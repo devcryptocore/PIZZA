@@ -180,13 +180,24 @@ body {
     background: #fd9d3e;
     padding: 25px;
     overflow: hidden;
+    gap: 12px;
 }
 .descript h2 {
     color: #fff;
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     margin: 0;
 }
 .descript b {
-    font-size: 1.3rem;
+    font-size: 1.7rem;
     color: #121619;
+    font-weight: 600;
+}
+.descript span {
+    font-size: 13px;
+    color: #121619;
+}
+.descript p {
+    font-size: 14px;
+    color: #121619;
+    margin: 0;
 }

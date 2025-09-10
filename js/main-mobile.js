@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded',()=>{
         newB.innerHTML = pza;
         const datos = description[pza];
         document.querySelector(".descript").innerHTML = `
-            <h2 data-aos="fade-down" data-aos-offset="0">Pizza ${pza}</h2>
             <b data-aos="fade-right" data-aos-offset="0">$${datos.precio}</b>
+            <h2 data-aos="fade-down" data-aos-offset="0">Pizza ${pza}</h2>
             <span data-aos="fade-left" data-aos-offset="0">${datos.ingredientes}</span>
             <p data-aos="fade-up" data-aos-offset="0">${datos.descripcion}</p>
         `;
