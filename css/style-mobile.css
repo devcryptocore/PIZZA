@@ -1,0 +1,192 @@
+@font-face {
+    font-family: Montserrat;
+    src: url(../res/fonts/Montserrat.ttf);
+}
+@font-face {
+    font-family: Poppins;
+    src: url(../res/fonts/Poppins.ttf);
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    padding: 0;
+    margin: 0;
+    background: url(../res/images/chef-bg.png) center / cover no-repeat,#121619;
+    background-attachment: fixed;
+    font-family: Poppins;
+}
+.navBar {
+    width: 100vw;
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+.org-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.org-name img {
+    max-width: 25px;
+    max-height: 25px;
+}
+.org-name h1 {
+    color: #fd9d3e;
+    font-size: 16px;
+}
+.org-name b  {
+    color: #fff;
+}
+#burger {
+    display: none;
+}
+.burguer {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 3px;
+}
+.part {
+    width: 25px;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 1s cubic-bezier(1,0,0,1);
+    opacity: 1;
+}
+#burger:checked + .burguer .part:nth-child(1){
+    transform: rotate(45deg) translate(5px, 6px);
+}
+#burger:checked + .burguer .part:nth-child(2){
+    transform: rotate(-45deg);
+    opacity: 0;
+}
+#burger:checked + .burguer .part:nth-child(3){
+    transform: rotate(-45deg) translate(5px, -6px);
+}
+#pizza_title {
+    width: 100vw;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    overflow: hidden;
+    color: #fff;
+    background: url(../res/icons/pizza.svg) 10% / 30px no-repeat;
+}
+#pizza_title b {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(0);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+#pizza_title b.enter-up {
+    opacity: 1;
+    transform: translateY(0);
+    animation: enterUp 0.4s forwards;
+}
+#pizza_title b.enter-down {
+    opacity: 1;
+    transform: translateY(0);
+    animation: enterDown 0.4s forwards;
+}
+#pizza_title b.exit-up {
+    opacity: 0;
+    animation: exitUp 0.4s forwards;
+}
+#pizza_title b.exit-down {
+    opacity: 0;
+    animation: exitDown 0.4s forwards;
+}
+@keyframes enterUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes enterDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes exitUp {
+    from { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(-30px); opacity: 0; }
+}
+@keyframes exitDown {
+    from { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(30px); opacity: 0; }
+}
+.main-section {
+    width: 100vw;
+    display: flex;
+    position: relative;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;/*Para que el scroll sea más suave*/
+    scrollbar-width: 0;
+}
+.main-section::-webkit-scrollbar {
+    width: 0;
+    color: #00000000;
+}
+.img-container {
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;/*Elementos no se encojen*/
+    scroll-snap-align: center;/*PROPIEDAD PARA SCROLL PÁGINA A PÁGINA*/
+}
+.img-container div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.big-pizza {
+    width: 60% !important;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 95%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.separator {
+    width: 100vw;
+    height: 8vh;
+    background: url(../res/images/yellow-separator.png) center / cover no-repeat;
+}
+.descript {
+    width: 100vw;
+    height: 50vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    background: #fd9d3e;
+    padding: 25px;
+    overflow: hidden;
+}
+.descript h2 {
+    color: #fff;
+    font-size: 1.8rem;
+    margin: 0;
+}
+.descript b {
+    font-size: 1.3rem;
+    color: #121619;
+}
