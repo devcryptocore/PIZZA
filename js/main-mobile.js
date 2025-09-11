@@ -5,6 +5,22 @@ document.addEventListener('DOMContentLoaded',()=>{
     const pizzaTittle = document.querySelector("#pizza_title");
     const pzz = ["p1.png","p2.png","p3.png","p4.png","p2.png","p3.png"];
     const tx  = ["Champiñones", "Pepperonni", "Italiana", "Hawainana", "Pollo", "Carne"];
+    let v = Date.now();
+
+    if(document.querySelector(".versionized")){
+        document.querySelectorAll('.versionized').forEach(ver => {
+            let sc = ver.getAttribute("href");
+            ver.setAttribute("href",`${sc}?${v}`);
+        });
+    }
+
+    if(document.querySelector(".versionizedjs")){
+        document.querySelectorAll('.versionizedjs').forEach(verjs => {
+            let scjs = verjs.getAttribute("src");
+            verjs.setAttribute("src",`${scjs}?${v}`);
+        });
+    }
+
     const description = {
         "Champiñones": {
             "precio":"35.000",
