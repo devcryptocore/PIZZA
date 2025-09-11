@@ -53,6 +53,8 @@ body {
     justify-content: center;
     gap: 5px;
     border-radius: 3px;
+    position: relative;
+    z-index: 899;
 }
 .part {
     width: 25px;
@@ -188,16 +190,45 @@ body {
     margin: 0;
 }
 .descript b {
-    font-size: 1.7rem;
+    font-size: 2rem;
     color: #121619;
     font-weight: 600;
+    text-shadow: 1px 1px 0px #eee, 1px -1px 0px #ffffff;
+    line-height: 0;
 }
 .descript span {
     font-size: 13px;
     color: #121619;
 }
+.descript ul {
+    font-size: 13px;
+    color: #363636;
+    padding: 0 0 0 16px;
+    margin: 0;
+}
 .descript p {
     font-size: 14px;
     color: #121619;
     margin: 0;
+}
+.modal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    background: #121619;
+    z-index: 888;
+    top: 0;
+    left: 0;
+}
+@keyframes exit {
+    from {transform: translateX(0%);opacity: 1;}
+    to {transform: translateX(-100%);opacity: 0.9;}
+}
+.exit {
+    animation: exit .5s linear both;
+    transition: all .5s cubic-bezier(1, 0, 0, 1);
 }

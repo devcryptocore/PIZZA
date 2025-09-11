@@ -8,32 +8,32 @@ document.addEventListener('DOMContentLoaded',()=>{
     const description = {
         "Champiñones": {
             "precio":"35.000",
-            "ingredientes":"Queso, harina, champiñones frescos, orégano, salsa",
+            "ingredientes":"Queso,harina,champiñones frescos,orégano,salsa",
             "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         },
         "Pepperonni": {
             "precio":"45.000",
-            "ingredientes":"Queso, harina, pepperonni, orégano, salsa",
+            "ingredientes":"Queso,harina,pepperonni,orégano,salsa",
             "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         },
         "Italiana": {
             "precio":"55.000",
-            "ingredientes":"Queso, harina, Pasta, orégano, salsa",
+            "ingredientes":"Queso,harina,Pasta,orégano,salsa",
             "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         },
         "Hawaiana": {
             "precio":"30.000",
-            "ingredientes":"Queso, harina, Jamón, Piña, orégano, salsa",
+            "ingredientes":"Queso,harina,Jamón,Piña,orégano,salsa",
             "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         },
         "Pollo": {
             "precio":"35.000",
-            "ingredientes":"Queso, harina, Pollo, orégano, salsa",
+            "ingredientes":"Queso,harina,Pollo,orégano,salsa",
             "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         },
         "Carne": {
             "precio":"45.000",
-            "ingredientes":"Queso, harina, Carne, orégano, salsa",
+            "ingredientes":"Queso,harina,Carne,orégano,salsa",
             "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         }
     }
@@ -52,11 +52,16 @@ document.addEventListener('DOMContentLoaded',()=>{
         newB.innerHTML = pza;
         const datos = description[pza];
         document.querySelector(".descript").innerHTML = `
-            <b data-aos="fade-right" data-aos-offset="0">$${datos.precio}</b>
+            <b data-aos="fade-right" data-aos-offset="0"><span>$</span>${datos.precio}</b>
             <h2 data-aos="fade-down" data-aos-offset="0">Pizza ${pza}</h2>
-            <span data-aos="fade-left" data-aos-offset="0">${datos.ingredientes}</span>
+            <ul id="ingredients" data-aos="fade-left" data-aos-offset="0"></ul>
+            <!--span data-aos="fade-left" data-aos-offset="0">${datos.ingredientes}</span-->
             <p data-aos="fade-up" data-aos-offset="0">${datos.descripcion}</p>
         `;
+        let  ings = datos.ingredientes.split(',');
+        ings.forEach(ing => {
+            document.querySelector("#ingredients").innerHTML += `<li>${ing}</li>`;
+        })
         AOS.refresh();
         pizzaTittle.appendChild(newB);
         if (direction === "right") {
@@ -98,10 +103,23 @@ document.addEventListener('DOMContentLoaded',()=>{
         const burger = document.querySelector("#burger");
         burger.addEventListener('change',()=>{
             if(burger.checked){
-                console.log("MARCADO");
+                const modal = document.createElement("div");
+                modal.classList.add("modal");
+                modal.id = "modal";
+                modal.setAttribute("data-aos","fade-right");
+                modal.setAttribute("data-aos-offset","0");
+                modal.setAttribute("data-aos-delay","500");
+                document.querySelector('body').appendChild(modal);
+                AOS.refresh();
             }
             else {
-                console.log("DESMARCADO");
+                if(document.querySelector("#modal")){
+                    const modal = document.querySelector("#modal");
+                    modal.classList.add("exit");
+                    setTimeout(()=>{
+                        modal.remove();
+                    },1000);
+                }
             }
         })
     }
