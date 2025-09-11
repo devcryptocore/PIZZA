@@ -24,6 +24,12 @@ body {
     justify-content: space-between;
     padding: 5px 10px;
 }
+.nav-left-cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
 .org-name {
     display: flex;
     align-items: center;
@@ -231,4 +237,10 @@ body {
 .exit {
     animation: exit .5s linear both;
     transition: all .5s cubic-bezier(1, 0, 0, 1);
+}
+.my-cart {
+    width: 25px;
+    aspect-ratio: 1/1;
+    border: 0;
+    background: #00000000 url(../res/icons/empty-cart.svg) center / 25px no-repeat;
 }
