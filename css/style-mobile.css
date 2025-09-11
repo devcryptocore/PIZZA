@@ -28,7 +28,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 25px;
 }
 .org-name {
     display: flex;
@@ -224,6 +224,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 25px;
     position: fixed;
     background: #121619;
     z-index: 888;
@@ -239,8 +240,16 @@ body {
     transition: all .5s cubic-bezier(1, 0, 0, 1);
 }
 .my-cart {
-    width: 25px;
+    width: 30px;
     aspect-ratio: 1/1;
     border: 0;
-    background: #00000000 url(../res/icons/empty-cart.svg) center / 25px no-repeat;
+    background: #00000000 url(../res/icons/empty-cart.svg) center / 30px no-repeat;
+}
+.modal-option {
+    width: 95%;
+    height: 40px;
+    background: #00000000;
+    border: 0;
+    font-size: 1.3rem;
+    color: #fff;
 }

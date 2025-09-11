@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     const animatedDiv = document.querySelectorAll(".big-pizza");
     const pizzaTittle = document.querySelector("#pizza_title");
     const pzz = ["p1.png","p2.png","p3.png","p4.png","p2.png","p3.png"];
-    const tx  = ["Champiñones", "Pepperonni", "Italiana", "Hawainana", "Pollo", "Carne"];
     let v = Date.now();
 
     if(document.querySelector(".versionized")){
@@ -18,6 +17,12 @@ document.addEventListener('DOMContentLoaded',()=>{
         document.querySelectorAll('.versionizedjs').forEach(verjs => {
             let scjs = verjs.getAttribute("src");
             verjs.setAttribute("src",`${scjs}?${v}`);
+        });
+    }
+
+    if(document.querySelector('.org-name')){
+        document.querySelector('.org-name').addEventListener('click',()=>{
+            location.reload();
         });
     }
 
@@ -127,6 +132,17 @@ document.addEventListener('DOMContentLoaded',()=>{
                 modal.setAttribute("data-aos-delay","500");
                 document.querySelector('body').appendChild(modal);
                 AOS.refresh();
+                if(document.querySelector("#modal")){
+                    const mdl = document.querySelector("#modal");
+                    mdl.innerHTML = `
+                        <button class="modal-option">Inicio</button>
+                        <button class="modal-option">Menú</button>
+                        <button class="modal-option">Ubicaciones</button>
+                        <button class="modal-option">Nosotros</button>
+                        <button class="modal-option">FAQs</button>
+                        <button class="modal-option">Contacto</button>
+                    `;
+                }
             }
             else {
                 if(document.querySelector("#modal")){
