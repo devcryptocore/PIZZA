@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     const wrapper = document.querySelector(".main-section");
     const animatedDiv = document.querySelectorAll(".big-pizza");
     const pizzaTittle = document.querySelector("#pizza_title");
+    const btnLeft  = document.querySelector("#ctrl-left");
+    const btnRight = document.querySelector("#ctrl-right");
     const pzz = ["p1.png","p2.png","p3.png","p4.png","p2.png","p3.png"];
     let v = Date.now();
 
@@ -26,6 +28,30 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
     }
 
+    let cartstate = 0;
+    if(document.querySelector("#my_cart")){
+        const mycart = document.querySelector("#my_cart");
+        mycart.addEventListener('click',()=>{
+            if(cartstate === 0){
+                const thecart = document.createElement("div");
+                thecart.classList.add("shopping-cart");
+                thecart.id = "shopping_cart";
+                thecart.setAttribute("data-aos","fade-down");
+                thecart.setAttribute("data-aos-offset","0");
+                thecart.setAttribute("data-aos-delay","100");
+                document.querySelector("body").appendChild(thecart);
+                cartstate = 1;
+            }
+            else {
+                document.querySelector("#shopping_cart").classList.add("hiddecart");
+                setTimeout(()=>{
+                    document.querySelector("#shopping_cart").remove();
+                },500);
+                cartstate = 0;
+            }
+        });
+    }
+
     const description = {
         "Champiñones": {
             "precio":"35.000",
@@ -39,8 +65,8 @@ document.addEventListener('DOMContentLoaded',()=>{
         },
         "Italiana": {
             "precio":"55.000",
-            "ingredientes":"Queso,harina,Pasta,orégano,salsa",
-            "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar!"
+            "ingredientes":"Queso,harina,Pasta,orégano,salsa,harina,Pasta,orégano,salsa",
+            "descripcion":"Deliciosa pizza con los mejores sabores que te puedas imaginar! Deliciosa pizza con los mejores sabores que te puedas imaginar!"
         },
         "Hawaiana": {
             "precio":"30.000",
@@ -73,17 +99,19 @@ document.addEventListener('DOMContentLoaded',()=>{
         newB.innerHTML = pza;
         const datos = description[pza];
         document.querySelector(".descript").innerHTML = `
-            <b data-aos="fade-right" data-aos-offset="0"><span>$</span>${datos.precio}</b>
-            <h2 data-aos="fade-down" data-aos-offset="0">Pizza ${pza}</h2>
-            <ul id="ingredients" data-aos="fade-left" data-aos-offset="0"></ul>
-            <!--span data-aos="fade-left" data-aos-offset="0">${datos.ingredientes}</span-->
-            <p data-aos="fade-up" data-aos-offset="0">${datos.descripcion}</p>
+            <div class="separator"></div>
+            <div class="props" data-aos="" data-aos-offset="0">
+                <b data-aos="fade-left" data-aos-offset="0"><span>$</span>${datos.precio}</b>
+                <h2 data-aos="fade-up" data-aos-offset="0">Pizza ${pza}</h2>
+                <ul id="ingredients" data-aos="fade-right" data-aos-offset="0"></ul>
+                <p data-aos="fade-left" data-aos-offset="0">${datos.descripcion}</p>
+            </div>
+            <div class="separator srotat"></div>
         `;
         let  ings = datos.ingredientes.split(',');
         ings.forEach(ing => {
             document.querySelector("#ingredients").innerHTML += `<li>${ing}</li>`;
         })
-        AOS.refresh();
         pizzaTittle.appendChild(newB);
         if (direction === "right") {
             newB.classList.add("enter-up");
@@ -96,7 +124,41 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (oldB) {
             setTimeout(() => oldB.remove(), 400);
         }
+        AOS.refresh();
     }
+
+    function updateButtons() {
+        if (currentIndex <= 0) {
+            btnLeft.style.display = "none";
+        } else {
+            btnLeft.style.display = "block";
+        }
+        if (currentIndex === animatedDiv.length - 1) {
+            btnRight.style.display = "none";
+        } else {
+            btnRight.style.display = "block";
+        }
+    }
+
+    function scrollToIndex(index) {
+        if (index >= 0 && index < animatedDiv.length) {
+            const target = animatedDiv[index];
+            wrapper.scrollTo({
+                left: target.offsetLeft - wrapper.clientWidth / 2 + target.offsetWidth / 2,
+                behavior: "smooth"
+            });
+        }
+    }
+
+    btnLeft.addEventListener("click", () => {
+        scrollToIndex(currentIndex - 1);
+    });
+
+    btnRight.addEventListener("click", () => {
+        scrollToIndex(currentIndex + 1);
+    });
+
+    updateButtons();
     showTitle(0, "right");
     currentIndex = 0;
     wrapper.addEventListener("scroll", () => {
@@ -115,6 +177,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                 if (index !== currentIndex) {
                     currentIndex = index;
                     showTitle(index, direction);
+                    updateButtons();
                 }
             }
         });

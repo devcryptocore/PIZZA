@@ -23,6 +23,13 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 5px 10px;
+    position: relative;
+    top: 0;
+    transition: all .5s cubic-bezier(1, 0, 0, 1);
+    position: sticky;
+    z-index: 890;
+    background: #121619;
+    box-shadow: 0px 3px 8px 0 #0000002f;
 }
 .nav-left-cont {
     display: flex;
@@ -134,6 +141,29 @@ body {
     from { transform: translateY(0); opacity: 1; }
     to   { transform: translateY(30px); opacity: 0; }
 }
+.header-section {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.slide-control {
+    width: 40px;
+    height: 55px;
+    position: absolute;
+    transform: translateY(40px);
+    z-index: 880;
+}
+.left-control {
+    background: url(../res/icons/left.svg) center / 100% no-repeat;
+    left: 10px;
+    display: none;
+}
+.right-control {
+    background: url(../res/icons/right.svg) center / 100% no-repeat;
+    right: 10px;
+}
 .main-section {
     width: 100vw;
     display: flex;
@@ -178,41 +208,72 @@ body {
     height: 8vh;
     background: url(../res/images/yellow-separator.png) center / cover no-repeat;
 }
+.srotat {
+    background-color: #fff;
+    background-image: url(../res/images/yellow-separator.png);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform: rotate(180deg);
+    position: relative;
+}
+.srotat::before {
+    content: "";
+    width: 100%;
+    height: 10px;
+    background: #fd9d3e;
+    position: absolute;
+    bottom: 0;
+    box-shadow: 0px 5px 0 0 #fd9d3e;
+}
+.swhite {
+    background: url(../res/images/white-separator.png) center / cover no-repeat;
+}
+.sdark {
+    background: url(../res/images/dark-separator.png) center / cover no-repeat;
+}
 .descript {
     width: 100vw;
-    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+.props {
     display: flex;
     align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: center;
     flex-direction: column;
+    width: 100%;
+    height: auto;
+    gap: 5px;
     background: #fd9d3e;
-    padding: 25px;
-    overflow: hidden;
-    gap: 12px;
+    padding: 0 0 20px 30px;
 }
-.descript h2 {
+.props h2 {
     color: #fff;
     font-size: 1.2rem;
     margin: 0;
 }
-.descript b {
+.props b {
     font-size: 2rem;
     color: #121619;
     font-weight: 600;
     text-shadow: 1px 1px 0px #eee, 1px -1px 0px #ffffff;
     line-height: 0;
 }
-.descript span {
+.props span {
     font-size: 13px;
     color: #121619;
 }
-.descript ul {
+.props ul {
     font-size: 13px;
     color: #363636;
     padding: 0 0 0 16px;
     margin: 0;
 }
-.descript p {
+.props p {
     font-size: 14px;
     color: #121619;
     margin: 0;
@@ -227,8 +288,9 @@ body {
     gap: 25px;
     position: fixed;
     background: #121619;
-    z-index: 888;
-    top: 0;
+    border-top: 4px solid #fd9d3e;
+    z-index: 889;
+    top: 8vh;
     left: 0;
 }
 @keyframes exit {
@@ -252,4 +314,36 @@ body {
     border: 0;
     font-size: 1.3rem;
     color: #fff;
+}
+.content-sec {
+    width: 100vw;
+    min-height: 50vh;
+    background: url(../res/images/dark-separator.png) bottom / 100% no-repeat, #fff;
+    box-shadow: 0px -5px 0 0 #fff;
+    mix-blend-mode: color-dodge;
+}
+.drk {
+    background: #121619;
+    box-shadow: 0px -5px 0 0 #121619;
+}
+.shopping-cart {
+    width: 100vw;
+    height: 50vh;
+    background: #fff;
+    border-top: 4px solid #fd9d3e;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    position: fixed;
+    top: 8vh;
+    left: 0;
+}
+@keyframes hidecart {
+    from {transform: translateY(0);}
+    to {transform: translateY(-100%);}
+}
+.hiddecart {
+    transition: all .3s cubic-bezier(1, 0, 0, 1);
+    animation: hidecart .4s linear both;
 }
