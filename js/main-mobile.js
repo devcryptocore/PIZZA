@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         const pza = nms[index];
         newB.innerHTML = pza;
         const datos = description[pza];
-        document.querySelector(".descript").innerHTML = `
+        document.querySelector(".descontainer").innerHTML = `
             <div class="separator"></div>
             <div class="props" data-aos="" data-aos-offset="0">
                 <b data-aos="fade-left" data-aos-offset="0"><span>$</span>${datos.precio}</b>

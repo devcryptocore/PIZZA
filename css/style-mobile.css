@@ -1,3 +1,6 @@
+:root {
+    --text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000;
+}
 @font-face {
     font-family: Montserrat;
     src: url(../res/fonts/Montserrat.ttf);
@@ -28,7 +31,7 @@ body {
     transition: all .5s cubic-bezier(1, 0, 0, 1);
     position: sticky;
     z-index: 890;
-    background: #121619;
+    background: #f9d000;
     box-shadow: 0px 3px 8px 0 #0000002f;
 }
 .nav-left-cont {
@@ -48,11 +51,12 @@ body {
     max-height: 25px;
 }
 .org-name h1 {
-    color: #fd9d3e;
+    color: #101010;
     font-size: 16px;
 }
 .org-name b  {
     color: #fff;
+    text-shadow: var(--text-shadow);
 }
 #burger {
     display: none;
@@ -72,7 +76,7 @@ body {
 .part {
     width: 25px;
     height: 3px;
-    background: #fff;
+    background: #101010;
     border-radius: 2px;
     transition: all 1s cubic-bezier(1,0,0,1);
     opacity: 1;
@@ -86,6 +90,10 @@ body {
 }
 #burger:checked + .burguer .part:nth-child(3){
     transform: rotate(-45deg) translate(5px, -6px);
+}
+#canvas {
+    position: absolute;
+    right: 0;
 }
 #pizza_title {
     width: 100vw;
@@ -206,11 +214,11 @@ body {
 .separator {
     width: 100vw;
     height: 8vh;
-    background: url(../res/images/yellow-separator.png) center / cover no-repeat;
+    background: url(../res/images/yellow-separator.svg) center / cover no-repeat;
 }
 .srotat {
     background-color: #fff;
-    background-image: url(../res/images/yellow-separator.png);
+    background-image: url(../res/images/yellow-separator.svg);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -221,10 +229,10 @@ body {
     content: "";
     width: 100%;
     height: 10px;
-    background: #fd9d3e;
+    background: #f9d000;
     position: absolute;
     bottom: 0;
-    box-shadow: 0px 5px 0 0 #fd9d3e;
+    box-shadow: 0px 5px 0 0 #f9d000;
 }
 .swhite {
     background: url(../res/images/white-separator.png) center / cover no-repeat;
@@ -248,7 +256,7 @@ body {
     width: 100%;
     height: auto;
     gap: 5px;
-    background: #fd9d3e;
+    background: #f9d000;
     padding: 0 0 20px 30px;
 }
 .props h2 {
@@ -288,7 +296,7 @@ body {
     gap: 25px;
     position: fixed;
     background: #121619;
-    border-top: 4px solid #fd9d3e;
+    border-top: 4px solid #f9d000;
     z-index: 889;
     top: 8vh;
     left: 0;
@@ -330,7 +338,7 @@ body {
     width: 100vw;
     height: 50vh;
     background: #fff;
-    border-top: 4px solid #fd9d3e;
+    border-top: 4px solid #f9d000;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
