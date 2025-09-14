@@ -16,14 +16,17 @@
     position: relative;
     transform: rotate(0deg);
     transition: transform 4s cubic-bezier(.17,.67,.83,.67);
-    background: conic-gradient(
-    #e74c3c 0deg 60deg,
-    #3498db 60deg 120deg,
-    #2ecc71 120deg 180deg,
-    #f1c40f 180deg 240deg,
-    #9b59b6 240deg 300deg,
-    #e67e22 300deg 360deg
-    );
+    background-image: conic-gradient(
+    #e74c3c00 0deg 60deg,
+    #3498db00 60deg 120deg,
+    #2ecc7100 120deg 180deg,
+    #f1c40f00 180deg 240deg,
+    #9b59b600 240deg 300deg,
+    #e67e2200 300deg 360deg
+    ), url(../res/images/pizzaruleta.png);
+    background-position: center;
+    background-size: 110%;
+    background-repeat: no-repeat;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -36,11 +39,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px 2px #000;
     writing-mode: vertical-lr;
+    text-shadow: var(--text-shadow);
 }
 .sector1 { transform: rotate(30deg) translate(-50%, -100%); }
 .sector2 { transform: rotate(90deg) translate(-50%, -100%); }
@@ -51,7 +55,7 @@
 .flecha {
     position: absolute;
     top: 2px;
-    width: 0; 
+    width: 0;
     height: 0; 
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
