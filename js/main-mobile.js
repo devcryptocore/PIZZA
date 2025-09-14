@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             setTimeout(() => {
                 const grados = angulo % 360;
                 let premioIndex = Math.floor((360 - grados) / 60) % 6; 
-                resultado.textContent = "🎉 Ganaste: " + premios[premioIndex];
+                resultado.textContent = "Ganaste: " + premios[premioIndex];
             }, 4000);
         });
     },3000);
