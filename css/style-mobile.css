@@ -94,6 +94,7 @@ body {
 #canvas {
     position: absolute;
     right: 0;
+    top: 0;
 }
 #pizza_title {
     width: 100vw;
@@ -247,6 +248,7 @@ body {
     justify-content: center;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
 }
 .props {
     display: flex;

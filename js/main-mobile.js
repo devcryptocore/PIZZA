@@ -52,6 +52,46 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
     }
 
+    setTimeout(()=>{
+        Swal.fire({
+            title: "Participa!",
+            html: `
+                <link rel="stylesheet" href="css/ruleta.css">
+                <div class="ruleta-container">
+                    <div class="flecha"></div>
+                    <div class="ruleta" id="ruleta">
+                        <div class="sector-text sector1">Premio 1</div>
+                        <div class="sector-text sector2">Premio 2</div>
+                        <div class="sector-text sector3">Premio 3</div>
+                        <div class="sector-text sector4">Premio 4</div>
+                        <div class="sector-text sector5">Premio 5</div>
+                        <div class="sector-text sector6">Premio 6</div>
+                    </div>
+                </div>
+                <button id="girar">Girar</button>
+                <p id="resultado"></p>
+            `,
+            showConfirmButton: false,
+            showCancelButton: false,
+            showCloseButton: true
+        });
+        const ruleta = document.getElementById("ruleta");
+        const boton = document.getElementById("girar");
+        const resultado = document.getElementById("resultado");
+        let angulo = 0;
+        const premios = ["Premio 1", "Premio 2", "Premio 3", "Premio 4", "Premio 5", "Premio 6"];
+        boton.addEventListener("click", () => {
+            const extra = Math.floor(Math.random() * 360);
+            angulo += 1800 + extra;
+            ruleta.style.transform = `rotate(${angulo}deg)`;
+            setTimeout(() => {
+                const grados = angulo % 360;
+                let premioIndex = Math.floor((360 - grados) / 60) % 6; 
+                resultado.textContent = "🎉 Ganaste: " + premios[premioIndex];
+            }, 4000);
+        });
+    },3000);
+
     const description = {
         "Champiñones": {
             "precio":"35.000",
