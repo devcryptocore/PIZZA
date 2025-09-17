@@ -1,0 +1,19 @@
+
+[2025-09-16 14:18:55] [Usuario: admin] [IP: ::1] - Error al registrar insumo: Field 'cantidad' doesn't have a default value
+[2025-09-16 14:20:39] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Carne de res, cantidad = 5000gr)
+[2025-09-16 14:21:24] [Usuario: admin] [IP: ::1] - 500gr de Carne de res agragados
+[2025-09-16 14:26:57] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Carne de res, cantidad = 5000gr)
+[2025-09-16 14:27:29] [Usuario: admin] [IP: ::1] - 1000gr de Carne de res agragados
+[2025-09-16 16:54:22] [Usuario: admin] [IP: ::1] - Insumo modificado (Carne de res, cantidad = 6000.00gr)
+[2025-09-16 17:09:31] [Usuario: admin] [IP: 192.168.200.6] - Nuevo insumo registrado (Queso, cantidad = 4000gr)
+[2025-09-16 17:10:31] [Usuario: admin] [IP: 192.168.200.6] - 1000gr de Queso agragados
+[2025-09-16 18:40:20] [Usuario: admin] [IP: ::1] - Insumo con id 13 eliminado.
+[2025-09-16 18:42:26] [Usuario: admin] [IP: ::1] - Insumo con id 12 eliminado.
+[2025-09-16 18:42:41] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Carne de res, cantidad = 5000gr)
+[2025-09-16 18:42:47] [Usuario: admin] [IP: ::1] - 1000gr de Carne de res agragados
+[2025-09-16 18:43:03] [Usuario: admin] [IP: ::1] - Insumo modificado (Carne de vaca, cantidad = 6000.00gr)
+[2025-09-16 18:43:24] [Usuario: admin] [IP: ::1] - Insumo con id 14 eliminado.
+[2025-09-16 21:38:30] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Carne de res, cantidad = 5000gr)
+[2025-09-16 21:38:53] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Piña, cantidad = 1000gr)
+[2025-09-16 21:39:14] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Pollo, cantidad = 4000gr)
+[2025-09-16 21:39:51] [Usuario: admin] [IP: ::1] - Nuevo insumo registrado (Queso mozzarella, cantidad = 10000gr)

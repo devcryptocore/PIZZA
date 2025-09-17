@@ -1,0 +1,22 @@
+@font-face {
+    font-family: Montserrat;
+    src: url(../res/fonts/Montserrat.ttf);
+}
+@font-face {
+    font-family: Poppins;
+    src: url(../res/fonts/Poppins.ttf);
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Montserrat;
+    font-size: 14px;
+}
+:root {
+    --dark-grey: #1f1f1f;
+    --white-font: #e0e0e0;
+    --amarillo: #f9d000;
+}

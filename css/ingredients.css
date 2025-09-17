@@ -1,0 +1,75 @@
+.myIngredients {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: auto;
+    padding: 25px 30px;
+}
+.center_text {
+    position: absolute;
+    top: 50%;
+    font-size: 2rem;
+    font-weight: 600;
+}
+.ingredients_table {
+    width: 90vw;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+.ingredients_table thead tr {
+    background: var(--dark-grey);
+}
+.ingredients_table thead tr th {
+    padding: 8px 8px;
+    color: var(--white-font);
+    font-size: 13px;
+}
+.ingredients_table thead tr th:nth-child(1) {
+    border-radius: 8px 0px 0px 0px;
+}
+.ingredients_table thead tr th:nth-child(9) {
+    border-radius: 0px 8px 0px 0px;
+}
+.ingredients_table tbody tr {
+    cursor: pointer;
+}
+.ingredients_table tbody tr:nth-last-of-type(even) {
+    background: #e7e7e7;
+}
+.ingredients_table tbody tr:hover {
+    background: var(--amarillo);
+}
+.ingredients_table tbody tr td {
+    font-size: 12px;
+    padding: 15px 5px;
+}
+.opscontainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.stkbutton {
+    width: 120px;
+    height: 40px;
+    border: 0;
+    background: #eee;
+    font-size: 14px;
+    color: var(--dark-grey);
+    border-radius: 8px;
+    cursor: pointer;
+}
+.add {
+    background: #007ecc3d url(../res/icons/add-blue.svg) 5px / 30px no-repeat;
+    color: #007ecc;
+}
+.modify {
+    background: #00a34f3d url(../res/icons/edit-green.svg) 5px / 20px no-repeat;
+    color: #00a34f;
+}
+.del {
+    background: #ff00573d url(../res/icons/delete-red.svg) 5px / 20px no-repeat;
+    color: #ff0057;
+}
