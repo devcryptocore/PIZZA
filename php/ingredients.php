@@ -24,8 +24,8 @@
             $ingrediente = htmlspecialchars($_POST['ingrediente']);
             $stock = $_POST['stock'];
             $minimo = $_POST['stock_minimo'];
-            $costo = $_POST['costo']/$stock;
-            $costo_total = $_POST['costo'];
+            $costo = sanear_string($_POST['costo'])/$stock;
+            $costo_total = sanear_string($_POST['costo']);
             $unidad = $_POST['unidad'];
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
             $ins = $con -> prepare("INSERT INTO ingredientes (nombre, costo, unidad, stock, stock_minimo, vencimiento) VALUES (?, ?, ?, ?, ?, ?)");
@@ -73,7 +73,7 @@
                     $precioxunidad = $ingreds['costo'];
                     $preciostock = miles($stock*$precioxunidad);
                     $ingredientes .= '
-                        <tr onclick="openIngredientOptions(\''.$id.'\')">
+                        <tr onclick="openIngredientOptions(\''.$nombre.'\',\''.$id.'\')" class="elem-busqueda">
                             <td>'.$id.'</td>
                             <td>'.$nombre.'</td>
                             <td>$'.miles($costo).'</td>

@@ -2,7 +2,18 @@ import * as uris from './uris.js';
 
 document.addEventListener("DOMContentLoaded",()=>{
 
+    const fecha = new Date();
     const body = document.querySelector("body");
+
+    (function($) {
+       $('#FiltrarContenido').keyup(function () {
+            var ValorBusqueda = new RegExp($(this).val(), 'i');
+            $('.elem-busqueda').hide();
+            $('.elem-busqueda').filter(function () {
+    	        return ValorBusqueda.test($(this).text());
+            }).show();
+        })
+    }(jQuery));
 
     if(document.querySelector("#add_ingredient")){
         const addingredient =  document.querySelector("#add_ingredient");
@@ -10,19 +21,51 @@ document.addEventListener("DOMContentLoaded",()=>{
             Swal.fire({
                 title: "Nuevo insumo",
                 html: `
-                    <div class="from_container">
+                    <div class="form-container">
                         <form id="newIngredient">
-                            <input type="text" name="ingrediente" placeholder="Ingrediente">
-                            <input type="number" name="stock" id="stock" placeholder="Stock">
-                            <input type="number" name="stock_minimo" id="stock_min" placeholder="Stock mínimo">
-                            <select name="unidad" id="unidad">
-                                <option value="gramo" selected>Gramos</option>
-                                <option value="ml">Mililitros</option>
-                                <option value="unidad">Unidades</option>
-                            </select>
-                            <input type="text" name="costo" id="costo" placeholder="Costo">
-                            <input type="date" name="vencimiento" placeholder="Vencimiento">
-                            <input type="submit" value="Registrar">
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/meat.svg)">
+                                    <input type="text" name="ingrediente" class="inputField" id="ingrediente" required autocomplete="off">
+                                    <label for="ingrediente">Insumo</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
+                                    <input type="number" name="stock" id="stock" class="inputField" required autocomplete="off">
+                                    <label for="stock">Cantidad (gr)</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
+                                    <input type="number" name="stock_minimo" id="stock_min" class="inputField" required autocomplete="off">
+                                    <label for="stock_min">Mínimo (gr)</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer"  style="background-image:url(../res/icons/pesa.svg)">
+                                    <select name="unidad" id="unidad" class="inputField" required autocomplete="off">
+                                        <option value="gramo" selected>Gramos</option>
+                                        <option value="ml">Mililitros</option>
+                                        <option value="unidad">Unidades</option>
+                                    </select>
+                                    <label for="unidad">Medida</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer"  style="background-image:url(../res/icons/dollar.svg)">
+                                    <input type="text" name="costo" id="costo" class="inputField" required autocomplete="off" onkeyup="moneyFormat(this)">
+                                    <label for="costo">Costo</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer"  style="background-image:url(../res/icons/time.svg)">
+                                    <input type="date" name="vencimiento" id="vencimiento" class="inputField" autocomplete="off">
+                                    <label for="Vencimiento">F. Vencimiento</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <input type="submit" value="Registrar" class="send-button">
+                            </div>
                         </form>
                     </div>
                 `,
@@ -30,6 +73,20 @@ document.addEventListener("DOMContentLoaded",()=>{
                 showConfirmButton: false,
                 showCloseButton: true
             });
+            if(document.querySelector(".inputField")){
+                const inputs = document.querySelectorAll('.inputField');
+                inputs.forEach(inp => {
+                    inp.addEventListener('focus',()=>{
+                        inp.classList.add('active-input-field');
+                    });
+                    inp.addEventListener('focusout', ()=>{
+                        let inpval = inp.value;
+                        if(inpval.length == 0 || inpval == ''){
+                            inp.classList.remove('active-input-field');
+                        }
+                    });
+                })
+            }
             if(document.querySelector("#newIngredient")){
                 const ingredientForm = document.querySelector("#newIngredient");
                 ingredientForm.addEventListener('submit',async (e) => {
@@ -132,18 +189,50 @@ document.addEventListener("DOMContentLoaded",()=>{
                     Swal.fire({
                         title: `Modificar ${rta.nombre}`,
                         html: `
-                            <div class="from_container">
+                            <div class="form-container">
                                 <form id="modIngredient">
-                                    <input type="text" name="ingrediente" placeholder="Ingrediente" value="${rta.nombre}">
-                                    <input type="number" name="stock" id="stock" placeholder="Stock" value="${rta.stock}">
-                                    <input type="number" name="stock_minimo" id="stock_min" placeholder="Stock mínimo" value="${rta.minimo}">
-                                    <select name="unidad" id="unidad">
-                                        ${rta.unidad_select}
-                                    </select>
-                                    <input type="text" name="costo" id="costo" placeholder="Costo" value="${rta.costo_total}">
-                                    <input type="date" name="vencimiento" placeholder="Vencimiento" value="${rta.vencimiento}">
                                     <input type="hidden" name="id" value="${id}">
-                                    <input type="submit" value="Modificar">
+                                    <div class="oneInput">
+                                        <div class="inputContainer" style="background-image:url(../res/icons/meat.svg)">
+                                            <input type="text" name="ingrediente" value="${rta.nombre}" class="inputField active-input-field" id="ingrediente" required autocomplete="off">
+                                            <label for="ingrediente">Insumo</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
+                                            <input type="number" value="${rta.stock}" name="stock" id="stock" class="inputField active-input-field" required autocomplete="off">
+                                            <label for="stock">Cantidad (gr)</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
+                                            <input type="number" value="${rta.minimo}" name="stock_minimo" id="stock_min" class="inputField active-input-field" required autocomplete="off">
+                                            <label for="stock_min">Mínimo (gr)</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <div class="inputContainer"  style="background-image:url(../res/icons/pesa.svg)">
+                                            <select name="unidad" id="unidad" class="inputField active-input-field" required autocomplete="off">
+                                                ${rta.unidad_select}
+                                            </select>
+                                            <label for="unidad">Medida</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <div class="inputContainer"  style="background-image:url(../res/icons/dollar.svg)">
+                                            <input type="text" value="${milesjs(rta.costo_total)}" name="costo" id="costo" class="inputField active-input-field" required autocomplete="off" onkeyup="moneyFormat(this)">
+                                            <label for="costo">Costo</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <div class="inputContainer"  style="background-image:url(../res/icons/time.svg)">
+                                            <input type="date" value="${rta.vencimiento.split(" ")[0]}" name="vencimiento" id="vencimiento" class="inputField" autocomplete="off">
+                                            <label for="Vencimiento">F. Vencimiento</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <input type="submit" value="Registrar" class="send-button">
+                                    </div>
                                 </form>
                             </div>
                         `,
@@ -224,9 +313,9 @@ document.addEventListener("DOMContentLoaded",()=>{
         })();
     }
 
-    window.openIngredientOptions = (id) => {
+    window.openIngredientOptions = (name,id) => {
         Swal.fire({
-            title: "Opciones",
+            title: `Opciones ${name}`,
             html: `
                 <div class="opscontainer">
                     <button class="stkbutton add" onclick="handleIngredient('add',${id})">Agregar</button>

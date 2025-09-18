@@ -20,3 +20,77 @@ body {
     --white-font: #e0e0e0;
     --amarillo: #f9d000;
 }
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+.form-container form {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    gap: 25px;
+}
+.oneInput {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--dark-grey);
+    border-radius: 4px;
+    background-position: 8px;
+    background-size: 20px;
+    background-repeat: no-repeat;
+    padding: 0 0 0 40px;
+}
+.inputContainer input,
+.inputContainer select {
+    width: 250px;
+    height: 40px;
+    border: 0;
+    background: #00000000;
+    font-size: 16px;
+    color: var(--dark-grey);
+    outline: none;
+}
+.inputContainer label {
+    font-size: 14px;
+    position: absolute;
+    left: 0;
+    transform: translate(45px, 0px);
+    transition: all .5s cubic-bezier(1, 0, 0, 1);
+    cursor: text;
+}
+.inputContainer select + label,
+.inputContainer input[type='date'] + label {
+    transform: translate(25px, -20px);
+    font-size: 12px;
+    background: #fff;
+    padding: 5px 5px;
+}
+.inputContainer input:focus + label {
+    transform: translate(25px, -20px);
+    transition: all .5s cubic-bezier(1, 0, 0, 1);
+    font-size: 12px;
+    background: #fff;
+    padding: 5px 5px;
+}
+.active-input-field + label {
+    transition: all .3s cubic-bezier(1, 0, 0, 1);
+    transform: translate(25px, -20px);
+    font-size: 12px;
+    background: #fff;
+    padding: 5px 5px;
+}
