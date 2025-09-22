@@ -196,4 +196,18 @@
 		return implode('.', array_slice($www, -2));
 	}
 
+	function units($unit){
+        switch ($unit) {
+            case 'ml':
+                return 'ml';
+                break;
+            case 'unidad':
+                return 'und';
+                break;
+            default:
+                return 'gr';
+                break;
+        }
+    }
+
 ?>

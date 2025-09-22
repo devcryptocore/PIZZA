@@ -6,6 +6,10 @@
     font-family: Poppins;
     src: url(../res/fonts/Poppins.ttf);
 }
+@font-face {
+    font-family: NunitoSans;
+    src: url(../res/fonts/NunitoSans.ttf);
+}
 * {
     box-sizing: border-box;
 }
@@ -19,6 +23,7 @@ body {
     --dark-grey: #1f1f1f;
     --white-font: #e0e0e0;
     --amarillo: #f9d000;
+    --rojo: #ff0057;
 }
 .form-container {
     display: flex;
@@ -56,7 +61,8 @@ body {
     padding: 0 0 0 40px;
 }
 .inputContainer input,
-.inputContainer select {
+.inputContainer select,
+#ingredientSelect {
     width: 250px;
     height: 40px;
     border: 0;

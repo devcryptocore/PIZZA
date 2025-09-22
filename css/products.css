@@ -1,0 +1,162 @@
+#ingredientSelect {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 14px;
+}
+.chklist {
+    position: absolute;
+    width: 100%;
+    height: 550px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: #fff;
+    padding: 25px;
+    top: 0;
+    left: 0;
+    border-radius: 8px;
+    gap: 20px;
+    z-index: 2;
+}
+.chklist h2 {
+    margin: 0;
+}
+.chklist ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+.chklist ul li {
+    padding: 10px 15px;
+    border: 1px solid var(--dark-grey);
+    border-radius: 6px;
+    font-size: 13px;
+    min-width: 350px;
+    max-width: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    position: relative;
+}
+.chklist ul li::marker {
+    color: #00000000;
+}
+.chcant,
+.chb {
+    width: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chb input[type='checkbox'] {
+    display: none;
+}
+.chb label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 35px;
+    border-radius: 6px;
+    background: #cbcbcb;
+    cursor: pointer;
+    transition: all .3s cubic-bezier(1, 0, 0, 1);
+}
+.chb input[type='checkbox']:checked + label {
+    background: var(--amarillo);
+    color: var(--dark-grey);
+    transition: all .3s cubic-bezier(1, 0, 0, 1);
+}
+.chcant {
+    width: 30%;
+}
+.chcant input {
+    width: 100%;
+    height: 35px;
+    border: 0;
+    background: #eee url(../res/icons/pesa.svg) 5px / 20px no-repeat;
+    border-radius: 6px;
+    padding: 0 0 0 30px;
+    font-size: 14px;
+}
+.ing-buttons {
+    display: flex;
+    width: 85%;
+    align-items: center;
+    justify-content: center;
+}
+.ing-buttons span {
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    background: #eee;
+    color: var(--dark-grey);
+    font-weight: 600;
+}
+.ing-buttons span:nth-child(1){
+    background: #00c493;
+    color: #fff;
+}
+.selected-ings {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 8px;
+    gap: 8px;
+}
+.selected-ings span {
+    font-size: 9px;
+    font-weight: 600;
+    border: 1px solid var(--dark-grey);
+    border-radius: 6px;
+    padding: 2px 4px;
+    cursor: default;
+}
+.special-input-cont input[type='checkbox'] {
+    display: none;
+}
+.special-input-cont label {
+    width: 250px;
+    height: 40px;
+    border: 0;
+    background: #00000000;
+    font-size: 16px;
+    color: var(--dark-grey);
+    outline: none;
+    position: relative;
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    transform: translate(0,0);
+    cursor: pointer;
+}
+.special-input-cont .active-input-field + label {
+    transform: translate(0,0);
+    font-size: 14px;
+    padding: 0;
+    background: unset;
+}
+.active_product {
+    background: #00c493 !important;
+    color: #fff !important;
+    font-weight: 600;
+    padding: 10px 15px;
+    box-shadow: inset 0 0 0 6px #fff;
+    border-radius: 10px;
+}

@@ -5,20 +5,6 @@
     include('optimizador.php');
     $sesion = "admin";//DUMMIE PARA SESION DE USUARIO
 
-    function units($unit){
-        switch ($unit) {
-            case 'ml':
-                return 'ml';
-                break;
-            case 'unidad':
-                return 'und';
-                break;
-            default:
-                return 'gr';
-                break;
-        }
-    }
-
     if(isset($_GET['new_ingredient']) && $_GET['new_ingredient'] === $clav){
         try {
             $ingrediente = htmlspecialchars($_POST['ingrediente']);
@@ -55,6 +41,30 @@
         $con -> close();
     }
 
+    elseif(isset($_GET['get_values'])){
+        $stk = $con->prepare("SELECT costo, stock FROM ingredientes");
+        $stk -> execute();
+        $Rstk = $stk -> get_result();
+        if($Rstk -> num_rows > 0){
+            $totalcost = 0;
+            while($st = mysqli_fetch_array($Rstk)){
+                $totalcost += $st['costo']*$st['stock'];
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "Correcto!",
+                "message" => $totalcost
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "success",
+                "title" => "Correcto!",
+                "message" => "Sin resultados"
+            ]);
+        }
+    }
+
     elseif(isset($_GET['get_ingredients']) && $_GET['get_ingredients'] === $clav){
         try {
             $consult = $con->prepare("SELECT * FROM ingredientes ORDER BY creado DESC");
@@ -76,11 +86,11 @@
                         <tr onclick="openIngredientOptions(\''.$nombre.'\',\''.$id.'\')" class="elem-busqueda">
                             <td>'.$id.'</td>
                             <td>'.$nombre.'</td>
-                            <td>$'.miles($costo).'</td>
+                            <td>$'.miles(round($costo)).'</td>
                             <td>'.$unidad.'</td>
-                            <td>'.$stock.'<span>'.units($unidad).'</span></td>
-                            <td>'.$min.'<span>'.units($unidad).'</span></td>
-                            <td>$'.$precioxunidad.'</td>
+                            <td>'.miles(round($stock)).'<span>'.units($unidad).'</span></td>
+                            <td>'.miles(round($min)).'<span>'.units($unidad).'</span></td>
+                            <td>$'.miles(round($precioxunidad)).'</td>
                             <td>$'.$preciostock.'</td>
                             <td>'.$vencimiento.'</td>
                         </tr>

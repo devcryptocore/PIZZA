@@ -2,13 +2,14 @@
     include('../includes/header.php');
 ?>
 <link rel="stylesheet" href="../css/ingredients.css?v=<?=$version;?>">
-<script type="module" src="../js/ingredients.js?v=<?=$version;?>"></script>
+<link rel="stylesheet" href="../css/products.css?v=<?=$version;?>">
+<script type="module" src="../js/producto.js?v=<?=$version;?>"></script>
 <body>
     <div class="headbar">
-        <h1>Insumos</h1>
+        <h1>Productos</h1>
         <div class="total-container"></div>
         <div class="search-container">
-            <input type="text" id="FiltrarContenido" placeholder="Buscar insumo" class="search-bar">
+            <input type="text" id="FiltrarContenido" placeholder="Buscar producto" class="search-bar">
         </div>
         <button id="add_ingredient"></button>
     </div>
@@ -16,14 +17,14 @@
         <table class="ingredients_table">
             <thead>
                 <th>No.</th>
-                <th>Insumo</th>
+                <th>Producto</th>
                 <th>Costo</th>
-                <th>Unidad</th>
+                <th>Precio</th>
+                <th>Ganancia</th>
                 <th>Stock</th>
-                <th>Mínimo</th>
-                <th>Precio und</th>
-                <th>Precio stock</th>
-                <th>Caduca</th>
+                <th>Ingredientes</th>
+                <th>Disponible</th>
+                <th>total</th>
             </thead>
             <tbody id="ingredients"></tbody>
         </table>
