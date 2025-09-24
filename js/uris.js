@@ -8,3 +8,5 @@ export const deleteingredient = "php/ingredients.php?delete=bWF4cGl6emFsYXVuaW9u
 export const ingredientsforcheck = "php/products.php?getingredientsforlist=bWF4cGl6emFsYXVuaW9u";
 export const setnewproduct = "php/products.php?set_new_product=bWF4cGl6emFsYXVuaW9u";
 export const getproducts = "php/products.php?get_products=bWF4cGl6emFsYXVuaW9u";
+export const getthisproduct = "php/products.php?get_this_product=bWF4cGl6emFsYXVuaW9u";
+export const activethisproduct = "php/products.php?active_this_product=bWF4cGl6emFsYXVuaW9u";

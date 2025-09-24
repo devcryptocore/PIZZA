@@ -14,7 +14,7 @@
         <button id="add_ingredient"></button>
     </div>
     <div class="myIngredients">
-        <table class="ingredients_table">
+        <table class="table-container ingredients_table">
             <thead>
                 <th>No.</th>
                 <th>Producto</th>
@@ -22,9 +22,7 @@
                 <th>Precio</th>
                 <th>Ganancia</th>
                 <th>Stock</th>
-                <th>Ingredientes</th>
-                <th>Disponible</th>
-                <th>total</th>
+                <th>Categoría</th>
             </thead>
             <tbody id="ingredients"></tbody>
         </table>

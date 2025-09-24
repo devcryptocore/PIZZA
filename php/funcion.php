@@ -210,4 +210,18 @@
         }
     }
 
+	function guardarFoto($campo, $producto, $dir) {
+        if (!empty($_FILES[$campo]['name'])) {
+            $idFoto = uniqid();
+            $ext = pathinfo($_FILES[$campo]['name'], PATHINFO_EXTENSION);
+            $nombreArchivo = preg_replace('/[^a-zA-Z0-9-_]/', '_', $producto) . "_{$idFoto}." . $ext;
+            $ruta = $dir . "/" . $nombreArchivo;
+
+            if (move_uploaded_file($_FILES[$campo]['tmp_name'], $ruta)) {
+                return $ruta;
+            }
+        }
+        return null;
+    }
+
 ?>

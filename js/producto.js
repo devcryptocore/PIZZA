@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 title: "Nuevo producto",
                 html: `
                     <div class="form-container">
-                        <form id="newProduct" novalidate>
+                        <form id="newProduct" enctype="multipart/form-data" novalidate>
                             <div id="chkingredeints" class="chklist">
                                 <h2>Ingredientes</h2>
                                 <div class="search-container">
@@ -33,6 +33,20 @@ document.addEventListener("DOMContentLoaded",()=>{
                                 <ul id="ingr_list"></ul>
                                 <div class="ing-buttons">
                                     <span id="closeIngChk">Integrar</span>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer con-image">
+                                    <input type="file" name="portada" id="portada" class="form-image" required>
+                                    <label for="portada" id="forPortada" class="fore-photo"></label>
+                                    <div class="ot-image">
+                                        <input type="file" name="photo1" id="photo1" class="form-image">
+                                        <label for="photo1" id="forPhoto1" class="fore-photo"></label>
+                                        <input type="file" name="photo2" id="photo2" class="form-image">
+                                        <label for="photo2" id="forPhoto2" class="fore-photo"></label>
+                                        <input type="file" name="photo3" id="photo3" class="form-image">
+                                        <label for="photo3" id="forPhoto3" class="fore-photo"></label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="oneInput">
@@ -67,7 +81,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                                     <label for="precio">Precio</label>
                                 </div>
                             </div>
-                            <div class="oneInput">
+                            <!--div class="oneInput">
                                 <div class="inputContainer special-input-cont" id="constatus" style="background-image:url(../res/icons/status-active.svg)">
                                     <input type="checkbox" name="estado" id="estado" class="inputField" autocomplete="off" checked>
                                     <label for="estado" class="pstatus active_product">Activo</label>
@@ -77,6 +91,22 @@ document.addEventListener("DOMContentLoaded",()=>{
                                 <div class="inputContainer special-input-cont" id="conoffer" style="background-image:url(../res/icons/offer-grey.svg)">
                                     <input type="checkbox" name="oferta" id="oferta" class="inputField" autocomplete="off">
                                     <label for="oferta" class="poffer active_offer">Oferta: No</label>
+                                </div>
+                            </div-->
+                            <div class="oneInput" id="sizeOfPizza">
+                                <div class="inputContainer special-input-cont" style="background-image:url(../res/icons/size.svg)">
+                                    <input type="radio" name="size" value="S" id="pizza_S">
+                                    <label for="pizza_S">S</label>
+                                    <input type="radio" name="size" value="M" id="pizza_M">
+                                    <label for="pizza_M">M</label>
+                                    <input type="radio" name="size" value="L" id="pizza_L">
+                                    <label for="pizza_L">L</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer textarea-container">
+                                    <textarea class="prduct-desc" name="descripcion" id="txtarea"></textarea>
+                                    <label for="txtarea">Descripción</label>
                                 </div>
                             </div>
                             <div class="oneInput">
@@ -89,7 +119,32 @@ document.addEventListener("DOMContentLoaded",()=>{
                 showConfirmButton: false,
                 showCloseButton: true
             });
-            if(document.querySelector("#estado")){
+            if(document.querySelector(".form-image")){
+                const pimage = document.querySelectorAll(".form-image");
+                pimage.forEach(f => {
+                    f.addEventListener("change",()=>{
+                        let inpid = f.id;
+                        let inpimg = f.files[0];
+                        if(inpimg && inpimg.type.startsWith("image/")){
+                            let bkg = URL.createObjectURL(inpimg);
+                            document.querySelectorAll(".fore-photo").forEach(l =>  {
+                                let lbl = l.getAttribute("for");
+                                if(lbl == inpid){
+                                    l.style.background = `url(${bkg}) center / cover no-repeat`;
+                                }
+                            });
+                        }
+                        else {
+                            iziToast.error({
+                                title: "Seleccione un archivo válido!",
+                                message: `Debe elegir un archivo en formato .jpg, .png o .webp`,
+                                position: "topCenter"
+                            });
+                        }
+                    });
+                });
+            }
+            /*if(document.querySelector("#estado")){
                 document.querySelector("#estado").addEventListener('change',(e)=>{
                     document.querySelector(".pstatus").classList.add("active_product");
                     document.querySelector(".pstatus").innerText = "Activo";
@@ -111,7 +166,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                         document.querySelector("#conoffer").style.backgroundImage = 'url(../res/icons/offer-grey.svg)';
                     }
                 });
-            }
+            }*/
             if(document.querySelector("#ingredientSelect")){
                 const ingselect = document.querySelector("#ingredientSelect");
                 (async ()=>{
@@ -240,8 +295,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 
     get_ingredients();
 
-    window.handleIngredient = (action, id) => {
-        const uri = `../${uris.getthisingredient}`;
+    window.handleProduct = (action, id) => {
+        let espizza = "";
+        const uri = `../${uris.getthisproduct}`;
         const dta = new FormData();
         dta.append("id",id);
         (async () =>{
@@ -251,18 +307,29 @@ document.addEventListener("DOMContentLoaded",()=>{
                     body: dta
                 });
                 const rta = await sdata.json();
-                if(action === 'add'){
+                if(action === 'disponible'){
+                    if(rta.message.categoria == 'pizza'){
+                        espizza = `
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/pizza-dark.svg)">
+                                    <input type="number" name="porciones" id="porciones" class="inputField" autocomplete="off">
+                                    <label for="porciones">Porciones</label>
+                                </div>
+                            </div>
+                        `;
+                    }
                     Swal.fire({
-                        title: `Stock ${rta.nombre}`,
+                        title: `Activar ${rta.message.producto}`,
                         html: `
                             <form id="moreminusing">
                                 <div class="numerator">
                                     <span class="actioner" id="minus">-</span>
-                                    <input type="number" id="cantid" required name="cantid" value="0">
+                                    <input type="number" id="cantid" required name="cantid" value="1" readonly>
                                     <span class="actioner" id="more">+</span>
                                 </div>
+                                ${espizza}
                                 <input type="hidden" name="id" value="${id}">
-                                <input type="submit" value="Agregar" class="send-button">
+                                <input type="submit" value="Activar" class="send-button">
                             </form>
                         `,
                         showCancelButton: false,
@@ -271,21 +338,30 @@ document.addEventListener("DOMContentLoaded",()=>{
                     });
                     let cantid = document.querySelector("#cantid");
                     const cantidform = document.querySelector("#moreminusing");
+                    let disponibles = document.querySelector(`#disponibles_${rta.message.id}`);
                     document.querySelector("#minus").addEventListener("click",()=>{
                         let vcantid = parseFloat(cantid.value);
-                        let ncantid = parseFloat(vcantid - 1000.00);
-                        if(vcantid > 0){
+                        let ncantid = parseFloat(vcantid - 1);
+                        if(vcantid > 1){
                             cantid.value = ncantid;
+                        }
+                        else {
+                            cantid.value = 1;
                         }
                     });
                     document.querySelector("#more").addEventListener("click",()=>{
                         let vcantid = parseFloat(cantid.value);
-                        let ncantid = parseFloat(vcantid + 1000.00);
-                        cantid.value = ncantid;
+                        let ncantid = parseFloat(vcantid + 1);
+                        if(ncantid <= disponibles.value){
+                            cantid.value = ncantid;
+                        }
+                        else{
+                            cantid.value = ncantid-1;
+                        }
                     });
                     cantidform.addEventListener('submit',async (x)=>{
                         x.preventDefault();
-                        const uric = `../${uris.cantidingredient}`;
+                        const uric = `../${uris.activethisproduct}`;
                         const can = new FormData(x.target);
                         const scant = await fetch(uric,{
                             method: "POST",
@@ -432,20 +508,57 @@ document.addEventListener("DOMContentLoaded",()=>{
         })();
     }
 
-    window.openIngredientOptions = (name,id) => {
+    window.openProductOptions = async (name,id) => {
         Swal.fire({
             title: `Opciones ${name}`,
             html: `
+                <div class="oneInput imageInput">
+                    <div class="inputContainer con-image">
+                        <input type="file" name="portada" id="portada" class="form-image" required>
+                        <label for="portada" id="forPortada" class="fore-photo"></label>
+                        <div class="ot-image">
+                            <input type="file" name="photo1" id="photo1" class="form-image">
+                            <label for="photo1" id="forPhoto1" class="fore-photo"></label>
+                            <input type="file" name="photo2" id="photo2" class="form-image">
+                            <label for="photo2" id="forPhoto2" class="fore-photo"></label>
+                            <input type="file" name="photo3" id="photo3" class="form-image">
+                            <label for="photo3" id="forPhoto3" class="fore-photo"></label>
+                        </div>
+                    </div>
+                </div>
                 <div class="opscontainer">
-                    <button class="stkbutton add" onclick="handleIngredient('add',${id})">Disponible</button>
-                    <button class="stkbutton modify" onclick="handleIngredient('modify',${id})">Modificar</button>
-                    <button class="stkbutton del" onclick="handleIngredient('delete',${id})">Eliminar</button>
+                    <button class="stkbutton add" onclick="handleProduct('disponible',${id})">Disponible</button>
+                    <button class="stkbutton modify" onclick="handleProduct('modify',${id})">Modificar</button>
+                    <button class="stkbutton del" onclick="handleProduct('delete',${id})">Eliminar</button>
                 </div>
             `,
             showCancelButton: false,
             showConfirmButton: false,
             showCloseButton: true
         });
+        try {
+            const urip = `../${uris.getthisproduct}`;
+            const iddata = new FormData();
+            iddata.append("id",id);
+            const prdata = await fetch(urip,{
+                method: "POST",
+                body: iddata
+            });
+            const rpa = await prdata.json();
+            if(document.querySelector("#forPortada")){
+                const portada = document.querySelector("#forPortada");
+                const ph1 = document.querySelector("#forPhoto1");
+                const ph2 = document.querySelector("#forPhoto2");
+                const ph3 = document.querySelector("#forPhoto3");
+                portada.style.background = `url(${rpa.message.portada}) center / cover no-repeat`;
+                ph1.style.background = `url(${rpa.message.foto1}) center / cover no-repeat`;
+                ph2.style.background = `url(${rpa.message.foto2}) center / cover no-repeat`;
+                ph3.style.background = `url(${rpa.message.foto3}) center / cover no-repeat`;
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
 });

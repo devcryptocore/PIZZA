@@ -15,11 +15,11 @@
             $unidad = $_POST['unidad'];
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
             $ins = $con -> prepare("INSERT INTO ingredientes (nombre, costo, unidad, stock, stock_minimo, vencimiento) VALUES (?, ?, ?, ?, ?, ?)");
-            $ins -> bind_param('sdsdds', $ingrediente, $costo, $unidad, $stock, $minimo, $vencimiento);
+            $ins -> bind_param('sisdis', $ingrediente, $costo, $unidad, $stock, $minimo, $vencimiento);
             $ins -> execute();
             $idinsert = $con -> insert_id;
             $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por) VALUES (?, ?, ?, ?, ? ,?)");
-            $inv -> bind_param('isdsds',$idinsert,$ingrediente,$stock,$unidad,$costo_total,$sesion);
+            $inv -> bind_param('isisis',$idinsert,$ingrediente,$stock,$unidad,$costo_total,$sesion);
             $inv -> execute();
             echo json_encode([
                 "status" => "success",
@@ -175,7 +175,7 @@
                 $upcant -> execute();
                 if($upcant -> affected_rows > 0){
                     $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por) VALUES (?, ?, ?, ?, ? ,?)");
-                    $inv -> bind_param('isdsds',$id,$ingrediente,$cantid,$unidad,$costo_total,$sesion);
+                    $inv -> bind_param('isisis',$id,$ingrediente,$cantid,$unidad,$costo_total,$sesion);
                     $inv -> execute();
                     echo json_encode([
                         "status" => "success",
@@ -215,10 +215,10 @@
             $unidad = $_POST['unidad'];
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
             $ins = $con -> prepare("UPDATE ingredientes SET nombre = ?, costo = ?, unidad = ?, stock = ?, stock_minimo = ?, vencimiento = ? WHERE id = ?");
-            $ins -> bind_param('sdsddsi', $ingrediente, $costo, $unidad, $stock, $minimo, $vencimiento,$id);
+            $ins -> bind_param('sisdisi', $ingrediente, $costo, $unidad, $stock, $minimo, $vencimiento,$id);
             $ins -> execute();
             $inv = $con->prepare("UPDATE inversion SET idinsumo = ?, concepto = ?, cantidad = ?, unidad = ?, costo = ?, registrado_por = ? WHERE id = ?");
-            $inv -> bind_param('isdsdsi',$id,$ingrediente,$stock,$unidad,$costo_total,$sesion,$id);
+            $inv -> bind_param('isisisi',$id,$ingrediente,$stock,$unidad,$costo_total,$sesion,$id);
             $inv -> execute();
             echo json_encode([
                 "status" => "success",

@@ -13,7 +13,7 @@
         <button id="add_ingredient"></button>
     </div>
     <div class="myIngredients">
-        <table class="ingredients_table">
+        <table class="table-container ingredients_table">
             <thead>
                 <th>No.</th>
                 <th>Insumo</th>

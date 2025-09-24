@@ -24,5 +24,6 @@
     $fullfecha = date('Y-m-d H:i:s');
     $version = time();
     include('../php/logger.php');
+    $default_image = "../res/icons/image.svg";
 
 ?>

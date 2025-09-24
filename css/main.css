@@ -100,3 +100,39 @@ body {
     background: #fff;
     padding: 5px 5px;
 }
+.ingredients_table {
+    width: 90vw;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+.table-container thead tr {
+    background: var(--dark-grey);
+}
+.table-container thead tr th {
+    padding: 8px 8px;
+    color: var(--white-font);
+    font-size: 13px;
+}
+.table-container thead tr th:nth-child(1) {
+    border-radius: 4px 0px 0px 0px;
+}
+.table-container thead tr th:nth-child(9) {
+    border-radius: 0px 4px 0px 0px;
+}
+.table-container tbody tr {
+    cursor: pointer;
+}
+.table-container tbody tr:nth-last-of-type(even) {
+    background: #e7e7e7;
+}
+.table-container tbody tr:hover {
+    background: var(--amarillo);
+}
+.table-container tbody tr td {
+    font-size: 12px;
+    padding: 15px 5px 15px 15px;
+    text-align: center;
+}
+.table-container tbody tr td:nth-child(2){
+    text-align: left;
+}
