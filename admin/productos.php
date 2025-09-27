@@ -21,6 +21,7 @@
                 <th>Costo</th>
                 <th>Precio</th>
                 <th>Ganancia</th>
+                <th>Activos</th>
                 <th>Stock</th>
                 <th>Categoría</th>
             </thead>

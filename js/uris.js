@@ -10,3 +10,11 @@ export const setnewproduct = "php/products.php?set_new_product=bWF4cGl6emFsYXVua
 export const getproducts = "php/products.php?get_products=bWF4cGl6emFsYXVuaW9u";
 export const getthisproduct = "php/products.php?get_this_product=bWF4cGl6emFsYXVuaW9u";
 export const activethisproduct = "php/products.php?active_this_product=bWF4cGl6emFsYXVuaW9u";
+export const prodimagemod = "php/products.php?change_image_product=bWF4cGl6emFsYXVuaW9u";
+export const modthisproduct = "php/products.php?mod_this_product=bWF4cGl6emFsYXVuaW9u";
+export const deleteproduct = "php/products.php?delete_this_product=bWF4cGl6emFsYXVuaW9u";
+export const offerproduct = "php/products.php?offer_this_product=bWF4cGl6emFsYXVuaW9u";
+export const deactivateproduct = "php/products.php?deactivate_this_product=bWF4cGl6emFsYXVuaW9u";
+export const makemenu = "php/mymenu.php?menu_products=bWF4cGl6emFsYXVuaW9u";
+export const conscart = "php/mymenu.php?cons_cart=bWF4cGl6emFsYXVuaW9u";
+export const setnewemployee = "php/employee.php?set_new_employee=bWF4cGl6emFsYXVuaW9u";

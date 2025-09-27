@@ -230,10 +230,45 @@
     resize: none;
     border: 0;
     outline: none;
+    background: #fff;
 }
 .textarea-container label {
     transform: translate(10px, -52px);
     font-size: 12px;
     background: #fff;
     padding: 5px 5px;
+}
+.offer_image {
+    width: 35px;
+    aspect-ratio: 1/1;
+    position: absolute;
+    background: url(../res/images/offer.png) top / 100% no-repeat;
+    top: -7px;
+    right: 0;
+}
+.active_ball {
+    width: 5px;
+    height: 100%;
+    background: #ffe600;
+    box-shadow: 2px 0px 0px 0px #ffe60061;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.offerbtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.offer {
+    background: #212121a6 url(../res/icons/offer-yellow.svg) 5px / 20px no-repeat;
+    color: var(--amarillo);
+}
+.desactivar {
+    background: #c1c1c1a6 url(../res/icons/cancel.svg) 5px / 20px no-repeat;
+}
+@media screen and (max-width: 700px) {
+    .opscontainer {
+        justify-content: center;
+    }
 }

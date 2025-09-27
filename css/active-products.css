@@ -1,0 +1,84 @@
+.myIngredients {
+    width: 90vw;
+    margin: 0 auto;
+    flex-direction: unset;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 0px;
+    gap: 20px;
+}
+.prod-card {
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--dark-grey);
+    border-radius: 6px;
+    padding: 8px;
+    gap: 8px;
+}
+.up-to-card,
+.price-cont {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+}
+.up-to-card h3 {
+    margin: 0;
+}
+.prod-image {
+    width: 80%;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.prod-form {
+    width: 100%;
+}
+#sell_this {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.counter-cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.counter-cont input[type='number'] {
+    width: 30px;
+    text-align: center;
+    outline: none;
+}
+.counter-bt {
+    width: 25px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--dark-grey);
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--amarillo);
+    cursor: pointer;
+}
+.send-button {
+    width: 120px;
+    background: var(--amarillo) url(../res/icons/add-cart.svg) 5px / 20px no-repeat;
+}
+.delbtn {
+    width: 25px;
+    aspect-ratio: 1/1;
+    background: transparent url(../res/icons/delete-red.svg) center / 20px no-repeat;
+    cursor: pointer;
+    border: 0;
+}

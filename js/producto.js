@@ -63,11 +63,12 @@ document.addEventListener("DOMContentLoaded",()=>{
                                         <option value="perrocaliente">Perros calientes</option>
                                         <option value="salchipapa">Salchipapas</option>
                                         <option value="jugo">Jugos</option>
+                                        <option value="refresco">Refrescos</option>
                                     </select>
                                     <label for="category">Categoría</label>
                                 </div>
                             </div>
-                            <div class="oneInput">
+                            <div class="oneInput" id="ing_select">
                                 <div class="inputContainer" style="background-image:url(../res/icons/ingredient.svg)">
                                     <div class="inputField" id="ingredientSelect">
                                         <span>Seleccionar ingredientes</span>
@@ -144,29 +145,6 @@ document.addEventListener("DOMContentLoaded",()=>{
                     });
                 });
             }
-            /*if(document.querySelector("#estado")){
-                document.querySelector("#estado").addEventListener('change',(e)=>{
-                    document.querySelector(".pstatus").classList.add("active_product");
-                    document.querySelector(".pstatus").innerText = "Activo";
-                    document.querySelector("#constatus").style.backgroundImage = 'url(../res/icons/status-active.svg)';
-                    if(!document.querySelector("#estado").checked){
-                        document.querySelector(".pstatus").classList.remove("active_product");
-                        document.querySelector(".pstatus").innerText = "Inactivo";
-                        document.querySelector("#constatus").style.backgroundImage = 'url(../res/icons/status-error.svg)';
-                    }
-                });
-
-                document.querySelector("#oferta").addEventListener('change',(e)=>{
-                    document.querySelector(".poffer").classList.add("active_offer");
-                    document.querySelector(".poffer").innerText = "Oferta: Si";
-                    document.querySelector("#conoffer").style.backgroundImage = 'url(../res/icons/offer-yellow.svg)';
-                    if(!document.querySelector("#oferta").checked){
-                        document.querySelector(".poffer").classList.remove("active_offer");
-                        document.querySelector(".poffer").innerText = "Oferta: No";
-                        document.querySelector("#conoffer").style.backgroundImage = 'url(../res/icons/offer-grey.svg)';
-                    }
-                });
-            }*/
             if(document.querySelector("#ingredientSelect")){
                 const ingselect = document.querySelector("#ingredientSelect");
                 (async ()=>{
@@ -295,7 +273,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
     get_ingredients();
 
-    window.handleProduct = (action, id) => {
+    window.handleProduct = (action, id, talla) => {
         let espizza = "";
         const uri = `../${uris.getthisproduct}`;
         const dta = new FormData();
@@ -308,7 +286,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 });
                 const rta = await sdata.json();
                 if(action === 'disponible'){
-                    if(rta.message.categoria == 'pizza'){
+                    if(rta.message.categoria == 'pizza' && talla == 'L'){
                         espizza = `
                             <div class="oneInput">
                                 <div class="inputContainer" style="background-image:url(../res/icons/pizza-dark.svg)">
@@ -318,17 +296,22 @@ document.addEventListener("DOMContentLoaded",()=>{
                             </div>
                         `;
                     }
+                    else {
+                        espizza = `
+                            <div class="numerator">
+                                <span class="actioner" id="minus">-</span>
+                                <input type="number" id="cantid" required name="cantid" value="1" readonly>
+                                <span class="actioner" id="more">+</span>
+                            </div>
+                        `;
+                    }
                     Swal.fire({
                         title: `Activar ${rta.message.producto}`,
                         html: `
                             <form id="moreminusing">
-                                <div class="numerator">
-                                    <span class="actioner" id="minus">-</span>
-                                    <input type="number" id="cantid" required name="cantid" value="1" readonly>
-                                    <span class="actioner" id="more">+</span>
-                                </div>
                                 ${espizza}
                                 <input type="hidden" name="id" value="${id}">
+                                <input type="hidden" name="producto" value="${rta.message.producto}">
                                 <input type="submit" value="Activar" class="send-button">
                             </form>
                         `,
@@ -336,29 +319,31 @@ document.addEventListener("DOMContentLoaded",()=>{
                         showConfirmButton: false,
                         showCloseButton: true
                     });
-                    let cantid = document.querySelector("#cantid");
+                    if(document.querySelector("#cantid")){
+                        let cantid = document.querySelector("#cantid");
+                        let disponibles = document.querySelector(`#disponibles_${rta.message.id}`);
+                        document.querySelector("#minus").addEventListener("click",()=>{
+                            let vcantid = parseFloat(cantid.value);
+                            let ncantid = parseFloat(vcantid - 1);
+                            if(vcantid > 1){
+                                cantid.value = ncantid;
+                            }
+                            else {
+                                cantid.value = 1;
+                            }
+                        });
+                        document.querySelector("#more").addEventListener("click",()=>{
+                            let vcantid = parseFloat(cantid.value);
+                            let ncantid = parseFloat(vcantid + 1);
+                            if(ncantid <= disponibles.value){
+                                cantid.value = ncantid;
+                            }
+                            else{
+                                cantid.value = ncantid-1;
+                            }
+                        });
+                    }
                     const cantidform = document.querySelector("#moreminusing");
-                    let disponibles = document.querySelector(`#disponibles_${rta.message.id}`);
-                    document.querySelector("#minus").addEventListener("click",()=>{
-                        let vcantid = parseFloat(cantid.value);
-                        let ncantid = parseFloat(vcantid - 1);
-                        if(vcantid > 1){
-                            cantid.value = ncantid;
-                        }
-                        else {
-                            cantid.value = 1;
-                        }
-                    });
-                    document.querySelector("#more").addEventListener("click",()=>{
-                        let vcantid = parseFloat(cantid.value);
-                        let ncantid = parseFloat(vcantid + 1);
-                        if(ncantid <= disponibles.value){
-                            cantid.value = ncantid;
-                        }
-                        else{
-                            cantid.value = ncantid-1;
-                        }
-                    });
                     cantidform.addEventListener('submit',async (x)=>{
                         x.preventDefault();
                         const uric = `../${uris.activethisproduct}`;
@@ -382,51 +367,53 @@ document.addEventListener("DOMContentLoaded",()=>{
                 }
                 if(action === 'modify') {
                     Swal.fire({
-                        title: `Modificar ${rta.nombre}`,
+                        title: `Modificar ${rta.message.producto}`,
                         html: `
                             <div class="form-container">
-                                <form id="modIngredient">
+                                <form id="modProduct" novalidate>
                                     <input type="hidden" name="id" value="${id}">
                                     <div class="oneInput">
                                         <div class="inputContainer" style="background-image:url(../res/icons/meat.svg)">
-                                            <input type="text" name="ingrediente" value="${rta.nombre}" class="inputField active-input-field" id="ingrediente" required autocomplete="off">
-                                            <label for="ingrediente">Insumo</label>
+                                            <input type="text" value="${rta.message.producto}" name="producto" class="inputField" id="producto" required autocomplete="off">
+                                            <label for="producto" class="active-label">Producto</label>
                                         </div>
                                     </div>
                                     <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
-                                            <input type="number" value="${rta.stock}" name="stock" id="stock" class="inputField active-input-field" required autocomplete="off">
-                                            <label for="stock">Cantidad (gr)</label>
-                                        </div>
-                                    </div>
-                                    <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
-                                            <input type="number" value="${rta.minimo}" name="stock_minimo" id="stock_min" class="inputField active-input-field" required autocomplete="off">
-                                            <label for="stock_min">Mínimo (gr)</label>
-                                        </div>
-                                    </div>
-                                    <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/pesa.svg)">
-                                            <select name="unidad" id="unidad" class="inputField active-input-field" required autocomplete="off">
-                                                ${rta.unidad_select}
+                                        <div class="inputContainer" style="background-image:url(../res/icons/category.svg)">
+                                            <select name="categoria" id="category" class="inputField" required autocomplete="off">
+                                                <option class="cat_opt" value="pizza">Pizzas</option>
+                                                <option class="cat_opt" value="hamburguesa">Hamburguesas</option>
+                                                <option class="cat_opt" value="perrocaliente">Perros calientes</option>
+                                                <option class="cat_opt" value="salchipapa">Salchipapas</option>
+                                                <option class="cat_opt" value="jugo">Jugos</option>
                                             </select>
-                                            <label for="unidad">Medida</label>
+                                            <label for="category">Categoría</label>
                                         </div>
                                     </div>
                                     <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/dollar.svg)">
-                                            <input type="text" value="${milesjs(rta.costo_total)}" name="costo" id="costo" class="inputField active-input-field" required autocomplete="off" onkeyup="moneyFormat(this)">
-                                            <label for="costo">Costo</label>
+                                        <div class="inputContainer" style="background-image:url(../res/icons/dollar.svg)">
+                                            <input type="text" value="${milesjs(rta.message.precio)}" name="precio" id="precio" class="inputField" required autocomplete="off" onkeyup="moneyFormat(this)">
+                                            <label for="precio" class="active-label">Precio</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput" id="sizeOfPizza">
+                                        <div class="inputContainer special-input-cont" style="background-image:url(../res/icons/size.svg)">
+                                            <input class="sizeof" type="radio" name="size" value="S" id="pizza_S">
+                                            <label for="pizza_S">S</label>
+                                            <input class="sizeof" type="radio" name="size" value="M" id="pizza_M">
+                                            <label for="pizza_M">M</label>
+                                            <input class="sizeof" type="radio" name="size" value="L" id="pizza_L">
+                                            <label for="pizza_L">L</label>
                                         </div>
                                     </div>
                                     <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/time.svg)">
-                                            <input type="date" value="${rta.vencimiento.split(" ")[0]}" name="vencimiento" id="vencimiento" class="inputField" autocomplete="off">
-                                            <label for="Vencimiento">F. Vencimiento</label>
+                                        <div class="inputContainer textarea-container">
+                                            <textarea class="prduct-desc" name="descripcion" id="txtarea">${rta.message.descripcion}</textarea>
+                                            <label for="txtarea">Descripción</label>
                                         </div>
                                     </div>
                                     <div class="oneInput">
-                                        <input type="submit" value="Registrar" class="send-button">
+                                        <input type="submit" value="Actualizar" class="send-button">
                                     </div>
                                 </form>
                             </div>
@@ -435,9 +422,26 @@ document.addEventListener("DOMContentLoaded",()=>{
                         showConfirmButton: false,
                         showCloseButton: true
                     });
-                    if(document.querySelector("#modIngredient")){
-                        const fomrmod = document.querySelector("#modIngredient");
-                        const urm = `../${uris.modifyingredient}`;
+                    if(document.querySelector(".cat_opt")){
+                        const catops = document.querySelectorAll(".cat_opt");
+                        catops.forEach(c => {
+                            if(c.value == rta.message.categoria) {
+                                c.setAttribute("selected","");
+                            }
+                        });
+                    }
+                    if(document.querySelector(".sizeof")){
+                        const szof = document.querySelectorAll(".sizeof");
+                        szof.forEach(t => {
+                            if(t.value == rta.message.talla) {
+                                t.setAttribute("checked","");
+                            }
+                        });
+                    }
+                    
+                    if(document.querySelector("#modProduct")){
+                        const fomrmod = document.querySelector("#modProduct");
+                        const urm = `../${uris.modthisproduct}`;
                         fomrmod.addEventListener('submit',async (m)=>{
                             m.preventDefault();
                             const modata = new FormData(m.target);
@@ -466,7 +470,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 }
                 if(action === 'delete') {
                     Swal.fire({
-                        title: "Eliminar insumo",
+                        title: `Eliminar ${rta.message.producto}`,
                         text: "Desea eliminar los registros de este elemento?",
                         icon: "question",
                         showCancelButton: true,
@@ -477,10 +481,12 @@ document.addEventListener("DOMContentLoaded",()=>{
                         confirmButtonColor: "#e91e63"
                     }).then((elec) => {
                         if(elec.isConfirmed){
-                            const urd = `../${uris.deleteingredient}`;
+                            const urd = `../${uris.deleteproduct}`;
                             const dldata = new FormData();
                             (async ()=>{
                                 dldata.append("id",id);
+                                dldata.append("producto",rta.message.producto);
+                                dldata.append("categoria",rta.message.categoria);
                                 const dlsend = await fetch(urd,{
                                     method: "POST",
                                     body: dldata
@@ -508,10 +514,14 @@ document.addEventListener("DOMContentLoaded",()=>{
         })();
     }
 
-    window.openProductOptions = async (name,id) => {
+    window.openProductOptions = async (name,id,talla) => {
         Swal.fire({
             title: `Opciones ${name}`,
             html: `
+                <div class="offerbtn">
+                    <button id="offerbutton" class="stkbutton offer">Oferta</button>
+                    <button id="deactivate" class="stkbutton desactivar">Desactivar</button>
+                </div>
                 <div class="oneInput imageInput">
                     <div class="inputContainer con-image">
                         <input type="file" name="portada" id="portada" class="form-image" required>
@@ -527,9 +537,9 @@ document.addEventListener("DOMContentLoaded",()=>{
                     </div>
                 </div>
                 <div class="opscontainer">
-                    <button class="stkbutton add" onclick="handleProduct('disponible',${id})">Disponible</button>
-                    <button class="stkbutton modify" onclick="handleProduct('modify',${id})">Modificar</button>
-                    <button class="stkbutton del" onclick="handleProduct('delete',${id})">Eliminar</button>
+                    <button class="stkbutton add" onclick="handleProduct('disponible',${id},'${talla}')">Disponible</button>
+                    <button class="stkbutton modify" onclick="handleProduct('modify',${id},'${talla}')">Modificar</button>
+                    <button class="stkbutton del" onclick="handleProduct('delete',${id},'${talla}')">Eliminar</button>
                 </div>
             `,
             showCancelButton: false,
@@ -537,6 +547,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             showCloseButton: true
         });
         try {
+            var disp = true;
             const urip = `../${uris.getthisproduct}`;
             const iddata = new FormData();
             iddata.append("id",id);
@@ -545,6 +556,78 @@ document.addEventListener("DOMContentLoaded",()=>{
                 body: iddata
             });
             const rpa = await prdata.json();
+            if(rpa.message.activos.some(can => can.cantidad <= 10)) {
+                disp = false;
+            }
+            else {
+                disp = true;
+            }
+            if(document.querySelector("#deactivate")){
+                const deactbt = document.querySelector("#deactivate");//CONTINUAR CON EL BOTÓN PARA ACTIVAR SIN SUMAR DISPONIBLES
+                deactbt.style.display = "none";
+                if(rpa.message.estado == 1) {
+                    deactbt.style.display = "block";
+                    deactbt.addEventListener("click", async ()=> {
+                        const urid = `../${uris.deactivateproduct}`;
+                        const dsc = new FormData();
+                        dsc.append("id",id);
+                        dsc.append("val",0);
+                        dsc.append("producto",rpa.message.producto);
+                        try {
+                            const desac = await fetch(urid,{
+                                method: "POST",
+                                body: dsc
+                            });
+                            const resdes = await desac.json();
+                            Swal.fire({
+                                title: resdes.title,
+                                text: resdes.message,
+                                icon: resdes.status
+                            }).then(()=>{
+                                if(resdes.status == "error"){
+                                    location.reload();
+                                }
+                                get_ingredients();
+                            });
+                        }
+                        catch (err) {
+                            console.error(err);
+                        }
+                    });
+                }
+            }
+            if(document.querySelector("#offerbutton")){
+                const offerbtn = document.querySelector("#offerbutton");
+                let ofr = 1;
+                offerbtn.innerText = "En oferta";
+                if(rpa.message.oferta == 1) {
+                    ofr = 0;
+                    offerbtn.innerText = "Quitar oferta";
+                }
+                offerbtn.addEventListener("click", async ()=>{
+                    const ouri = `../${uris.offerproduct}`;
+                    const dta = new FormData();
+                    dta.append("id",id);
+                    dta.append("producto",rpa.message.producto);
+                    dta.append("oferta",ofr);
+                    const onoffer = await fetch(ouri,{
+                        method: "POST",
+                        body: dta
+                    });
+                    const resoffer = await onoffer.json();
+                    Swal.fire({
+                        title: resoffer.title,
+                        text: resoffer.message,
+                        icon: resoffer.status
+                    }).then(()=>{
+                        if(resoffer.status == "error"){
+                            location.reload();
+                        }
+                        get_ingredients();
+                    });
+                });
+            }
+            
             if(document.querySelector("#forPortada")){
                 const portada = document.querySelector("#forPortada");
                 const ph1 = document.querySelector("#forPhoto1");
@@ -554,6 +637,40 @@ document.addEventListener("DOMContentLoaded",()=>{
                 ph1.style.background = `url(${rpa.message.foto1}) center / cover no-repeat`;
                 ph2.style.background = `url(${rpa.message.foto2}) center / cover no-repeat`;
                 ph3.style.background = `url(${rpa.message.foto3}) center / cover no-repeat`;
+                const foreimage = document.querySelectorAll(".form-image");
+                foreimage.forEach(im => {
+                    im.addEventListener("change",async ()=>{
+                        const imid = im.id;
+                        const imname = im.getAttribute("name");
+                        const upimage = `../${uris.prodimagemod}`;
+                        const imdata = new FormData();
+                        imdata.append("foto",imname);
+                        imdata.append("id",id);
+                        imdata.append("producto",rpa.message.producto);
+                        imdata.append("categoria",rpa.message.categoria);
+                        imdata.append(imname, im.files[0]);
+                        try {
+                            const changeimg = await fetch(upimage,{
+                                method: "POST",
+                                body: imdata
+                            });
+                            const respimg = await changeimg.json();
+                            if(respimg.status == "success"){
+                                openProductOptions(name, id, talla);
+                            }
+                            else {
+                                iziToast.error({
+                                    title: respimg.title,
+                                    message: `${respimg.message}`,
+                                    position: "topCenter"
+                                });
+                            }
+                        }
+                        catch (err) {
+                            console.error(err);
+                        }
+                    });
+                });
             }
         }
         catch (err) {

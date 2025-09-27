@@ -1,0 +1,98 @@
+.parent {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+.div1 {
+    grid-area: 1 / 2 / 2 / 6;
+    border-radius: 6px;
+    border: 1px solid var(--dark-grey);
+}
+.div2 {
+    grid-area: 1 / 1 / 6 / 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--dark-grey);
+}
+.div3 {
+    grid-area: 2 / 2 / 6 / 6;
+    border-radius: 6px;
+    border: 1px solid var(--dark-grey);
+}
+.logo-container {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: url(../res/images/logo.jpeg) center / 100% no-repeat;
+}
+.source-option-container {
+    width: 100%;
+    height: 80vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    overflow: auto;
+}
+.source-container {
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.source-container iframe {
+    width: 100%;
+    height: 100%;
+}
+.source-option {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid var(--dark-grey);
+    gap: 10px;
+    background: #fff;
+    transition: all .3s cubic-bezier(1, 0, 0, 1);
+}
+.source-option:hover {
+    transition: all .3s cubic-bezier(1, 0, 0, 1);
+    border: 1.5px solid var(--dark-grey);
+    transform: scale(1.03);
+}
+.source-option img {
+    width: 20px;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+}
+.source-option span {
+    font-size: 13px;
+    color: var(--dark-grey);
+}
+@media screen and (max-width: 900px) {
+    .div1 {
+        height: 10vh;
+        grid-area: 1 / 1 / 2 / 6;
+    }
+    .div2 {
+        display: none;
+    }
+    .div3 {
+        grid-area: 2 / 1 / 6 / 6;
+    }
+    .source-container {
+        height: 90vh;
+    }
+}

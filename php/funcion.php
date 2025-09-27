@@ -224,4 +224,32 @@
         return null;
     }
 
+	function validarFormulario($postData, $camposObligatorios = []) {
+		$errores = [];
+		if (!empty($camposObligatorios)) {
+			foreach ($camposObligatorios as $campo) {
+				if (!isset($postData[$campo]) || trim($postData[$campo]) === '') {
+					$errores[] = "El campo '$campo' es obligatorio.";
+				}
+			}
+		}
+		return $errores;
+	}
+
+	function eliminarDirectorio($rutaDirectorio) {
+    if (!is_dir($rutaDirectorio)) {
+        return false;
+    }
+    $archivos = array_diff(scandir($rutaDirectorio), ['.', '..']);
+    foreach ($archivos as $archivo) {
+        $rutaCompleta = $rutaDirectorio . DIRECTORY_SEPARATOR . $archivo;
+        if (is_dir($rutaCompleta)) {
+            eliminarDirectorio($rutaCompleta);
+        } else {
+            unlink($rutaCompleta);
+        }
+    }
+    return rmdir($rutaDirectorio);
+}
+
 ?>

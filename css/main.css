@@ -18,12 +18,25 @@ body {
     padding: 0;
     font-family: Montserrat;
     font-size: 14px;
+    scrollbar-width: 5px;
+    scrollbar-color: #1f1f1f;
 }
 :root {
     --dark-grey: #1f1f1f;
     --white-font: #e0e0e0;
     --amarillo: #f9d000;
     --rojo: #ff0057;
+}
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #1f1f1f;
+    border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 6px;
 }
 .form-container {
     display: flex;
@@ -80,9 +93,10 @@ body {
     cursor: text;
 }
 .inputContainer select + label,
-.inputContainer input[type='date'] + label {
-    transform: translate(25px, -20px);
-    font-size: 12px;
+.inputContainer input[type='date'] + label,
+.active-label {
+    transform: translate(25px, -20px) !important;
+    font-size: 12px !important;
     background: #fff;
     padding: 5px 5px;
 }

@@ -32,13 +32,13 @@ document.addEventListener("DOMContentLoaded",()=>{
                             <div class="oneInput">
                                 <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
                                     <input type="number" name="stock" id="stock" class="inputField" required autocomplete="off">
-                                    <label for="stock">Cantidad (gr)</label>
+                                    <label for="stock">Cantidad</label>
                                 </div>
                             </div>
                             <div class="oneInput">
                                 <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
                                     <input type="number" name="stock_minimo" id="stock_min" class="inputField" required autocomplete="off">
-                                    <label for="stock_min">Mínimo (gr)</label>
+                                    <label for="stock_min">Mínimo</label>
                                 </div>
                             </div>
                             <div class="oneInput">

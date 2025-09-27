@@ -4,22 +4,23 @@
     include('../config/errorhandler.php');
     include('optimizador.php');
     $sesion = "admin";//DUMMIE PARA SESION DE USUARIO
+    include('../includes/verificator.php');
 
     if(isset($_GET['new_ingredient']) && $_GET['new_ingredient'] === $clav){
         try {
             $ingrediente = htmlspecialchars($_POST['ingrediente']);
-            $stock = $_POST['stock'];
-            $minimo = $_POST['stock_minimo'];
-            $costo = sanear_string($_POST['costo'])/$stock;
+            $stock = isset($_POST['stock']) ? $_POST['stock'] : 0;
+            $minimo = isset($_POST['stock_minimo']) ? $_POST['stock_minimo'] : 0;
+            $costo = isset($_POST['stock']) ? sanear_string($_POST['costo'])/$stock : sanear_string($_POST['costo'])/1;
             $costo_total = sanear_string($_POST['costo']);
             $unidad = $_POST['unidad'];
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
-            $ins = $con -> prepare("INSERT INTO ingredientes (nombre, costo, unidad, stock, stock_minimo, vencimiento) VALUES (?, ?, ?, ?, ?, ?)");
-            $ins -> bind_param('sisdis', $ingrediente, $costo, $unidad, $stock, $minimo, $vencimiento);
+            $ins = $con -> prepare("INSERT INTO ingredientes (nombre, costo, unidad, stock, stock_minimo, vencimiento, sucursal, usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $ins -> bind_param('sisdisss', $ingrediente, $costo, $unidad, $stock, $minimo, $vencimiento,$sucursal,$sesion);
             $ins -> execute();
             $idinsert = $con -> insert_id;
-            $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por) VALUES (?, ?, ?, ?, ? ,?)");
-            $inv -> bind_param('isisis',$idinsert,$ingrediente,$stock,$unidad,$costo_total,$sesion);
+            $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por,sucursal) VALUES (?, ?, ?, ?, ?, ? ,?)");
+            $inv -> bind_param('isisiss',$idinsert,$ingrediente,$stock,$unidad,$costo_total,$sesion,$sucursal);
             $inv -> execute();
             echo json_encode([
                 "status" => "success",
@@ -42,7 +43,8 @@
     }
 
     elseif(isset($_GET['get_values'])){
-        $stk = $con->prepare("SELECT costo, stock FROM ingredientes");
+        $stk = $con->prepare("SELECT costo, stock FROM ingredientes WHERE sucursal = ?");
+        $stk -> bind_param('s',$sucursal);
         $stk -> execute();
         $Rstk = $stk -> get_result();
         if($Rstk -> num_rows > 0){
@@ -67,7 +69,8 @@
 
     elseif(isset($_GET['get_ingredients']) && $_GET['get_ingredients'] === $clav){
         try {
-            $consult = $con->prepare("SELECT * FROM ingredientes ORDER BY creado DESC");
+            $consult = $con->prepare("SELECT * FROM ingredientes WHERE sucursal = ? ORDER BY creado DESC");
+            $consult -> bind_param('s',$sucursal);
             $consult -> execute();
             $Rconsult = $consult -> get_result();
             if($Rconsult -> num_rows > 0){
@@ -123,8 +126,8 @@
 
     elseif(isset($_GET['get_this_ingredient']) && $_GET['get_this_ingredient'] === $clav){
         $id = $_POST['id'];
-        $ingre = $con->prepare("SELECT * FROM ingredientes WHERE id = ?");
-        $ingre -> bind_param('i',$id);
+        $ingre = $con->prepare("SELECT * FROM ingredientes WHERE id = ? AND sucursal = ?");
+        $ingre -> bind_param('is',$id,$sucursal);
         $ingre -> execute();
         $Ringre = $ingre -> get_result();
         if($Ringre -> num_rows > 0){
@@ -160,8 +163,8 @@
         $id = $_POST['id'];
         $cantid = $_POST['cantid'];
         try {
-            $cns = $con->prepare("SELECT * FROM ingredientes WHERE id = ?");
-            $cns -> bind_param('i',$id);
+            $cns = $con->prepare("SELECT * FROM ingredientes WHERE id = ? AND sucursal = ?");
+            $cns -> bind_param('is',$id,$sucursal);
             $cns -> execute();
             $Rcns = $cns -> get_result();
             if($Rcns -> num_rows > 0){
@@ -174,8 +177,8 @@
                 $upcant -> bind_param('di', $cantid, $id);
                 $upcant -> execute();
                 if($upcant -> affected_rows > 0){
-                    $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por) VALUES (?, ?, ?, ?, ? ,?)");
-                    $inv -> bind_param('isisis',$id,$ingrediente,$cantid,$unidad,$costo_total,$sesion);
+                    $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por,sucursal) VALUES (?, ?, ?, ?, ?, ? ,?)");
+                    $inv -> bind_param('isisiss',$id,$ingrediente,$cantid,$unidad,$costo_total,$sesion,$sucursal);
                     $inv -> execute();
                     echo json_encode([
                         "status" => "success",
@@ -210,8 +213,8 @@
             $ingrediente = htmlspecialchars($_POST['ingrediente']);
             $stock = $_POST['stock'];
             $minimo = $_POST['stock_minimo'];
-            $costo = $_POST['costo']/$stock;
-            $costo_total = $_POST['costo'];
+            $costo = sanear_string($_POST['costo'])/$stock;
+            $costo_total = sanear_string($_POST['costo']);
             $unidad = $_POST['unidad'];
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
             $ins = $con -> prepare("UPDATE ingredientes SET nombre = ?, costo = ?, unidad = ?, stock = ?, stock_minimo = ?, vencimiento = ? WHERE id = ?");
