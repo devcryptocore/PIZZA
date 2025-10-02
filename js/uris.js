@@ -1,3 +1,4 @@
+export const ses = "includes/verify.php?verify=bWF4cGl6emFsYXVuaW9u";
 export const newingredient = "php/ingredients.php?new_ingredient=bWF4cGl6emFsYXVuaW9u";
 export const getingredients = "php/ingredients.php?get_ingredients=bWF4cGl6emFsYXVuaW9u";
 export const gettotal = "php/ingredients.php?get_values=bWF4cGl6emFsYXVuaW9u";
@@ -18,3 +19,12 @@ export const deactivateproduct = "php/products.php?deactivate_this_product=bWF4c
 export const makemenu = "php/mymenu.php?menu_products=bWF4cGl6emFsYXVuaW9u";
 export const conscart = "php/mymenu.php?cons_cart=bWF4cGl6emFsYXVuaW9u";
 export const setnewemployee = "php/employee.php?set_new_employee=bWF4cGl6emFsYXVuaW9u";
+export const login = "php/users.php?go_login=bWF4cGl6emFsYXVuaW9u";
+export const search_product = "php/products.php?find_product=bWF4cGl6emFsYXVuaW9u";
+export const add_sell_product = "php/products.php?add_sell_product=bWF4cGl6emFsYXVuaW9u";
+export const get_added_products = "php/products.php?get_added_products=bWF4cGl6emFsYXVuaW9u";
+export const cant_added_products = "php/products.php?cant_added_products=bWF4cGl6emFsYXVuaW9u";
+export const del_added_products = "php/products.php?del_added_products=bWF4cGl6emFsYXVuaW9u";
+export const makesell = "php/vender.php?make_sell=bWF4cGl6emFsYXVuaW9u";
+export const getinvoice = "factura/?num=";
+export const get_my_invoices = "php/facturas.php?get_invoices=bWF4cGl6emFsYXVuaW9u";

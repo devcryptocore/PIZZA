@@ -1,0 +1,24 @@
+.form-container {
+    width: 100vw;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logoContainer {
+    width: 180px;
+    aspect-ratio: 1/1;
+    background: url(../res/images/logo.jpeg) center / 95% no-repeat;
+}
+.footerSignature {
+    position: relative;
+    bottom: -50px;
+    font-size: 10px;
+    cursor: pointer;
+}
+.pizza_load {
+    width: 40px;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    transition: all .4s cubic-bezier(1, 0, 0, 1);
+}

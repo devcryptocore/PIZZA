@@ -3,7 +3,6 @@
     include('../config/connector.php');
     include('../config/errorhandler.php');
     include('optimizador.php');
-    $sesion = "admin";//DUMMIE PARA SESION DE USUARIO
     include('../includes/verificator.php');
 
     if(isset($_GET['new_ingredient']) && $_GET['new_ingredient'] === $clav){
@@ -55,7 +54,7 @@
             echo json_encode([
                 "status" => "success",
                 "title" => "Correcto!",
-                "message" => $totalcost
+                "message" => miles($totalcost)
             ]);
         }
         else {

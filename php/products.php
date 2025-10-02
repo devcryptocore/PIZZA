@@ -3,7 +3,6 @@
     include('../config/connector.php');
     include('../config/errorhandler.php');
     include('optimizador.php');
-    $sesion = "admin";//DUMMIE PARA SESION DE USUARIO
     include('../includes/verificator.php');
 
     
@@ -163,7 +162,7 @@
         $con -> close();
     }
 
-    if(isset($_GET['get_products']) && $_GET['get_products'] === $clav) {
+    if(isset($_GET['get_products']) && $_GET['get_products'] === $clav) {//FALTA CALCULAR VALOR DE OFERTA
         try {
             $sql = "
                 SELECT p.id, p.producto, p.precio, p.categoria, p.talla, p.estado, p.oferta,
@@ -210,7 +209,7 @@
                         $estado = "No disponible";
                     }
 
-                    if($row['oferta'] == 1){
+                    if($row['oferta'] > 0){
                         $oferta = '
                             <span class="offer_image"></span>
                         ';
@@ -223,20 +222,82 @@
                     $xs = $srl -> fetch_assoc();
                     $costo = $row['costo'];
                     $ganancia = $row['ganancia'];
-                    if($xs['medida'] == 'unidad'){
-                        $costo = $costo / $xs['cantidad'];
-                        $ganancia = $row['precio'] - $costo;
+
+                    if($row['oferta'] > 0){
+                        $row['precio'] = calculate_offer($row['precio'],$row['oferta'])['newprice'];
                     }
+
+                    if($xs['medida'] == 'unidad'){
+                        if($xs['cantidad'] > 0){
+                            $costo = $costo / $xs['cantidad'];
+                            $ganancia = $row['precio'] - $costo;
+                        }
+                        else {
+                            $costo = 0;
+                            $ganancia = 0;
+                        }
+                    }
+
+                    $cap = $con -> query("SELECT * FROM active_products WHERE id_producto = $idf");
+                    $ap = $cap -> fetch_assoc();
+                    if($row['oferta'] > 0){
+                        $ap['precio'] = calculate_offer($ap['precio'],$row['oferta'])['newprice'];
+                    }
+                    if(isset($ap['porciones']) && $ap['porciones'] > 0){
+                        $costoporc = $costo/$ap['porciones'];
+                        $cost = "
+                            <div class='dvcont'>
+                                <span><b>Porc:</b> $".miles(round($costoporc,2))."</span>
+                                <span><b>Und:</b> $".miles(round($costo))."</span>
+                            </div>
+                        ";
+                        $prec = "
+                            <div class='dvcont'>
+                                <span><b>Porc:</b> $".miles($ap['precio'])."</span>
+                                <span><b>Und:</b> $".miles($row['precio'])."</span>
+                            </div>
+                        ";
+                        $gan = "
+                            <div class='dvcont'>
+                                <span><b>Porc:</b> $".miles($ap['precio']-round($costoporc,2))."</span>
+                                <span><b>Und:</b> $".miles(round($row['precio']-$costo))."</span>
+                            </div>
+                        ";
+                        $actv = "
+                            <div class='dvcont'>
+                                <span><b>Porc:</b> ".$ap['porciones']."</span>
+                                <span><b>Und:</b> ".round($ap['unidades'],2)."</span>
+                            </div>
+                        ";
+                        $stk = "
+                            <div class='dvcont'>
+                                <span><b>Porc:</b> ".($row['stock_disponible']*8)."</span>
+                                <span><b>Und:</b> ".$row['stock_disponible']."</span>
+                            </div>
+                        ";
+                    }
+                    else {
+                        $cost = miles(round($costo));
+                        $prec = miles($row['precio']);
+                        $gan = miles(round($ganancia));
+                        $actv = round($ap['unidades'] ?? 0);
+                        $stk = $row['stock_disponible'];
+                    }
+
+                    $talla = $row['talla'] == 'innecesario' ? "⊘" : $row['talla'];
+                    $offr = $row['oferta'] > 0 ? $row['oferta']."% Off" : 0 ;
 
                     $productos .= '
                         <tr onclick="openProductOptions(\''.$row['producto'].'\',\''.$row['id'].'\',\''.$row['talla'].'\')" class="elem-busqueda">
                             <td style="position:relative;">'.$stt.$row['id'].'</td>
                             <td>'.$row['producto'].'</td>
-                            <td>'.miles(round($costo)).'</td>
-                            <td>$'.miles($row['precio']).'</td>
-                            <td>$'.miles(round($ganancia)).'</td>
-                            <td>'.$xs['cantidad'].'</td>
-                            <td>'.$row['stock_disponible'].'</td>
+                            <td>'.$talla.'</td>
+                            <td>'.$cost.'</td>
+                            <td>'.$prec.'</td>
+                            <td>'.$gan.'</td>
+                            <td>'.$actv.'</td>
+                            <td>'.$stk.'</td>
+                            <td>'.$offr.'</td>
                             <td style="position:relative;">'.$row['categoria'].$oferta.'</td>
                             <input type="hidden" id="disponibles_'.$row['id'].'" value="'.$row['stock_disponible'].'">
                         </tr>
@@ -380,7 +441,7 @@
                 $Rconprod = $conprod -> get_result();
                 $prod = $Rconprod -> fetch_assoc();
                 $nombreprod = $prod['producto'];
-                $precioprod = $prod['precio']*$cant;
+                $precioprod = $prod['precio'];
                 if($porciones  > 0) {
                     $dvs = 1/8;
                     $dvs = $dvs * $porciones;
@@ -585,6 +646,12 @@
             $dl -> bind_param('i',$id);
             $dl -> execute();
             if($dl){
+                $cpr = $con -> query("SELECT * FROM active_products WHERE id_producto = $id");
+                if($cpr -> num_rows > 0){
+                    $apr = $con -> prepare("DELETE FROM active_products WHERE id_producto = ?");
+                    $apr -> bind_param('i',$id);
+                    $apr -> execute();
+                }
                 $dir = "../res/images/products/" . sanear_string($cat) . preg_replace('/[^a-zA-Z0-9-_]/', '_', $product);
                 eliminarDirectorio($dir);
                 echo json_encode([
@@ -614,14 +681,14 @@
         $con -> close();
     }
 
-    if(isset($_GET['offer_this_product']) && $_GET['offer_this_product'] === $clav){
+    if(isset($_GET['offer_this_product']) && $_GET['offer_this_product'] === $clav){//ESTABLECER PORCENTAJE DE OFERTA
         $id = $_POST['id'];
         $prod = $_POST['producto'];
-        $oferta = $_POST['oferta'];
-        $ff = $oferta == 1 ? "está" : "ya no está";
+        $porcentaje = $_POST['porcoffer'];
+        $ff = $porcentaje > 0 ? "está" : "ya no está";
         try {
             $offer = $con -> prepare("UPDATE productos SET oferta = ? WHERE id = ?");
-            $offer -> bind_param('ii',$oferta,$id);
+            $offer -> bind_param('ii',$porcentaje,$id);
             if($offer -> execute()){
                 echo json_encode([
                     "status" => "success",
@@ -654,6 +721,26 @@
         $prod = $_POST['producto'];
         $val = $_POST['val'];
         try {
+            if($_GET['act'] == "activar"){
+                $nst = 1;
+                $std = $con -> prepare("UPDATE productos SET estado = ? WHERE id = ?");
+                $std -> bind_param('ii',$nst,$id);
+                if($std -> execute()){
+                    echo json_encode([
+                        "status" => "success",
+                        "title" => "Producto activado!",
+                        "message" => "El producto se ha activado correctamente"
+                    ]);
+                }
+                else {
+                    echo json_encode([
+                        "status" => "error",
+                        "title" => "No se activó el producto!",
+                        "message" => "No se ha podido activar el producto. "
+                    ]);
+                }
+                exit;
+            }
             $desac = $con -> prepare("UPDATE productos SET estado = ? WHERE id = ?");
             $desac -> bind_param('ii',$val,$id);
             if($desac -> execute()){
@@ -680,6 +767,237 @@
                 "message" => "Ha ocurrido un error: " . $e->getMessage()
             ]);
             writeLog("Error al establecer desactivar producto ".$prod.": ".$e -> getMessage());
+        }
+    }
+
+    if(isset($_GET['find_product']) && $_GET['find_product'] === $clav) {
+        $producto = htmlspecialchars($_POST['producto']);
+        $estado = 1;
+        $cs = "SELECT p.*, ap.*
+            FROM productos p
+            INNER JOIN active_products ap
+            ON ap.id_producto = p.id
+            WHERE (p.producto LIKE CONCAT('%', ?, '%')
+                OR p.categoria LIKE CONCAT('%', ?, '%'))
+            AND p.estado = ?;";
+        //$consl = $con -> prepare("SELECT * FROM productos WHERE (producto LIKE CONCAT('%', ?, '%') OR categoria LIKE CONCAT('%', ?, '%')) AND estado = ?");
+        $consl = $con -> prepare($cs);
+        $consl -> bind_param('ssi', $producto, $producto, $estado);
+        $consl -> execute();
+        $Rconsl = $consl -> get_result();
+        if($Rconsl -> num_rows > 0){
+            $produc = "";
+            while($prd = mysqli_fetch_array($Rconsl)){
+                $price = $prd['precio'];
+                $bg = "";
+                if($prd['oferta'] > 0){
+                    $bg = "style='background: #dddddd url(../res/icons/offer-yellow.svg) right / 30px no-repeat;'";
+                    $price = calculate_offer($price,$prd['oferta'])['newprice'];
+                }
+                $produc .= '
+                    <button class="found_product" onclick="add_product(\''.$prd['id_producto'].'\')" '.$bg.'>
+                        <b>'.$prd['producto'].'</b>
+                        <span>$'.miles($price).'</span>
+                    </button>
+                ';
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "Ok",
+                "message" => $produc
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Vacío",
+                "message" => "Sin resultados"
+            ]);
+        }
+    }
+
+    if(isset($_GET['add_sell_product']) && $_GET['add_sell_product'] === $clav) {
+        $id = $_POST['id'];
+        $term = $_POST['terminal'];
+        $cantidad = 1;
+        $cpd = $con -> prepare("SELECT * FROM productos WHERE id = ?");
+        $cpd -> bind_param('i',$id);
+        $cpd -> execute();
+        $Rcpd = $cpd -> get_result();
+        if($Rcpd -> num_rows > 0){
+            $p = $Rcpd -> fetch_assoc();
+            $concart = $con -> prepare("SELECT * FROM sell_cart WHERE id_producto = ? AND usuario = ? AND unico = ?");
+            $concart -> bind_param('isi',$id,$sesion,$term);
+            $concart -> execute();
+            $Rconcart = $concart -> get_result();
+            $incart = $con -> prepare("INSERT INTO sell_cart (unico,id_producto,cantidad,sucursal,usuario) VALUES (?, ?, ?, ?, ?)");
+            $incart -> bind_param('iiiss',$term,$id,$cantidad,$sucursal,$sesion);
+            if($Rconcart -> num_rows > 0){
+                $incart = $con -> prepare("UPDATE sell_cart SET cantidad = COALESCE(cantidad, 0) + ? WHERE id_producto = ? AND unico = ?");
+                $incart -> bind_param('iii',$cantidad,$id,$term);
+            }
+            if ($incart -> execute()) {
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Ok",
+                    "message" => "ok"
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "error",
+                    "message" => "error"
+                ]);
+            }
+        }
+    }
+
+    if(isset($_GET['get_added_products']) && $_GET['get_added_products'] === $clav) {
+        $term = $_GET['terminal'];
+        $cons = $con -> prepare("SELECT * FROM sell_cart WHERE unico = ? AND usuario = ?");
+        $cons -> bind_param('is',$term,$sesion);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if ($Rcons -> num_rows > 0) {
+            $prods = "";
+            $total = 0;
+            $descu = 0;
+            while($pr = mysqli_fetch_array($Rcons)){
+                $consp = $con -> prepare("SELECT productos.*, active_products.* FROM productos
+                INNER JOIN active_products WHERE productos.id = ? AND active_products.id_producto = ?");
+                $consp -> bind_param('ii',$pr['id_producto'],$pr['id_producto']);
+                $consp -> execute();
+                $Rconsp = $consp -> get_result();
+                $prto = $Rconsp -> fetch_assoc();
+                $discount = 0;
+                $price = $prto['precio'];
+                $fff = "";
+                $porcc = $prto['porciones'] > 0 ? 'porc.' : 'und.';
+                if($prto['oferta'] > 0){
+                    $calcularoferta = calculate_offer($prto['precio'],$prto['oferta']);
+                    $price = $calcularoferta['newprice'];
+                    $discount = $calcularoferta['discount']*$pr['cantidad'];
+                    $descu += $discount;
+                    $fff = '<span class="offer_image"></span>';
+                }
+                $subtotal = $price*$pr['cantidad'];
+                $total += $subtotal;
+                $prods .= '
+                    <tr>
+                        <td>'.$fff.$prto['producto'].'</td>
+                        <td>
+                            <input type="number" name="cantidad" value="'.$pr['cantidad'].'"
+                            class="prcant" onkeyup="changecant(this,\''.$pr['id_producto'].'\')" autocomplete="off">
+                            <span style="font-size:10px;">'.$porcc.'</span>
+                        </td>
+                        <td>$'.miles($prto['precio']).'</td>
+                        <td>$'.miles($discount).'</td>
+                        <td>$'.miles($subtotal).'</td>
+                        <td>
+                            <button class="delthisprd" onclick="deladdedproduct(\''.$pr['id_producto'].'\')"></button>
+                        </td>
+                    </tr>
+                ';
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "Ok",
+                "message" => [
+                    "prods" => $prods,
+                    "total" => $total,
+                    "offer" => $prto['oferta']."%",
+                    "descuento" => miles($descu)
+                ]
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "empty",
+                "message" => [
+                    "prods" => "<tr><td style='padding:15px;'>Sin productos seleccionados</td></tr>",
+                    "total" => "0000",
+                    "offer" => "0%",
+                    "descuento" => "0"
+                ]
+            ]);
+        }
+    }
+
+    if(isset($_GET['cant_added_products']) && $_GET['cant_added_products'] === $clav) {
+        $id = $_POST['id'];
+        $valor = $_POST['valor'];
+        $term = $_POST['terminal'];
+        $vlo = 0;
+        $cons = $con -> prepare("SELECT * FROM active_products WHERE id_producto = ?");
+        $cons -> bind_param('i', $id);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0) {
+            $ap = $Rcons -> fetch_assoc();
+            $unidades = $ap['unidades'];
+            if($ap['porciones'] > 0){
+                $unidades = $ap['porciones'];
+            }
+            if($valor <= 0){
+                die(json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "No se puede establecer la cantidad a 0"
+                ]));
+            }
+            if($unidades < $valor) {
+                die(json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "La cantidad establecida es mayor a la disponible"
+                ]));
+            }
+            $change = $con -> prepare("UPDATE sell_cart SET cantidad = ? WHERE unico = ? AND id_producto = ?");
+            $change -> bind_param('iii',$valor,$term,$id);
+            if($change -> execute()){
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "ok",
+                    "message" => "changed"
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "No se ha podido cambiar el valor de la cantidad"
+                ]);
+            }
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Producto no disponible"
+            ]);
+        }
+    }
+
+    if(isset($_GET['del_added_products']) && $_GET['del_added_products'] === $clav){
+        $id = $_POST['id'];
+        $term = $_POST['terminal'];
+        $dl = $con -> prepare("DELETE FROM sell_cart WHERE unico = ? AND id_producto = ?");
+        $dl -> bind_param('ii',$term,$id);
+        if($dl -> execute()){
+            echo json_encode([
+                "status" => "success",
+                "title" => "Eliminado",
+                "message" => "Se ha eliminado el producto de la lista"
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error",
+                "message" => "No se ha podido eliminar el priducto de la lista"
+            ]);
         }
     }
 

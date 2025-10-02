@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Max Pizza</title>
+    <link rel="stylesheet" href="../css/main.css" class="versionized">
+    <link rel="stylesheet" href="../css/login.css" class="versionized">
+    <link rel="shortcut icon" href="../res/icons/pizza2.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../css/sweetAlert.css">
+    <link rel="stylesheet" href="../css/aos.css">
+    <script src="../js/aos.js"></script>
+    <script src="../js/sweetAlert.js"></script>
+    <script src="../js/script.js" class="versionized"></script>
+    <script type="module" src="../js/login.js" class="versionized"></script>
+</head>
+<body>
+    <div class="form-container">
+        <form action="" id="loginForm">
+            <div class="logoContainer"></div>
+            <div class="oneInput">
+                <div class="inputContainer" style="background-image: url(../res/icons/user.svg);">
+                    <input type="text" name="username" id="uname" required autocomplete="off" pattern="[a-z0-9]+" class="inputField">
+                    <label for="uname">Nombre de usuario</label>
+                </div>
+            </div>
+            <div class="oneInput">
+                <div class="inputContainer" style="background-image: url(../res/icons/password.svg);">
+                    <input type="password" name="userpasswd" id="upasswd" required class="inputField">
+                    <label for="upasswd">Contraseña</label>
+                </div>
+            </div>
+            <div class="oneInput" id="sbt">
+                <input type="submit" value="Ingresar" class="send-button">
+            </div>
+        </form>
+        <span class="footerSignature"></span>
+    </div>
+</body>
+</html>

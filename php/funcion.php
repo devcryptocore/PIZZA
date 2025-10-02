@@ -237,19 +237,29 @@
 	}
 
 	function eliminarDirectorio($rutaDirectorio) {
-    if (!is_dir($rutaDirectorio)) {
-        return false;
-    }
-    $archivos = array_diff(scandir($rutaDirectorio), ['.', '..']);
-    foreach ($archivos as $archivo) {
-        $rutaCompleta = $rutaDirectorio . DIRECTORY_SEPARATOR . $archivo;
-        if (is_dir($rutaCompleta)) {
-            eliminarDirectorio($rutaCompleta);
-        } else {
-            unlink($rutaCompleta);
-        }
-    }
-    return rmdir($rutaDirectorio);
-}
+		if (!is_dir($rutaDirectorio)) {
+			return false;
+		}
+		$archivos = array_diff(scandir($rutaDirectorio), ['.', '..']);
+		foreach ($archivos as $archivo) {
+			$rutaCompleta = $rutaDirectorio . DIRECTORY_SEPARATOR . $archivo;
+			if (is_dir($rutaCompleta)) {
+				eliminarDirectorio($rutaCompleta);
+			} else {
+				unlink($rutaCompleta);
+			}
+		}
+		return rmdir($rutaDirectorio);
+	}
+
+	function calculate_offer($price ,$offer) {
+		$offer = max(0, min(100, $offer));
+		$discount = $price * ($offer / 100);
+		$newprice = $price - $discount;
+		return [
+			"newprice" => round($newprice, 2),
+			"discount" => round($discount, 2)
+		];
+	}
 
 ?>

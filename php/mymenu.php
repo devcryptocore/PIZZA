@@ -3,8 +3,7 @@
     include('../config/connector.php');
     include('../config/errorhandler.php');
     include('optimizador.php');
-    $sucursal = "las_americas";
-    $sesion = "admin";//DUMMIE PARA SESION DE USUARIO
+    include('../includes/verificator.php');
 
     if(isset($_GET['menu_products']) && $_GET['menu_products'] === $clav){
         $consprod = "SELECT 
@@ -110,6 +109,31 @@
                 "message" => "Sin productos en el carrito"
             ]);
         }
+    }
+
+    if(isset($_GET['get_sys_data'])){
+        $idcaja = 1;
+        $usu = $con -> prepare("SELECT u.documento,o.nombre,o.apellido
+        FROM usuarios u INNER JOIN operadores o ON o.documento = u.documento
+        WHERE u.usuario = ?");
+        $usu -> bind_param('s',$sesion);
+        $usu -> execute();
+        $Rusu = $usu -> get_result();
+        $us = $Rusu -> fetch_assoc();
+        $nombre = $us['nombre'] ?? 'Sin sesión';
+        $apellido = $us['apellido'] ?? '';
+        $cons = $con -> prepare("SELECT COALESCE(SUM(total), 0) AS total_vendido FROM ventas WHERE idcaja = ? AND usuario = ? AND sucursal = ?");
+        $cons -> bind_param('iss',$idcaja,$sesion,$sucursal);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        $tl = $Rcons -> fetch_assoc();
+        $total = $tl['total_vendido'] ?? 0;
+        $data = [
+            "sucursal" => $sucursal,
+            "nombre" => $nombre. " " .$apellido,
+            "vendido" => miles($total)
+        ];
+        echo json_encode($data);
     }
 
 ?>

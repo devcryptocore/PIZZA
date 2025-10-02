@@ -1,4 +1,6 @@
 <?php
+    session_start();
+    $sesion = $_SESSION['usuario'];
 
     $verif12 = $con -> prepare("SELECT * FROM usuarios WHERE usuario = ?");
     $verif12 -> bind_param('s',$sesion);

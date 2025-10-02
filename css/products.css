@@ -267,6 +267,32 @@
 .desactivar {
     background: #c1c1c1a6 url(../res/icons/cancel.svg) 5px / 20px no-repeat;
 }
+.activar {
+    background: #c1c1c1a6 url(../res/icons/ok.svg) 5px / 20px no-repeat;
+}
+.dvcont {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+}
+.dvcont span {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+}
+.dvcont span b {
+    font-size: 10px;
+    color: #2196F3;
+}
+.ingredients_table thead tr th:nth-child(9) {
+    border-radius: 0px 0px 0px 0px;
+}
+.ingredients_table thead tr th:nth-child(10) {
+    border-radius: 0px 4px 0px 0px;
+}
 @media screen and (max-width: 700px) {
     .opscontainer {
         justify-content: center;

@@ -556,19 +556,32 @@ document.addEventListener("DOMContentLoaded",()=>{
                 body: iddata
             });
             const rpa = await prdata.json();
-            if(rpa.message.activos.some(can => can.cantidad <= 10)) {
+            let svaction = "desactivar";
+            if(rpa.message.activos.some(can => can.cantidad <= 0)) {
                 disp = false;
             }
             else {
                 disp = true;
+                if(rpa.message.estado == 0){
+                    document.querySelector("#deactivate").innerHTML = `Activar`;
+                    document.querySelector("#deactivate").classList.remove("desactivar");
+                    document.querySelector("#deactivate").classList.add("activar");
+                    svaction = "activar";
+                }
+                else {
+                    document.querySelector("#deactivate").innerHTML = `Desactivar`;
+                    document.querySelector("#deactivate").classList.remove("activar");
+                    document.querySelector("#deactivate").classList.add("desactivar");
+                    svaction = "desactivar";
+                }
             }
             if(document.querySelector("#deactivate")){
-                const deactbt = document.querySelector("#deactivate");//CONTINUAR CON EL BOTÓN PARA ACTIVAR SIN SUMAR DISPONIBLES
-                deactbt.style.display = "none";
-                if(rpa.message.estado == 1) {
+                const deactbt = document.querySelector("#deactivate");
+                //deactbt.style.display = "none";
+                if(disp) {
                     deactbt.style.display = "block";
                     deactbt.addEventListener("click", async ()=> {
-                        const urid = `../${uris.deactivateproduct}`;
+                        const urid = `../${uris.deactivateproduct}&act=${svaction}`;
                         const dsc = new FormData();
                         dsc.append("id",id);
                         dsc.append("val",0);
@@ -600,31 +613,53 @@ document.addEventListener("DOMContentLoaded",()=>{
                 const offerbtn = document.querySelector("#offerbutton");
                 let ofr = 1;
                 offerbtn.innerText = "En oferta";
-                if(rpa.message.oferta == 1) {
+                if(rpa.message.oferta > 0) {
                     ofr = 0;
                     offerbtn.innerText = "Quitar oferta";
                 }
                 offerbtn.addEventListener("click", async ()=>{
-                    const ouri = `../${uris.offerproduct}`;
-                    const dta = new FormData();
-                    dta.append("id",id);
-                    dta.append("producto",rpa.message.producto);
-                    dta.append("oferta",ofr);
-                    const onoffer = await fetch(ouri,{
-                        method: "POST",
-                        body: dta
-                    });
-                    const resoffer = await onoffer.json();
                     Swal.fire({
-                        title: resoffer.title,
-                        text: resoffer.message,
-                        icon: resoffer.status
-                    }).then(()=>{
-                        if(resoffer.status == "error"){
-                            location.reload();
-                        }
-                        get_ingredients();
+                        title: "Producto en oferta",
+                        html: `
+                            <form id="offer_form" class="small-form">
+                                <div class="oneInput">
+                                    <div class="inputContainer" style="background-image:url(../res/icons/offer-grey.svg)">
+                                        <input type="number" required name="porcoffer" id="porcoffer" class="inputField" autocomplete="off">
+                                        <label for="porcoffer">Porcentaje</label>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="id" value="${id}">
+                                <input type="hidden" name="producto" value="${rpa.message.producto}">
+                                <input type="submit" value="Confirmar" class="send-button">
+                            </form>
+                        `,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        showCloseButton: true
                     });
+                    if(document.querySelector("#offer_form")){
+                        const form_offer = document.querySelector("#offer_form");
+                        form_offer.addEventListener('submit', async (f) => {
+                            f.preventDefault();
+                            const ouri = `../${uris.offerproduct}`;
+                            const dta = new FormData(form_offer);
+                            const onoffer = await fetch(ouri,{
+                                method: "POST",
+                                body: dta
+                            });
+                            const resoffer = await onoffer.json();
+                            Swal.fire({
+                                title: resoffer.title,
+                                text: resoffer.message,
+                                icon: resoffer.status
+                            }).then(()=>{
+                                if(resoffer.status == "error"){
+                                    location.reload();
+                                }
+                                get_ingredients();
+                            });
+                        });
+                    }
                 });
             }
             
@@ -682,7 +717,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 async function get_ingredients(){
     const url = `../${uris.getproducts}`;
-    try {
+    //try {
         const ings = await fetch(url);
         if(!ings.ok){
             throw new Error(`Error: ${ings.status} ${ings.statusText}`);
@@ -690,10 +725,10 @@ async function get_ingredients(){
         const res = await ings.json();
         document.querySelector("#ingredients").innerHTML = `${res.message}`;
         gettotal();
-    }
+    /*}
     catch (err) {
         console.error(`Error: ${err}`);
-    }
+    }*/
 }
 
 async function gettotal() { 

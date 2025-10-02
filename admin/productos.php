@@ -18,11 +18,13 @@
             <thead>
                 <th>No.</th>
                 <th>Producto</th>
+                <th>Tam.</th>
                 <th>Costo</th>
                 <th>Precio</th>
                 <th>Ganancia</th>
                 <th>Activos</th>
                 <th>Stock</th>
+                <th>Oferta %</th>
                 <th>Categoría</th>
             </thead>
             <tbody id="ingredients"></tbody>

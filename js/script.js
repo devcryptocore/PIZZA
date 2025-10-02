@@ -1,3 +1,37 @@
+document.addEventListener('DOMContentLoaded', ()=>{
+	let v = Date.now();
+
+    if(document.querySelector(".versionized")){
+        document.querySelectorAll('.versionized').forEach(ver => {
+            let sc = ver.getAttribute("href");
+            ver.setAttribute("href",`${sc}?${v}`);
+        });
+    }
+
+    if(document.querySelector(".versionizedjs")){
+        document.querySelectorAll('.versionizedjs').forEach(verjs => {
+            let scjs = verjs.getAttribute("src");
+            verjs.setAttribute("src",`${scjs}?${v}`);
+        });
+    }
+
+	if(document.querySelector(".inputField")){
+		const inputs = document.querySelectorAll('.inputField');
+		inputs.forEach(inp => {
+			inp.addEventListener('focus',()=>{
+				inp.classList.add('active-input-field');
+			});
+			inp.addEventListener('focusout', ()=>{
+				let inpval = inp.value;
+				if(inpval.length == 0 || inpval == ''){
+					inp.classList.remove('active-input-field');
+				}
+			});
+		})
+	}
+
+});
+
 function moneyFormat(input){
 	var num = input.value.replace(/\./g,'');
 	if(!isNaN(num)){
@@ -37,4 +71,19 @@ function milesjs(mil){
 function mesesjs(mes){
     let meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     return meses[mes];
+}
+
+async function sys_data() {
+	const uro = `../php/mymenu.php?get_sys_data`;
+	try {
+		const udata = await fetch(uro);
+		if(!udata.ok){
+			throw new Error(`Error: ${udata.status} / ${udata.statusText}`);
+		}
+		const resp = await udata.json();
+		return resp;
+	}
+	catch (err) {
+		console.error(err);
+	}
 }
