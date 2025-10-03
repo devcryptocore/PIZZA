@@ -1,18 +1,12 @@
 .parent {
+    width: 100vw;
     height: 100vh;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+    display: flex;
     gap: 10px;
     padding: 10px;
 }
-.div1 {
-    grid-area: 1 / 2 / 2 / 6;
-    border-radius: 6px;
-    border: 1px solid var(--dark-grey);
-}
 .div2 {
-    grid-area: 1 / 1 / 6 / 2;
+    width: 25vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -20,11 +14,13 @@
     gap: 10px;
     border-radius: 6px;
     border: 1px solid var(--dark-grey);
+    transition: all .4s cubic-bezier(1, 0, 0, 1);
 }
 .div3 {
-    grid-area: 2 / 2 / 6 / 6;
+    width: 75vw;
     border-radius: 6px;
     border: 1px solid var(--dark-grey);
+    transition: all .4s cubic-bezier(1, 0, 0, 1);
 }
 .logo-container {
     width: 100%;
@@ -44,7 +40,6 @@
 }
 .source-container {
     width: 100%;
-    height: 80vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -77,22 +72,69 @@
     aspect-ratio: 1/1;
     object-fit: contain;
 }
-.source-option span {
+.source-option::after {
     font-size: 13px;
     color: var(--dark-grey);
 }
-@media screen and (max-width: 900px) {
-    .div1 {
-        height: 10vh;
-        grid-area: 1 / 1 / 2 / 6;
+.source-option:nth-child(1):after {
+    content: "Caja";
+}
+.source-option:nth-child(2):after {
+    content: "Ventas";
+}
+.source-option:nth-child(3):after {
+    content: "Productos";
+}
+.source-option:nth-child(4):after {
+    content: "Insumos";
+}
+.source-option:nth-child(5):after {
+    content: "Reportes";
+}
+.source-option:nth-child(6):after {
+    content: "Empleados";
+}
+.source-option:nth-child(7):after {
+    content: "Administración";
+}
+.source-option:nth-child(8):after {
+    content: "Empresa";
+}
+.source-option:nth-child(9):after {
+    content: "Acerca de";
+}
+#logout_button {
+    border: 0;
+}
+#logout_button:hover {
+    border: 0;
+    transform: scale(1);
+}
+#logout_button::after {
+    content: "Salir";
+}
+@media screen and (max-width: 1000px) {
+    .div2 {
+        width: 8vw;
     }
+    .source-option {
+        width: 45px;
+        aspect-ratio: 1/1;
+        justify-content: center;
+        gap: 0;
+    }
+    .source-option::after {
+        content: "" !important;
+    }
+}
+@media screen and (max-width: 900px) {
     .div2 {
         display: none;
     }
     .div3 {
-        grid-area: 2 / 1 / 6 / 6;
+        width: 100vw;
     }
     .source-container {
-        height: 90vh;
+        height: 100vh;
     }
 }

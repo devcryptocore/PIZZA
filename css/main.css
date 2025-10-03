@@ -188,3 +188,22 @@ input[type='number']::-webkit-inner-spin-button {
     top: -7px;
     left: 0;
 }
+.textarea-container {
+    padding: 0;
+    overflow: hidden;
+}
+.textarea-container textarea {
+    width: 290px;
+    height: 100px;
+    padding: 10px;
+    resize: none;
+    border: 0;
+    outline: none;
+    background: #fff;
+}
+.textarea-container label {
+    transform: translate(10px, -52px);
+    font-size: 12px;
+    background: #fff;
+    padding: 5px 5px;
+}

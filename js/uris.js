@@ -28,3 +28,9 @@ export const del_added_products = "php/products.php?del_added_products=bWF4cGl6e
 export const makesell = "php/vender.php?make_sell=bWF4cGl6emFsYXVuaW9u";
 export const getinvoice = "factura/?num=";
 export const get_my_invoices = "php/facturas.php?get_invoices=bWF4cGl6emFsYXVuaW9u";
+export const get_to_rollback = "php/facturas.php?get_to_rollback=bWF4cGl6emFsYXVuaW9u";
+export const devolucion = "php/vender.php?devolucion=bWF4cGl6emFsYXVuaW9u";
+export const history_bill = "php/facturas.php?history_invoices=bWF4cGl6emFsYXVuaW9u";
+export const com_client = "php/clients.php?com_client=bWF4cGl6emFsYXVuaW9u";
+export const getclient = "php/clients.php?get_client=bWF4cGl6emFsYXVuaW9u";
+export const set_entidad = "php/movements.php?set_entidad=bWF4cGl6emFsYXVuaW9u";

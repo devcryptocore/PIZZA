@@ -94,7 +94,10 @@
     border-radius: 6px;
 }
 #product_search,
-#field_change {
+#field_change,
+#invoice_search,
+#rollback_search,
+#client_search {
     width: 100%;
     height: 40px;
     border: 1px solid var(--dark-grey);
@@ -104,6 +107,11 @@
     outline: none;
     font-size: 16px;
     color: var(--dark-grey);
+}
+#invoice_search,
+#rollback_search,
+#client_search {
+    margin-bottom: 15px;
 }
 #field_change {
     background: url(../res/icons/change.svg) 5px / 20px no-repeat;
@@ -244,6 +252,23 @@
     gap: 10px;
     font-size: 11px;
 }
+#new_client {
+    width: 35px;
+    aspect-ratio: 1/1;
+    border: 1px solid var(--dark-grey);
+    background: #ededed url(../res/icons/new-user.svg) center / 25px no-repeat;
+    cursor: pointer;
+    border-radius: 6px;
+    position: absolute;
+    margin: 20px;
+    top: 5px;
+    right: 90px;
+}
+.clilogo{
+    width: 100px;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+}
 @media screen and (max-width: 800px) {
     .div1 {
         padding: 0 10px 0 0;
@@ -259,5 +284,9 @@
     }
     .totalcont h2 {
         font-size: 2em;
+    }
+    #new_client {
+        right: unset;
+        left: 25px;
     }
 }

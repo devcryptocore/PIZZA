@@ -8,6 +8,7 @@
         $sucursal = "";
         $fechareg = "";
         $recibido = "";
+        $idventa = "";
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -111,6 +112,9 @@
                 <b>Factura No.</b><span><?=$facnum;?></span>
             </div>
             <div class="cdata">
+                <b>Cliente:</b><span id="clinom">Indefinido / 123456789</span>
+            </div>
+            <div class="cdata">
                 <b>Fecha:</b><span id="fechafac">01/01/2000</span>
             </div>
             <div class="cdata">
@@ -161,6 +165,9 @@
                             $sucursal = $f['sucursal'];
                             $fechareg = $f['fechareg'];
                             $recibido = $f['recibido'];
+                            $idventa = $f['idventa'];
+                            $cliente = $f['cliente'];
+                            $clidoc = $f['clidoc'];
                         }
                         $cuser = $con -> prepare("SELECT u.documento,o.* FROM usuarios u INNER JOIN operadores o
                         ON u.documento = o.documento WHERE u.usuario = ?");
@@ -199,6 +206,7 @@
             </ul>
             <b>Aviso legal:</b>
             <span>El uso de nuestros productos/servicios implica la aceptación de nuestras políticas de calidad, garantía y privacidad.</span>
+            <span>Para solicitar devoluciones por favor use este código: <b><?=$idventa;?></b></span>
             <b style="margin: 0 auto;margin-top:10px;">¡Gracias por preferirnos!</b>
             <i style="margin: 0 auto;">Seguiremos trabajando para brindarle la mejor atención.</i>
         </div>
@@ -210,6 +218,7 @@
             document.querySelector("#fechafac").textContent = '<?=$fechareg;?>';
             document.querySelector("#vendedor").textContent = '<?=$vendedor;?>';
             document.querySelector("#sucursal").textContent = '<?=$sucursal;?>';
+            document.querySelector("#clinom").textContent = '<?=$cliente . " / " . $clidoc;?>';
             window.print();
             if(rev == 0) {
                 setTimeout(()=>{

@@ -23,6 +23,8 @@
     if (isset($_GET['make_sell']) && $_GET['make_sell'] === $clav) {
         $term     = $_GET['terminal'];
         $recibido = sanear_string($_POST['recibido']);
+        $cliente = empty($_POST['cliente']) ? 'Indefinido' : $_POST['cliente'];
+        $clidoc = empty($_POST['clidoc']) ? '0000000000' : $_POST['clidoc'];
         $idventa = uniqid();
         $seriefac = get_last_serie();
         $idcaja   = 1; // Simula ID de caja
@@ -44,6 +46,7 @@
             if ($result->num_rows === 0) {
                 throw new Exception("No se encontraron productos en el carrito.");
             }
+            $tsl = 0;
             while ($prod = $result->fetch_assoc()) {
                 $idproducto = $prod['id_producto'];
                 $nombre_producto = $prod['producto'];
@@ -58,18 +61,22 @@
                 }
 
                 $total = $precio * $cantidad;
+                $tsl += $total;
                 $venta = $con->prepare("INSERT INTO ventas 
-                    (consecutivo,idventa, idcaja, id_producto, producto, cantidad, porciones, precio, total, recibido, unico, descuento, usuario, sucursal)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    (consecutivo,idventa, idcaja, id_producto, producto, cantidad, porciones, precio, total, recibido, unico, descuento, cliente, clidoc, usuario, sucursal)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 $venta->bind_param(
-                    'ssiisiiiiiiiss',
+                    'ssiisiiiiiiissss',
                     $seriefac, $idventa, $idcaja, $idproducto, $nombre_producto, $cantidad, $cantidad,
-                    $precio, $total, $recibido, $term, $descuento, $sesion, $sucursal
+                    $precio, $total, $recibido, $term, $descuento, $cliente, $clidoc, $sesion, $sucursal
                 );
                 if (!$venta->execute()) {
                     throw new Exception("Error al procesar la venta de {$nombre_producto}.");
                 }
             }
+            $uup = $con -> prepare("UPDATE clientes SET total_comprado = COALESCE(total_comprado,0) + ? WHERE documento = ?");
+            $uup -> bind_param('is',$tsl,$clidoc);
+            @$uup -> execute();//Suprime warnings
             $con->commit();
             echo json_encode([
                 "status" => "success",
@@ -97,65 +104,49 @@
 
     if (isset($_GET['devolucion']) && $_GET['devolucion'] === $clav) {
         $ventaId = intval($_POST['venta_id']);
-        $usuario = $_SESSION['usuario']; 
-        $sucursal = $_SESSION['sucursal'];
+        $devolver = intval($_POST['cantidad']);
         $motivo = !empty($_POST['motivo']) ? trim($_POST['motivo']) : "Sin especificar";
-
-        // Verificamos que la venta exista
         $check = $con->prepare("SELECT * FROM ventas WHERE id = ? AND sucursal = ?");
         $check->bind_param("is", $ventaId, $sucursal);
         $check->execute();
         $result = $check->get_result();
-
         if ($result->num_rows > 0) {
             $venta = $result->fetch_assoc();
+            if ($devolver > $venta['cantidad']) {
+                echo json_encode([
+                    "status" => "error",
+                    "title"  => "Cantidad inválida",
+                    "message"=> "No se pueden devolver más productos de los que se vendieron."
+                ]);
+                exit;
+            }
             $insertDev = $con->prepare("INSERT INTO devoluciones 
                 (id_venta, id_producto, producto, cantidad, precio, total, usuario, sucursal, motivo)
                 VALUES (?,?,?,?,?,?,?,?,?)");
-            $insertDev->bind_param(
-                "iisiiisss",
-                $venta['id'],
-                $venta['id_producto'],
-                $venta['producto'],
-                $venta['cantidad'],
-                $venta['precio'],
-                $venta['total'],
-                $usuario,
-                $sucursal,
-                $motivo
-            );
+            $totalDev = $venta['precio'] * $devolver;
+            $insertDev->bind_param("iisiiisss",$venta['id'],$venta['id_producto'],$venta['producto'],$devolver,
+                $venta['precio'],$totalDev,$sesion,$sucursal,$motivo);
             if ($insertDev->execute()) {
-                $del = $con->prepare("DELETE FROM ventas WHERE id = ? AND sucursal = ?");
-                $del->bind_param("is", $ventaId, $sucursal);
-                if ($del->execute()) {
-                    echo json_encode([
-                        "status" => "success",
-                        "title"  => "Devolución realizada",
-                        "message"=> "Se devolvió {$venta['cantidad']} unidad(es) de {$venta['producto']} correctamente."
-                    ]);
+                if ($devolver == $venta['cantidad']) {
+                    $del = $con->prepare("DELETE FROM ventas WHERE id = ? AND sucursal = ?");
+                    $del->bind_param("is", $ventaId, $sucursal);
+                    $del->execute();
                 } else {
-                    echo json_encode([
-                        "status" => "error",
-                        "title"  => "Error en eliminación",
-                        "message"=> "No se pudo borrar la venta después de registrar la devolución."
-                    ]);
+                    $nuevaCantidad = $venta['cantidad'] - $devolver;
+                    $nuevoTotal = $nuevaCantidad * $venta['precio'];
+                    $upd = $con->prepare("UPDATE ventas SET cantidad = ?, total = ? WHERE id = ? AND sucursal = ?");
+                    $upd->bind_param("iiis",$nuevaCantidad,$nuevoTotal,$ventaId,$sucursal);
+                    $upd->execute();
                 }
-            } else {
                 echo json_encode([
-                    "status" => "error",
-                    "title"  => "Error en registro",
-                    "message"=> "No se pudo registrar la devolución en la base de datos."
+                    "status" => "success",
+                    "title"  => "Devolución realizada",
+                    "message"=> "Se devolvieron $devolver unidad(es) de {$venta['producto']} correctamente."
                 ]);
             }
-        } else {
-            echo json_encode([
-                "status" => "error",
-                "title"  => "Venta no encontrada",
-                "message"=> "La venta indicada no existe o no corresponde a esta sucursal."
-            ]);
         }
-        $con->close();
     }
+
 
 
 ?>

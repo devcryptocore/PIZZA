@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const sucursalname = document.querySelector("#sucursalName");
     const sellername = document.querySelector("#sellerName");
     const selledvalue = document.querySelector("#selledData");
+    const client = document.querySelector("#client");
+    const doc_client = document.querySelector("#doc_client");
+    const clientdata = document.querySelector("#clientData");
 
     document.addEventListener('keydown', (k)=>{
         k = k || event;
@@ -26,6 +29,17 @@ document.addEventListener('DOMContentLoaded', ()=> {
         sellername.innerHTML = `<b>Vendedor: </b><span>${info.nombre}</span>`;
         selledvalue.innerHTML = `<b>Vendido: </b><span>$${info.vendido}</span>`;
     })();
+
+    window.setClient = (nom,ced) => {
+        client.value = nom;
+        doc_client.value = ced;
+        clientdata.innerHTML = `
+            <b>Cliente:</b>
+            <span>${nom}</span>
+            <span>${ced}</span>
+        `;
+        Swal.close();
+    }
 
     const uripr = `../${uris.search_product}`;
     const word = new FormData();
@@ -72,6 +86,8 @@ document.addEventListener('DOMContentLoaded', ()=> {
         const datos = new FormData();
         if(field_change.value.length > 0){
             try {
+                datos.append("cliente",client.value);
+                datos.append("clidoc",doc_client.value);
                 datos.append("recibido",field_change.value);
                 const venta = await fetch(uriv,{
                     method: "POST",
@@ -213,28 +229,195 @@ document.addEventListener('DOMContentLoaded', ()=> {
     }
 
     window.get_invoices = async () => {
-        const ufac = `../${uris.get_my_invoices}`;
-        try {
-            const req = await fetch(ufac);
-            if(!req.ok){
-                throw new Error(`Error: ${req.status} / ${req.statusText}`);
+        Swal.fire({
+            title: "Consultar factura",
+            html: `
+                <input type="text" id="invoice_search" placeholder="Número de factura" autocomplete="off" style="width: 290px;">
+                <button class="send-button" id="factura_search">Buscar</button>
+            `,
+            showConfirmButton: false,
+            showCancelButton: false,
+            showCloseButton: true
+        });
+        document.querySelector("#factura_search").addEventListener('click', async ()=> {
+            const numfac = document.querySelector("#invoice_search");
+            if(!numfac.value.length > 4 || numfac.value == ""){
+                iziToast.error({
+                    title: "Error!",
+                    message: `El número de factura no es correcto!`,
+                    position: "topCenter"
+                });
+                return;
             }
-            const resp = await req.json();
+            const ufac = `../${uris.get_my_invoices}`;
+            const facnums = new FormData();
+            try {
+                facnums.append("facnum",numfac.value);
+                const req = await fetch(ufac,{
+                    method: "POST",
+                    body: facnums
+                });
+                const resp = await req.json();
+                if(resp.status == "success"){
+                    open_bill(resp.message,'rev');
+                    Swal.close();
+                }
+                else {
+                    Swal.fire({
+                        title: resp.title,
+                        text: resp.message,
+                        icon: resp.status
+                    });
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
+    window.rollback = async () => {
+        Swal.fire({
+            title: "Devolución",
+            html: `
+                <input type="text" id="rollback_search" placeholder="Código de venta" autocomplete="off" style="width: 290px;">
+                <button class="send-button" id="devolucion_dp">Consultar</button>
+            `,
+            showConfirmButton: false,
+            showCancelButton: false,
+            showCloseButton: true
+        });
+        document.querySelector("#devolucion_dp").addEventListener('click', async ()=> {
+            const codigorb = document.querySelector("#rollback_search");
+            if(!codigorb.value.length > 4 || codigorb.value == ""){
+                iziToast.error({
+                    title: "Error!",
+                    message: `El código de devolución no es correcto!`,
+                    position: "topCenter"
+                });
+                return;
+            }
+            const roll = `../${uris.get_to_rollback}`;
+            const idv = new FormData();
+            try {
+                idv.append("idventa",codigorb.value);
+                const reqs = await fetch(roll,{
+                    method: "POST",
+                    body: idv
+                });
+                const resp = await reqs.json();
+                Swal.fire({
+                    title: resp.title,
+                    html: `
+                    <div style="display:flex;width:100%;overflow:auto;">
+                        <table class="table-container ingredients_table">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:11px;">Factura No.</th>
+                                    <th style="font-size:11px;">Producto</th>
+                                    <th style="font-size:11px;">Cant.</th>
+                                    <th style="font-size:11px;">Precio</th>
+                                    <th style="font-size:11px;">Subtotal</th>
+                                    <th style="font-size:11px;">Dto.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${resp.message}
+                            </tbody>
+                        </table>
+                    </div>
+                    `,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    showCloseButton: true
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
+    window.set_rollback = async (id,can,prod) => {
+        Swal.fire({
+            title: `Devolución de ${prod}`,
+            html: `
+            <div class="form-container">
+                <form id="rollbackForm">
+                    <div class="oneInput">
+                        <div class="inputContainer">
+                            <input type="number" id="cantid" name="cantidad" class="inputField" autocomplete="off" required value="${can}">
+                            <label for="cantid" class="active-label">Cantidad</label>
+                        </div>
+                    </div>
+                    <div class="oneInput">
+                        <div class="inputContainer textarea-container">
+                            <textarea class="prduct-desc" name="motivo" id="txtarea"></textarea>
+                            <label for="txtarea">Motivo</label>
+                        </div>
+                    </div>
+                    <input type="hidden" name="venta_id" value="${id}">
+                    <div class="oneInput">
+                        <input type="submit" value="Devolver" class="send-button">
+                    </div>
+                </form>
+            </div>
+            `,
+            showConfirmButton: false,
+            showCancelButton: false,
+            showCloseButton: true
+        });
+        const rollbackform = document.querySelector("#rollbackForm");
+        rollbackform.addEventListener("submit", async (r) => {
+            r.preventDefault();
+            const urd = `../${uris.devolucion}`;
+            const datadev = new FormData(r.target);
+            try {
+                const sdev = await fetch(urd, {
+                    method: "POST",
+                    body: datadev
+                });
+                const rpdev = await sdev.json();
+                Swal.fire({
+                    title: rpdev.title,
+                    text: rpdev.message,
+                    icon: rpdev.status
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
+    window.get_history = async () => {
+        const history = `../${uris.history_bill}`;
+        try {
+            const reqs = await fetch(history);
+            if(!reqs.ok){
+                throw new Error(`Error: ${reqs.stauts}  / ${reqs.statusText}`);
+            }
+            const resp = await reqs.json();
             Swal.fire({
                 title: resp.title,
                 html: `
+                <div style="display:flex;width:100%;overflow:auto;">
                     <table class="table-container ingredients_table">
                         <thead>
                             <tr>
-                                <th>Factura No.</th>
-                                <th>ID</th>
-                                <th>Fecha</th>
+                                <th style="font-size:11px;">Factura No.</th>
+                                <th style="font-size:11px;">Producto</th>
+                                <th style="font-size:11px;">Cant.</th>
+                                <th style="font-size:11px;">Precio</th>
+                                <th style="font-size:11px;">Subtotal</th>
+                                <th style="font-size:11px;">Dto.</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${resp.message}
                         </tbody>
                     </table>
+                </div>
                 `,
                 showConfirmButton: false,
                 showCancelButton: false,
@@ -244,6 +427,118 @@ document.addEventListener('DOMContentLoaded', ()=> {
         catch (err) {
             console.error(err);
         }
+    }
+
+    window.clients = () => {
+        Swal.fire({
+            title: "Clientes",
+            html: `
+                <button id="new_client"></button>
+                <input type="text" id="client_search" placeholder="Documento" autocomplete="off" style="width: 290px;">
+                <button class="send-button" id="conscli">Buscar</button>
+            `,
+            showConfirmButton: false,
+            showCancelButton: false,
+            showCloseButton: true
+        });
+        const conscli = document.querySelector("#conscli");
+        const clidoc = document.querySelector("#client_search");
+        conscli.addEventListener('click', async () => {
+            const cliu = `../${uris.getclient}`;
+            const clid = new FormData();
+            try {
+                clid.append("doc",clidoc.value);
+                const cld = await fetch(cliu,{
+                    method: "POST",
+                    body: clid
+                });
+                const rescli = await cld.json();
+                Swal.fire({
+                    title: rescli.title,
+                    html: rescli.message,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    showCloseButton: true
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+        const newclient = document.querySelector("#new_client");
+        newclient.addEventListener('click', ()=> {
+            Swal.fire({
+                title: "Nuevo cliente",
+                html: `
+                    <div class="form-container">
+                        <form id="clienteForm">
+                            <input type="hidden" id="id" name="id">
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background: url(../res/icons/user.svg) 5px / 20px no-repeat;">
+                                    <input type="text" id="nombre" name="nombre" required class="inputField">
+                                    <label for="nombre">Nombre</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background: url(../res/icons/v-card.svg) 5px / 20px no-repeat;">
+                                    <input type="text" id="documento" name="documento" required class="inputField">
+                                    <label for="documento">Documento</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background: url(../res/icons/address.svg) 5px / 20px no-repeat;">
+                                    <input type="text" id="direccion" name="direccion" class="inputField">
+                                    <label for="direccion">Dirección</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background: url(../res/icons/phone.svg) 5px / 20px no-repeat;">
+                                    <input type="text" id="telefono" name="telefono" class="inputField">
+                                    <label for="telefono">Teléfono</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <button type="submit" class="send-button">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCancelButton: false,
+                showCloseButton: true
+            });
+            if(document.querySelector(".inputField")){
+                const inputs = document.querySelectorAll('.inputField');
+                inputs.forEach(inp => {
+                    inp.addEventListener('focus',()=>{
+                        inp.classList.add('active-input-field');
+                    });
+                    inp.addEventListener('focusout', ()=>{
+                        let inpval = inp.value;
+                        if(inpval.length == 0 || inpval == ''){
+                            inp.classList.remove('active-input-field');
+                        }
+                    });
+                })
+            }
+            const form = document.getElementById("clienteForm");
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const clis = new FormData(e.target);
+                const resp = await fetch(`../${uris.com_client}&action=save`, {
+                    method: "POST",
+                    body: clis
+                });
+                const result = await resp.json();
+                Swal.fire({
+                    title: result.title,
+                    text: result.message,
+                    icon: result.status
+                }).then(()=>{
+                    cargarClientes();
+                });
+            });
+        });
     }
 
 });

@@ -21,7 +21,11 @@
         </div>
         <div class="div2">
             <div class="searchbar-container">
-                <h3>Esta venta</h3>
+                <div class="sell-data" id="clientData">
+                    <b>Cliente:</b>
+                    <span>Indefinido</span>
+                    <span>123456789</span>
+                </div>
                 <input type="text" id="product_search" placeholder="Producto" autocomplete="off">
                 <div id="prod_result"></div>
             </div>
@@ -77,6 +81,8 @@
             </div>
         </div>
     </div>
+    <input type="hidden" name="client" id="client" value="">
+    <input type="hidden" name="doc_client" id="doc_client" value="">
     <input type="hidden" name="tval" id="totalVal" value="0">
 </body>
 </html>

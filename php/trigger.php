@@ -8,6 +8,7 @@
     if(isset($_GET['create_triggers']) && $_GET['create_triggers'] === $clav){
          $mess = "";
         $con->query("DROP TRIGGER IF EXISTS after_insert_venta");
+        $con->query("DROP TRIGGER IF EXISTS after_update_venta");
         $con->query("DROP TRIGGER IF EXISTS after_delete_venta");
 
         $trigger_after_insert = "
@@ -55,6 +56,56 @@
             $mess .= "<span>Trigger after_insert_venta creado</span><br>";
         } else {
             $mess .= "<span>Error creando after_insert_venta: " . $con->error . "</span><br>";
+        }
+
+        $trigger_after_update = "
+            CREATE TRIGGER after_update_venta
+            AFTER UPDATE ON ventas
+            FOR EACH ROW
+            BEGIN
+                DECLARE diff INT;
+                DECLARE v_unidades DECIMAL(10,3);
+                DECLARE v_porciones INT;
+
+                -- diferencia de cantidad (antes vs después)
+                SET diff = OLD.cantidad - NEW.cantidad;
+
+                IF diff > 0 THEN
+                    -- se devolvieron diff unidades
+                    SELECT unidades, porciones
+                    INTO v_unidades, v_porciones
+                    FROM active_products
+                    WHERE id_producto = NEW.id_producto
+                    AND sucursal = NEW.sucursal
+                    LIMIT 1;
+
+                    IF v_porciones > 0 THEN
+                        SET v_porciones = v_porciones + diff;
+                        SET v_unidades = v_porciones / 8;
+                    ELSE
+                        SET v_unidades = v_unidades + diff;
+                    END IF;
+
+                    UPDATE active_products
+                    SET unidades = v_unidades,
+                        porciones = v_porciones
+                    WHERE id_producto = NEW.id_producto
+                    AND sucursal   = NEW.sucursal;
+
+                    -- si vuelve a haber stock, reactivar
+                    IF v_unidades > 0 OR v_porciones > 0 THEN
+                        UPDATE productos
+                        SET estado = 1
+                        WHERE id = NEW.id_producto
+                        AND sucursal = NEW.sucursal;
+                    END IF;
+                END IF;
+            END
+        ";
+        if ($con->query($trigger_after_update)) {
+            $mess .= "<span>Trigger after_update_venta creado</span><br>";
+        } else {
+            $mess .= "<span>Error creando after_update_venta: " . $con->error . "</span><br>";
         }
 
         $trigger_after_delete = "

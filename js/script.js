@@ -32,6 +32,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 });
 
+function activelabel() {
+	if(document.querySelector(".inputField")){
+		const inputs = document.querySelectorAll('.inputField');
+		inputs.forEach(inp => {
+			inp.addEventListener('focus',()=>{
+				inp.classList.add('active-input-field');
+			});
+			inp.addEventListener('focusout', ()=>{
+				let inpval = inp.value;
+				if(inpval.length == 0 || inpval == ''){
+					inp.classList.remove('active-input-field');
+				}
+			});
+		})
+	}
+}
+
 function moneyFormat(input){
 	var num = input.value.replace(/\./g,'');
 	if(!isNaN(num)){

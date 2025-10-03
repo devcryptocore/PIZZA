@@ -122,7 +122,8 @@
         $us = $Rusu -> fetch_assoc();
         $nombre = $us['nombre'] ?? 'Sin sesión';
         $apellido = $us['apellido'] ?? '';
-        $cons = $con -> prepare("SELECT COALESCE(SUM(total), 0) AS total_vendido FROM ventas WHERE idcaja = ? AND usuario = ? AND sucursal = ?");
+        $cons = $con -> prepare("SELECT COALESCE(SUM(total), 0) AS total_vendido FROM ventas
+         WHERE idcaja = ? AND usuario = ? AND sucursal = ? AND DATE(fechareg) = CURDATE()");
         $cons -> bind_param('iss',$idcaja,$sesion,$sucursal);
         $cons -> execute();
         $Rcons = $cons -> get_result();
