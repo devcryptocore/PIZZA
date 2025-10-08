@@ -104,3 +104,18 @@ async function sys_data() {
 		console.error(err);
 	}
 }
+
+async function get_box_state() {
+	const urb = `../php/box.php?constate`;
+	try {
+		const cos = await fetch(urb);
+		if(!cos.ok){
+			throw new Error(`ERR: ${cos.status} / ${cos.statusText}`);
+		}
+		const gets = await cos.json();
+		return gets.message;
+	}
+	catch (err) {
+		console.error(err);
+	} 
+}

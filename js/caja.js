@@ -1,6 +1,11 @@
 import * as uris from './uris.js';
 document.addEventListener('DOMContentLoaded', () => {
 
+    getboxes();
+    (async ()=> {
+        let boxstate = await get_box_state();
+        console.log(boxstate);
+    })();
     const set_entidad = document.querySelector("#set_entidad");
 
     set_entidad.addEventListener('click', async () => {
@@ -59,3 +64,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+async function getboxes() {
+    const urb = `../${uris.getboxstates}`;
+    try {
+        const cons = await fetch(urb);
+        if(!cons.ok){
+            throw new Error(`Error: ${cons.status} / ${cons.statusText}`);
+        }
+        const rpa = await cons.json();
+        document.querySelector("#ingredients").innerHTML = rpa.message;
+    }
+    catch (err){
+        console.error(`ERROR: ${err}`);
+    }
+}

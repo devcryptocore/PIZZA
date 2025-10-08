@@ -198,6 +198,26 @@
     gap: 10px;
     padding: 10px;
     background: url(../res/images/logotype_bn.png) center / 85px no-repeat;
+    position: relative;
+}
+#barcodefocus {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 35px;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--dark-grey);
+    background: #ededed url(../res/icons/cbscanner.svg) center / 25px no-repeat;
+    border-radius: 6px;
+    cursor: pointer;
+}
+#barcode_reciever {
+    position: absolute;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: transparent;
+    user-select: none;
 }
 .cbuttons {
     width: 100%;

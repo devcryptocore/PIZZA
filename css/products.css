@@ -293,6 +293,14 @@
 .ingredients_table thead tr th:nth-child(10) {
     border-radius: 0px 4px 0px 0px;
 }
+#get_barcodes {
+    width: 30px;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--dark-grey);
+    background: #ededed url(../res/icons/barcode-ui.svg) center / 20px no-repeat;
+    cursor: pointer;
+    border-radius: 6px;
+}
 @media screen and (max-width: 700px) {
     .opscontainer {
         justify-content: center;

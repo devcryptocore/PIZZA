@@ -34,3 +34,7 @@ export const history_bill = "php/facturas.php?history_invoices=bWF4cGl6emFsYXVua
 export const com_client = "php/clients.php?com_client=bWF4cGl6emFsYXVuaW9u";
 export const getclient = "php/clients.php?get_client=bWF4cGl6emFsYXVuaW9u";
 export const set_entidad = "php/movements.php?set_entidad=bWF4cGl6emFsYXVuaW9u";
+export const getbarcodes = "php/products.php?get_barcodes=bWF4cGl6emFsYXVuaW9u";
+export const frombarcode = "php/products.php?from_barcode=bWF4cGl6emFsYXVuaW9u";
+export const getboxstates = "php/box.php?boxhistory=bWF4cGl6emFsYXVuaW9u";
+export const getstatebox = "php/box.php?constate=bWF4cGl6emFsYXVuaW9u";

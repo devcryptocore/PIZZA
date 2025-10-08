@@ -2,6 +2,7 @@
     include('../includes/header.php');
 ?>
 <link rel="stylesheet" href="../css/ingredients.css?v=<?=$version;?>">
+<link rel="stylesheet" href="../css/caja.css?v=<?=$version;?>">
 <script type="module" src="../js/caja.js?v=<?=$version;?>"></script>
 <body>
     <div class="headbar">
@@ -15,15 +16,16 @@
     <div class="myIngredients">
         <table class="table-container ingredients_table">
             <thead>
-                <th>No.</th>
-                <th>Insumo</th>
-                <th>Costo</th>
-                <th>Unidad</th>
-                <th>Stock</th>
-                <th>Mínimo</th>
-                <th>Precio und</th>
-                <th>Precio stock</th>
-                <th>Caduca</th>
+                <th>Cod.</th>
+                <th>Estado</th>
+                <th>Base</th>
+                <th>Ventas</th>
+                <th>Descuentos</th>
+                <th>Ingresos</th>
+                <th>Egresos</th>
+                <th>Sucursal</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
             </thead>
             <tbody id="ingredients"></tbody>
         </table>

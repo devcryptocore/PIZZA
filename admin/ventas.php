@@ -16,6 +16,7 @@
             <div class="logo-container"></div>
             <div class="values-container">
                 <span class="descuento">Descuento: <b id="procDesc">0%</b> $0.000</span>
+                <input type="text" id="barcode_reciever">
                 <span class="totalcont">Total: <h2 id="totalPrice">$0.000</h2></span>
             </div>
         </div>
@@ -47,6 +48,7 @@
                         <b>Vendido:</b>
                         <span>$0.000</span>
                     </div>
+                    <button id="barcodefocus"></button>
                 </div>
                 <div class="cbuttons">
                     <button class="sbutton history" onclick="get_history()"></button>

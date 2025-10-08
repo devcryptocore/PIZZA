@@ -1,0 +1,6 @@
+.ingredients_table thead tr th:nth-child(9) {
+    border-radius: 0px 0px 0px 0px;
+}
+.ingredients_table thead tr th:nth-child(10) {
+    border-radius: 0px 4px 0px 0px;
+}

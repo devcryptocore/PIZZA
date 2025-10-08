@@ -4,7 +4,8 @@
     include('../config/errorhandler.php');
     include('optimizador.php');
     include('../includes/verificator.php');
-
+    include('vendor/autoload.php');
+    use Picqer\Barcode\BarcodeGeneratorPNG;
     
 
     if(isset($_GET['getingredientsforlist']) && $_GET['getingredientsforlist'] === $clav){
@@ -37,6 +38,9 @@
     }
 
     if(isset($_GET['set_new_product']) && $_GET['set_new_product'] === $clav){
+        $generator = new BarcodeGeneratorPNG();
+        $idcode = $_POST['idcode'];
+        $uniqd = rand(10000,99999) . $idcode;
         $producto = $_POST['producto'];
         $precio = sanear_string($_POST['precio']);
         $categoria = isset($_POST['categoria']) ? $_POST['categoria'] : "uncategorized";
@@ -64,11 +68,14 @@
         $portada = guardarFoto("portada", $producto, $dir);
         $photo1 = guardarFoto("photo1", $producto, $dir);
         $photo2 = guardarFoto("photo2", $producto, $dir);
-        $photo3 = guardarFoto("photo3", $producto, $dir);//NO SE ESTÁN SUBIENDO LAS IMAGENES REVISAR!!!!
+        $photo3 = guardarFoto("photo3", $producto, $dir);
+        $barcode = $generator -> getBarcode($uniqd, $generator::TYPE_CODE_128);
+        $archivocb = $dir . '/' . $uniqd . ".png";
+        file_put_contents($archivocb, $barcode);
         $ingedientes = [];
-        $inprod = $con -> prepare("INSERT INTO productos (producto,  precio, categoria, descripcion, talla, estado, oferta, portada, foto_1, foto_2, foto_3, sucursal, usuario)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $inprod -> bind_param('sisssiissssss',$producto,$precio,$categoria,$descripcion,$size,$estado,$oferta,$portada,$photo1,$photo2,$photo3,$sucursal,$sesion);
+        $inprod = $con -> prepare("INSERT INTO productos (id_code, cod_barras, producto, precio, categoria, descripcion, talla, estado, oferta, portada, foto_1, foto_2, foto_3, barcode, sucursal, usuario)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $inprod -> bind_param('ississsiisssssss',$idcode,$uniqd,$producto,$precio,$categoria,$descripcion,$size,$estado,$oferta,$portada,$photo1,$photo2,$photo3,$archivocb,$sucursal,$sesion);
         $inprod -> execute();
         if($inprod){
             $idprod = $con -> insert_id;
@@ -365,7 +372,8 @@
                     "portada" => $prod['portada'] ?? $default_image,
                     "foto1" => $prod['foto_1'] ?? $default_image,
                     "foto2" => $prod['foto_2'] ?? $default_image,
-                    "foto3" => $prod['foto_3'] ?? $default_image
+                    "foto3" => $prod['foto_3'] ?? $default_image,
+                    "barcode" => $prod['barcode'] ?? $default_image
                 ]
             ];
             echo json_encode($res);
@@ -779,10 +787,11 @@
             ON ap.id_producto = p.id
             WHERE (p.producto LIKE CONCAT('%', ?, '%')
                 OR p.categoria LIKE CONCAT('%', ?, '%'))
+                OR p.id_code = ?
             AND p.estado = ?;";
         //$consl = $con -> prepare("SELECT * FROM productos WHERE (producto LIKE CONCAT('%', ?, '%') OR categoria LIKE CONCAT('%', ?, '%')) AND estado = ?");
         $consl = $con -> prepare($cs);
-        $consl -> bind_param('ssi', $producto, $producto, $estado);
+        $consl -> bind_param('ssii', $producto, $producto, $producto, $estado);
         $consl -> execute();
         $Rconsl = $consl -> get_result();
         if($Rconsl -> num_rows > 0){
@@ -997,6 +1006,62 @@
                 "status" => "error",
                 "title" => "Error",
                 "message" => "No se ha podido eliminar el priducto de la lista"
+            ]);
+        }
+    }
+
+    if(isset($_GET['get_barcodes']) && $_GET['get_barcodes'] === $clav) {
+        $cons = $con -> prepare("SELECT id_code,producto,barcode FROM productos");
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        $rps = "";
+        if($Rcons -> num_rows > 0){
+            while($cb = mysqli_fetch_array($Rcons)){
+                $nn = $cb['barcode'] == null || $cb['barcode'] == '' ? 'none' : 'flex';
+                $rps .= '
+                    <div style="
+                    width:220px;height:110px;padding:15px 8px;display:'.$nn.';flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px solid #1f1f1f;border-radius:6px;
+                    ">
+                        <h2 style="font-size:18px;">'.$cb['producto'].'</h2>
+                        <img src="'.$cb['barcode'].'" alt="CB_'.$cb['id_code'].'" style="width:180px;">
+                    </div>
+                ';
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => $rps
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "bad",
+                "message" => "Sin códigos de barras"
+            ]);
+        }
+    }
+
+    if(isset($_GET['from_barcode']) && $_GET['from_barcode'] === $clav) {
+        $barcode = $_POST['barcode'];
+        $stato = 1;
+        $bc = $con -> prepare("SELECT id FROM productos WHERE cod_barras = ? AND estado = ?");
+        $bc -> bind_param('si',$barcode,$stato);
+        $bc -> execute();
+        $Rbc = $bc -> get_result();
+        if($Rbc -> num_rows > 0) {
+            $idp = $Rbc -> fetch_assoc();
+            echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => $idp['id']
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error",
+                "message" => "No se ha encontrado el producto"
             ]);
         }
     }

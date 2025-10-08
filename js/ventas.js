@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const client = document.querySelector("#client");
     const doc_client = document.querySelector("#doc_client");
     const clientdata = document.querySelector("#clientData");
+    const barcode_reciever = document.querySelector("#barcode_reciever");
 
     document.addEventListener('keydown', (k)=>{
         k = k || event;
@@ -64,6 +65,36 @@ document.addEventListener('DOMContentLoaded', ()=> {
             prres.classList.remove("active-results");
             prres.innerHTML = "";
         }
+    });
+
+    let $flag = 0;
+    const ucb = `../${uris.frombarcode}`;
+    const codb = new FormData();
+    barcode_reciever.addEventListener('keyup', async (e) => {
+        let $value = e.target.value;
+        if($value.length > 5 && $flag === 0) {
+            codb.append("barcode",$value);
+            const sendcb = await fetch(ucb,{
+                method: "POST",
+                body: codb
+            });
+            const idcb = await sendcb.json();
+            if(idcb.status === "success"){
+                add_product(idcb.message);
+            }
+            else {
+                iziToast.error({
+                    title: idcb.title,
+                    message: `${idcb.message}`,
+                    position: "topCenter"
+                });
+            }
+            $flag = 1;
+        }
+        barcode_reciever.value = "";
+        setTimeout(()=>{
+            $flag = 0;
+        },100);
     });
 
     field_change.addEventListener('keyup',(c) => {
@@ -544,6 +575,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 });
 
 async function get_added_products() {
+    barcode_reciever.focus();
     const termid = document.querySelector("#terminalId");
     const urig = `../${uris.get_added_products}&terminal=${termid.value}`;
     try {

@@ -50,6 +50,12 @@ document.addEventListener("DOMContentLoaded",()=>{
                                 </div>
                             </div>
                             <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/barcode.svg)">
+                                    <input type="tel" name="idcode" class="inputField" id="idcode" minlength="4" maxlength="5" required autocomplete="off">
+                                    <label for="idcode">Código</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
                                 <div class="inputContainer" style="background-image:url(../res/icons/meat.svg)">
                                     <input type="text" name="producto" class="inputField" id="producto" required autocomplete="off">
                                     <label for="producto">Producto</label>
@@ -711,6 +717,28 @@ document.addEventListener("DOMContentLoaded",()=>{
         catch (err) {
             console.error(err);
         }
+    }
+
+    if(document.querySelector("#get_barcodes")){
+        const gbc = document.querySelector("#get_barcodes");
+        gbc.addEventListener('click', async () => {
+            const uricb = `../${uris.getbarcodes}`;
+            const getcb = await fetch(uricb);
+            if(!getcb.ok){
+                throw new Error(`Error: ${getcb.status} / ${getcb.statusText}`);
+            }
+            const rescb = await getcb.json();
+            const newwind = window.open("","_blank", "width=1000,height=700,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=no");
+            newwind.focus();
+            const doc = newwind.document;
+            const ncb = doc.createElement('div');
+            ncb.innerHTML = `
+                <div style="width:100vw;display:flex;flex-wrap:wrap;gap:20px;padding:20px;margin:0;font-family:sans-serif;">
+                    ${rescb.message}
+                </div>
+            `;
+            doc.body.appendChild(ncb);
+        });
     }
 
 });
