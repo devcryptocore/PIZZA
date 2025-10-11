@@ -20,14 +20,30 @@
         return $serie;
     }
 
+    function boxcode() {
+        global $con,$sesion,$sucursal;
+        $bcon = $con -> prepare("SELECT codcaja FROM caja WHERE usuario = ? AND sucursal = ? ORDER BY codcaja DESC LIMIT 1");
+        $bcon -> bind_param('ss',$sesion,$sucursal);
+        $bcon -> execute();
+        $Rbcon = $bcon -> get_result();
+        if($Rbcon -> num_rows > 0) {
+            $nc = $Rbcon -> fetch_assoc()['codcaja'];
+            return $nc;
+        }
+        else {
+            return 1;
+        }
+    }
+
     if (isset($_GET['make_sell']) && $_GET['make_sell'] === $clav) {
         $term     = $_GET['terminal'];
+        $metodopago = $_POST['metodopago'];
         $recibido = sanear_string($_POST['recibido']);
         $cliente = empty($_POST['cliente']) ? 'Indefinido' : $_POST['cliente'];
         $clidoc = empty($_POST['clidoc']) ? '0000000000' : $_POST['clidoc'];
         $idventa = uniqid();
         $seriefac = get_last_serie();
-        $idcaja   = 1; // Simula ID de caja
+        $idcaja   = boxcode();
         $errors   = [];
 
         $con->begin_transaction();
@@ -63,11 +79,11 @@
                 $total = $precio * $cantidad;
                 $tsl += $total;
                 $venta = $con->prepare("INSERT INTO ventas 
-                    (consecutivo,idventa, idcaja, id_producto, producto, cantidad, porciones, precio, total, recibido, unico, descuento, cliente, clidoc, usuario, sucursal)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    (consecutivo,idventa, metodopago, idcaja, id_producto, producto, cantidad, porciones, precio, total, recibido, unico, descuento, cliente, clidoc, usuario, sucursal)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 $venta->bind_param(
-                    'ssiisiiiiiiissss',
-                    $seriefac, $idventa, $idcaja, $idproducto, $nombre_producto, $cantidad, $cantidad,
+                    'sssiisiiiiiiissss',
+                    $seriefac, $idventa, $metodopago, $idcaja, $idproducto, $nombre_producto, $cantidad, $cantidad,
                     $precio, $total, $recibido, $term, $descuento, $cliente, $clidoc, $sesion, $sucursal
                 );
                 if (!$venta->execute()) {

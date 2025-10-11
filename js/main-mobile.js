@@ -1,3 +1,4 @@
+import * as source from '../utils/uripage.js';
 document.addEventListener('DOMContentLoaded',()=>{
     AOS.init();
     const wrapper = document.querySelector(".main-section");
@@ -52,44 +53,80 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
     }
 
-    setTimeout(()=>{
-        Swal.fire({
-            title: "Participa!",
-            html: `
-                <link rel="stylesheet" href="css/ruleta.css">
-                <div class="ruleta-container">
-                    <div class="flecha"></div>
-                    <div class="ruleta" id="ruleta">
-                        <div class="sector-text sector1">Premio 1</div>
-                        <div class="sector-text sector2">Premio 2</div>
-                        <div class="sector-text sector3">Premio 3</div>
-                        <div class="sector-text sector4">Premio 4</div>
-                        <div class="sector-text sector5">Premio 5</div>
-                        <div class="sector-text sector6">Premio 6</div>
-                    </div>
-                </div>
-                <button id="girar">Girar</button>
-                <p id="resultado"></p>
-            `,
-            showConfirmButton: false,
-            showCancelButton: false,
-            showCloseButton: true
-        });
-        const ruleta = document.getElementById("ruleta");
-        const boton = document.getElementById("girar");
-        const resultado = document.getElementById("resultado");
-        let angulo = 0;
-        const premios = ["Premio 1", "Premio 2", "Premio 3", "Premio 4", "Premio 5", "Premio 6"];
-        boton.addEventListener("click", () => {
-            const extra = Math.floor(Math.random() * 360);
-            angulo += 1800 + extra;
-            ruleta.style.transform = `rotate(${angulo}deg)`;
-            setTimeout(() => {
-                const grados = angulo % 360;
-                let premioIndex = Math.floor((360 - grados) / 60) % 6; 
-                resultado.textContent = "Ganaste: " + premios[premioIndex];
-            }, 4000);
-        });
+    setTimeout(async () => {
+        const uri = `${source.getroulette}`;
+        try {
+            const getdata = await fetch(uri);
+            if(!getdata.ok){
+                throw new Error(`Error: ${getdata.status} / ${getdata.statusText}`);
+            }
+            const resdata = await getdata.json();
+            if(resdata.status != 'empty' && resdata.message.estado == 1){
+                Swal.fire({
+                    title: `Participa por ${resdata.message.premio}`,
+                    html: `
+                        <link rel="stylesheet" href="css/ruleta.css">
+                        <div class="ruleta-container">
+                            <div class="flecha"></div>
+                            <div class="ruleta" id="ruleta">
+                                <div class="sector-text sector1" id="p1">${resdata.message.premio1}</div>
+                                <div class="sector-text sector2" id="p2">${resdata.message.premio2}</div>
+                                <div class="sector-text sector3" id="p3">${resdata.message.premio3}</div>
+                                <div class="sector-text sector4" id="p4">${resdata.message.premio4}</div>
+                                <div class="sector-text sector5" id="p5">${resdata.message.premio5}</div>
+                                <div class="sector-text sector6" id="p6">${resdata.message.premio6}</div>
+                            </div>
+                        </div>
+                        <button id="girar">Girar</button>
+                        <p id="resultado"></p>
+                    `,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    showCloseButton: true
+                });
+                const ruleta = document.getElementById("ruleta");
+                const boton = document.getElementById("girar");
+                const resultado = document.getElementById("resultado");
+                let angulo = 0;
+                const premiada = JSON.parse(resdata.message.premiada);
+                boton.addEventListener("click", () => {
+                    const extra = Math.floor(Math.random() * 360);
+                    angulo += 1800 + extra;
+                    ruleta.style.transform = `rotate(${angulo}deg)`;
+                    setTimeout(() => {
+                        const grados = angulo % 360;
+                        let premioIndex = Math.floor((360 - grados) / 60) % 6;
+                        const idGanador = "p" + (premioIndex + 1);
+                        const nombrePremio = resdata.message.premio;
+                        resultado.textContent = "Ganaste: " + nombrePremio;
+                        if (premiada.includes(idGanador)) {
+                            setTimeout(()=>{
+                                Swal.fire({
+                                    title: `¡Felicidades! has ganado ${nombrePremio}`,
+                                    background: "url(res/images/dancing_pizza.webp) center / cover no-repeat",
+                                    width: 600,
+                                    html: `
+                                        <div class="pizzaWinner"></div>
+                                    `,
+                                    confirmButtonColor: "#000000ff",
+                                    confirmButtonText: "Reclamar mi premio"
+                                });
+                            },1000);//INTENTOS PARA GIRAR
+                        } else {
+                            /*Swal.fire({
+                                icon: "info",
+                                title: "Sigue participando 🍀",
+                                text: "Este sector no tiene premio, intenta nuevamente.",
+                                confirmButtonColor: "#007bff"
+                            });*/
+                        }
+                    }, 4000);
+                });
+            }
+        }
+        catch (err){
+            console.error(err);
+        }
     },3000);
 
     const description = {

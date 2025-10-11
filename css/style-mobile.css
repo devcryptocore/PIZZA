@@ -357,3 +357,7 @@ body {
     transition: all .3s cubic-bezier(1, 0, 0, 1);
     animation: hidecart .4s linear both;
 }
+.pizzaWinner {
+    width: 100%;
+    height: 65vh;
+}

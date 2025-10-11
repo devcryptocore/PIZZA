@@ -9,6 +9,9 @@
         $fechareg = "";
         $recibido = "";
         $idventa = "";
+        $metodopago = "";
+        $cambio = 0;
+        $total = 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -146,7 +149,6 @@
                     $fac -> execute();
                     $Rfac = $fac -> get_result();
                     if($Rfac ->num_rows > 0){
-                        $total = 0;
                         while($f = $Rfac -> fetch_assoc()){
                             $dsc = '';
                             $total += $f['total'];
@@ -168,7 +170,9 @@
                             $idventa = $f['idventa'];
                             $cliente = $f['cliente'];
                             $clidoc = $f['clidoc'];
+                            $metodopago = $f['metodopago'];
                         }
+                        $cambio = $recibido - $total;
                         $cuser = $con -> prepare("SELECT u.documento,o.* FROM usuarios u INNER JOIN operadores o
                         ON u.documento = o.documento WHERE u.usuario = ?");
                         $cuser -> bind_param('s',$vendedor);
@@ -192,6 +196,17 @@
                 ?>
             </tbody>
         </table>
+        <div class="cinfo">
+            <div class="cdata">
+                <b>Recibido:</b><span>$<?=miles($recibido ?? 0);?></span>
+            </div>
+            <div class="cdata">
+                <b>Cambio:</b><span>$<?=miles($cambio ?? 0);?></span>
+            </div>
+            <div class="cdata">
+                <b>Forma de pago:</b><span id="metpago" style="text-transform: capitalize;"><?=$metodopago;?></span>
+            </div>
+        </div>
         <div class="factext">
             <b>Gracias por su compra</b>
             <span>Apreciamos su confianza en nuestros productos.</span>

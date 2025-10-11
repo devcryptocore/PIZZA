@@ -119,3 +119,9 @@ async function get_box_state() {
 		console.error(err);
 	} 
 }
+
+function exportarExcel(tabla) {
+    tabla = document.querySelector(tabla);
+    const wb = XLSX.utils.table_to_book(tabla, { sheet: "Hoja 1" });
+    XLSX.writeFile(wb, "datos_exportados.xlsx");
+}

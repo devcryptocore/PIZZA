@@ -1,6 +1,83 @@
+.fondosbar {
+    width: 90vw;
+    margin: 0 auto;
+    padding: 10px 0px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.search-container {
+    position: relative;
+    overflow: hidden;
+    padding: 0 0 0 45px;
+}
+#boxsearch {
+    width: 40px;
+    aspect-ratio: 1/1;
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+    border: 0;
+    border-right: 1px solid var(--dark-grey);
+    background: var(--amarillo) url(../res/icons/lupa.svg) center / 20px no-repeat;
+}
 .ingredients_table thead tr th:nth-child(9) {
     border-radius: 0px 0px 0px 0px;
 }
 .ingredients_table thead tr th:nth-child(10) {
     border-radius: 0px 4px 0px 0px;
+}
+.open_box {
+    background: #00a34f3d url(../res/icons/open-square.svg) 5px / 20px no-repeat;
+    color: #00a34f;
+}
+.close_box {
+    background: #ff004c3d url(../res/icons/closed-square.svg) 5px / 20px no-repeat;
+    color: #ff004c;
+}
+.transfer {
+    background: #ffc1077a url(../res/icons/transfer.svg) 5px / 20px no-repeat;
+    color: #b38600;
+}
+.movement {
+    background: #5507ff3d url(../res/icons/movement.svg) 5px / 20px no-repeat;
+    color: #5507ff;
+}
+.entityes {
+    background: #dddddd url(../res/icons/money-bag.svg) 5px / 20px no-repeat;
+    color: var(--dark-grey);
+}
+.entcon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 11px;
+    border-radius: 6px;
+    border: 1px solid var(--dark-grey);
+    padding: 5px 10px;
+}
+.dtcon {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    font-size: 11px;
+    padding: 10px 0px;
+}
+.dtcon div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted var(--dark-grey);
+}
+.xlsbutton{
+    width: 40px;
+    aspect-ratio: 1/1;
+    background: #00ff7353 url(../res/icons/xls.svg) center / 25px no-repeat;
+    cursor: pointer;
 }

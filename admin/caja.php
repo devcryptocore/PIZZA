@@ -7,14 +7,18 @@
 <body>
     <div class="headbar">
         <h1>Caja</h1>
-        <div class="total-container"></div>
         <div class="search-container">
-            <input type="text" id="FiltrarContenido" placeholder="Buscar insumo" class="search-bar">
+            <button id="boxsearch"></button>
+            <input type="date" id="FiltrarBoxes" placeholder="Buscar" class="search-bar">
         </div>
-        <button id="set_entidad" class="stkbutton add">Entidades</button>
+        <button id="transfer" class="stkbutton transfer">Transferir</button>
+        <button id="movement" class="stkbutton movement">Movimiento</button>
+        <button id="set_entidad" class="stkbutton entityes">Entidades</button>
+        <button id="set_box_state" class="stkbutton close_box">Abrir caja</button>
     </div>
+    <div class="fondosbar"></div>
     <div class="myIngredients">
-        <table class="table-container ingredients_table">
+        <table class="table-container ingredients_table" id="boxtable">
             <thead>
                 <th>Cod.</th>
                 <th>Estado</th>

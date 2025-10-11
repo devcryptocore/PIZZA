@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const doc_client = document.querySelector("#doc_client");
     const clientdata = document.querySelector("#clientData");
     const barcode_reciever = document.querySelector("#barcode_reciever");
+    const barcodefocus = document.querySelector("#barcodefocus");
+    const metodopago = document.querySelector("#metodoPago");
 
     document.addEventListener('keydown', (k)=>{
         k = k || event;
@@ -21,6 +23,16 @@ document.addEventListener('DOMContentLoaded', ()=> {
             let wind = window.open(`?terminal=${termid.value}`, "_blank", "width=1000,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes");
             wind.focus();
         }
+    });
+
+    barcodefocus.addEventListener('click', ()=>{
+        barcode_reciever.focus();
+    });
+    barcode_reciever.addEventListener('focusin',()=>{
+        barcodefocus.classList.add("reciever_focused");
+    });
+    barcode_reciever.addEventListener('focusout',()=>{
+        barcodefocus.classList.remove("reciever_focused");
     });
 
     (async ()=>{
@@ -120,6 +132,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 datos.append("cliente",client.value);
                 datos.append("clidoc",doc_client.value);
                 datos.append("recibido",field_change.value);
+                datos.append("metodopago",metodopago.value);
                 const venta = await fetch(uriv,{
                     method: "POST",
                     body: datos

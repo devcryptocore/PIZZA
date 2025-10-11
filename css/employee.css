@@ -1,0 +1,16 @@
+.actButton {
+    width: 25px;
+    aspect-ratio: 1/1;
+    border: 0;
+    background: #ffffff;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.mod {
+    background: #00883b3d url(../res/icons/edit-green.svg) center / 15px no-repeat;
+    color: #00883b;
+}
+.del {
+    background: #ff00573d url(../res/icons/delete-red.svg) center / 15px no-repeat;
+    color: #E91E63;
+}

@@ -89,18 +89,21 @@
     content: "Insumos";
 }
 .source-option:nth-child(5):after {
-    content: "Reportes";
+    content: "Obligaciones";
 }
 .source-option:nth-child(6):after {
-    content: "Empleados";
+    content: "Reportes";
 }
 .source-option:nth-child(7):after {
-    content: "Administración";
+    content: "Empleados";
 }
 .source-option:nth-child(8):after {
-    content: "Empresa";
+    content: "Administración";
 }
 .source-option:nth-child(9):after {
+    content: "Empresa";
+}
+.source-option:nth-child(10):after {
     content: "Acerca de";
 }
 #logout_button {

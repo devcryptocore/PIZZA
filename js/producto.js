@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                         const url = `../${uris.setnewproduct}`;
                         const form = e.target;
                         const data = new FormData(form);
-                        //try {
+                        try {
                             const sendata = await fetch(url,{
                                 method: "POST",
                                 body: data
@@ -267,10 +267,10 @@ document.addEventListener("DOMContentLoaded",()=>{
                                 }
                                 get_ingredients();
                             });
-                        /*}
+                        }
                         catch (error){
                             console.error(`Ha ocurrido un error: ${error}`);
-                        }*/
+                        }
                     }
                 });
             }
@@ -583,7 +583,6 @@ document.addEventListener("DOMContentLoaded",()=>{
             }
             if(document.querySelector("#deactivate")){
                 const deactbt = document.querySelector("#deactivate");
-                //deactbt.style.display = "none";
                 if(disp) {
                     deactbt.style.display = "block";
                     deactbt.addEventListener("click", async ()=> {
@@ -745,7 +744,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 async function get_ingredients(){
     const url = `../${uris.getproducts}`;
-    //try {
+    try {
         const ings = await fetch(url);
         if(!ings.ok){
             throw new Error(`Error: ${ings.status} ${ings.statusText}`);
@@ -753,10 +752,10 @@ async function get_ingredients(){
         const res = await ings.json();
         document.querySelector("#ingredients").innerHTML = `${res.message}`;
         gettotal();
-    /*}
+    }
     catch (err) {
         console.error(`Error: ${err}`);
-    }*/
+    }
 }
 
 async function gettotal() { 

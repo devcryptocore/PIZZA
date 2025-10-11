@@ -7,7 +7,7 @@
         http_response_code(500);
         echo json_encode([
             "status"  => "error",
-            "title"   => "Error PHP",
+            "title"   => "Error interno",
             "message" => "$errstr en $errfile:$errline"
         ]);
         exit;

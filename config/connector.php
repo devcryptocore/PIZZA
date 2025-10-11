@@ -12,6 +12,7 @@
     $dbpass = $_ENV['DB_PASS'];
     $dbname = $_ENV['DB_NAME'];
     $clav = base64_encode($_ENV['WORD']);
+    $exclav = base64_encode($_ENV['EXWORD']);
 
     $con = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
     $con->set_charset("utf8mb4");
@@ -25,5 +26,6 @@
     $version = time();
     include('../php/logger.php');
     $default_image = "../res/icons/image.svg";
+
 
 ?>

@@ -5,6 +5,21 @@
     include('optimizador.php');
     include('../includes/verificator.php');
 
+    function boxcode() {
+        global $con,$sesion,$sucursal;
+        $bcon = $con -> prepare("SELECT codcaja FROM caja WHERE usuario = ? AND sucursal = ? ORDER BY codcaja DESC LIMIT 1");
+        $bcon -> bind_param('ss',$sesion,$sucursal);
+        $bcon -> execute();
+        $Rbcon = $bcon -> get_result();
+        if($Rbcon -> num_rows > 0) {
+            $nc = $Rbcon -> fetch_assoc()['codcaja'];
+            return $nc;
+        }
+        else {
+            return 1;
+        }
+    }
+
     if(isset($_GET['menu_products']) && $_GET['menu_products'] === $clav){
         $consprod = "SELECT 
             a.id,
@@ -112,7 +127,7 @@
     }
 
     if(isset($_GET['get_sys_data'])){
-        $idcaja = 1;
+        $idcaja = boxcode();
         $usu = $con -> prepare("SELECT u.documento,o.nombre,o.apellido
         FROM usuarios u INNER JOIN operadores o ON o.documento = u.documento
         WHERE u.usuario = ?");

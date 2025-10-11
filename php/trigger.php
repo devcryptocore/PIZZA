@@ -34,6 +34,32 @@
                     SET v_porciones = 0;
                 END IF;
 
+                UPDATE caja
+                SET ventas = COALESCE(ventas, 0) + NEW.total,
+                descuentos = COALESCE(descuentos, 0) + NEW.descuento,
+                ingresos = COALESCE(ingresos, 0) + NEW.total
+                WHERE codcaja = NEW.idcaja;
+
+                IF NEW.metodopago = 'efectivo' THEN 
+                    UPDATE entidades SET efectivo = COALESCE(efectivo, 0) + NEW.total;
+                ELSEIF NEW.metodopago = 'nequi' THEN 
+                    UPDATE entidades SET nequi = COALESCE(nequi, 0) + NEW.total;
+                ELSEIF NEW.metodopago = 'daviplata' THEN 
+                    UPDATE entidades SET daviplata = COALESCE(daviplata, 0) + NEW.total;
+                ELSEIF NEW.metodopago = 'bancolombia' THEN 
+                    UPDATE entidades SET bancolombia = COALESCE(bancolombia, 0) + NEW.total;
+                ELSEIF NEW.metodopago = 'davivienda' THEN 
+                    UPDATE entidades SET davivienda = COALESCE(davivienda, 0) + NEW.total;
+                ELSEIF NEW.metodopago = 'consignacion' THEN 
+                    UPDATE entidades SET consignacion = COALESCE(consignacion, 0) + NEW.total;
+                ELSEIF NEW.metodopago = 'otros' THEN 
+                    UPDATE entidades SET otros = COALESCE(otros, 0) + NEW.total;
+                END IF;
+
+                INSERT INTO movimientos
+                (codcaja,tipo,concepto,entidad,valor,sucursal)
+                VALUES (NEW.idcaja,'venta',CONCAT(NEW.producto,' vendido por ',NEW.usuario),NEW.metodopago,NEW.total,NEW.sucursal);
+
                 UPDATE active_products
                 SET unidades = v_unidades,
                     porciones = v_porciones
@@ -86,6 +112,32 @@
                         SET v_unidades = v_unidades + diff;
                     END IF;
 
+                    UPDATE caja
+                    SET ventas = COALESCE(ventas, 0) - OLD.total,
+                    descuentos = COALESCE(descuentos, 0) - OLD.descuento,
+                    ingresos = COALESCE(ingresos, 0) - OLD.total
+                    WHERE codcaja = OLD.idcaja;
+
+                    IF OLD.metodopago = 'efectivo' THEN 
+                        UPDATE entidades SET efectivo = COALESCE(efectivo, 0) - OLD.total;
+                    ELSEIF OLD.metodopago = 'nequi' THEN 
+                        UPDATE entidades SET nequi = COALESCE(nequi, 0) - OLD.total;
+                    ELSEIF OLD.metodopago = 'daviplata' THEN 
+                        UPDATE entidades SET daviplata = COALESCE(daviplata, 0) - OLD.total;
+                    ELSEIF OLD.metodopago = 'bancolombia' THEN 
+                        UPDATE entidades SET bancolombia = COALESCE(bancolombia, 0) - OLD.total;
+                    ELSEIF OLD.metodopago = 'davivienda' THEN 
+                        UPDATE entidades SET davivienda = COALESCE(davivienda, 0) - OLD.total;
+                    ELSEIF OLD.metodopago = 'consignacion' THEN 
+                        UPDATE entidades SET consignacion = COALESCE(consignacion, 0) - OLD.total;
+                    ELSEIF OLD.metodopago = 'otros' THEN 
+                        UPDATE entidades SET otros = COALESCE(otros, 0) - OLD.total;
+                    END IF;
+
+                    INSERT INTO movimientos
+                    (codcaja,tipo,concepto,entidad,valor,sucursal)
+                    VALUES (OLD.idcaja,'devolucion',CONCAT('Devolución de ',OLD.producto,' por ',OLD.usuario),OLD.metodopago,OLD.total,OLD.sucursal);
+
                     UPDATE active_products
                     SET unidades = v_unidades,
                         porciones = v_porciones
@@ -130,6 +182,32 @@
                     SET v_unidades = v_unidades + OLD.cantidad;
                     SET v_porciones = 0;
                 END IF;
+
+                UPDATE caja
+                SET ventas = COALESCE(ventas, 0) - OLD.total,
+                    descuentos = COALESCE(descuentos, 0) - OLD.descuento,
+                    ingresos = COALESCE(ingresos, 0) - OLD.total
+                WHERE codcaja = OLD.idcaja;
+
+                IF OLD.metodopago = 'efectivo' THEN 
+                    UPDATE entidades SET efectivo = COALESCE(efectivo, 0) - OLD.total;
+                ELSEIF OLD.metodopago = 'nequi' THEN 
+                    UPDATE entidades SET nequi = COALESCE(nequi, 0) - OLD.total;
+                ELSEIF OLD.metodopago = 'daviplata' THEN 
+                    UPDATE entidades SET daviplata = COALESCE(daviplata, 0) - OLD.total;
+                ELSEIF OLD.metodopago = 'bancolombia' THEN 
+                    UPDATE entidades SET bancolombia = COALESCE(bancolombia, 0) - OLD.total;
+                ELSEIF OLD.metodopago = 'davivienda' THEN 
+                    UPDATE entidades SET davivienda = COALESCE(davivienda, 0) - OLD.total;
+                ELSEIF OLD.metodopago = 'consignacion' THEN 
+                    UPDATE entidades SET consignacion = COALESCE(consignacion, 0) - OLD.total;
+                ELSEIF OLD.metodopago = 'otros' THEN 
+                    UPDATE entidades SET otros = COALESCE(otros, 0) - OLD.total;
+                END IF;
+
+                INSERT INTO movimientos
+                (codcaja,tipo,concepto,entidad,valor,sucursal)
+                VALUES (OLD.idcaja,'devolucion',CONCAT('Devolución de ',OLD.producto,' por ',OLD.usuario),OLD.metodopago,OLD.total,OLD.sucursal);
 
                 UPDATE active_products
                 SET unidades = v_unidades,

@@ -59,6 +59,22 @@ body {
     padding: 5px;
     gap: 25px;
 }
+.search-bar-date {
+    width: 120px;
+    height: 40px;
+    border: 1px solid var(--dark-grey);
+    border-radius: 6px;
+    background: #00000000;
+    outline: none;
+    color: var(--dark-grey);
+}
+.addBtn {
+    width: 35px;
+    aspect-ratio: 1 / 1;
+    border: 0;
+    background: url(../res/icons/add-green.svg) center / cover no-repeat;
+    cursor: pointer;
+}
 .oneInput {
     display: flex;
     align-items: center;
@@ -76,6 +92,17 @@ body {
     background-size: 20px;
     background-repeat: no-repeat;
     padding: 0 0 0 40px;
+}
+.send-button {
+    width: 290px;
+    height: 40px;
+    border: 1px solid var(--dark-grey);
+    border-radius: 6px;
+    color: var(--dark-grey);
+    background: var(--amarillo) url(../res/icons/send.svg) 95% / 25px no-repeat;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 400;
 }
 .inputContainer input,
 .inputContainer select,
@@ -206,4 +233,20 @@ input[type='number']::-webkit-inner-spin-button {
     font-size: 12px;
     background: #fff;
     padding: 5px 5px;
+}
+.dtcon {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    font-size: 11px;
+    padding: 10px 0px;
+}
+.dtcon div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted var(--dark-grey);
 }

@@ -211,6 +211,9 @@
     border-radius: 6px;
     cursor: pointer;
 }
+.reciever_focused {
+    background: #00ff8b url(../res/icons/cbscanner.svg) center / 25px no-repeat !important;
+}
 #barcode_reciever {
     position: absolute;
     background: transparent;
@@ -230,7 +233,7 @@
 }
 .sbutton {
     width: 48%;
-    height: 50px;
+    height: 40px;
     cursor: pointer;
     border-radius: 6px;
     border: 1px solid var(--dark-grey);
@@ -256,14 +259,27 @@
 }
 .devcontainer {
     width: 100%;
-    height: 65px;
+    gap: 10px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 10px 40px;
-    background: url(../res/icons/money-dollar.svg) 10px / 25px no-repeat;
+    padding: 10px 10px;
+    background: url(../res/icons/dollar.svg) 10px 10px / 25px no-repeat;
 }
 #devuelta {
-    margin: 0;
+    margin: 0px auto 0px 35px;
+}
+#metodoPago {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    background: #ffffffff url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;
+    border: 1px solid var(--dark-grey);
+    font-size: 15px;
+    padding: 0px 35px;
+    color: var(--dark-grey);
+    cursor: pointer;
+    outline: none;
 }
 .sell-data {
     display: flex;
@@ -290,6 +306,9 @@
     object-fit: contain;
 }
 @media screen and (max-width: 800px) {
+    .parent {
+        height: unset;
+    }
     .div1 {
         padding: 0 10px 0 0;
     }

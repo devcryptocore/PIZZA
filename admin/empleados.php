@@ -1,17 +1,29 @@
 <?php
     include('../includes/header.php');
 ?>
-    <script type="module" src="../js/employee.js"></script>
-</head>
+<link rel="stylesheet" href="../css/products.css?<?=$version;?>">
+<link rel="stylesheet" href="../css/ingredients.css?<?=$version;?>">
+<link rel="stylesheet" href="../css/employee.css?<?=$version;?>">
+<script type="module" src="../js/employee.js"></script>
 <body>
-    <form id="new_employee">
-        <input type="text" name="nombre" id="nombre">
-        <input type="text" name="apellido" id="apellido">
-        <input type="text" name="documento" id="documento">
-        <input type="tel" name="telefono" id="telefono">
-        <input type="text" name="direccion" id="direccion">
-        <input type="text" name="email" id="email">
-        <input type="submit" value="Registrar">
-    </form>
+    <div class="headbar">
+        <h1>Empleados</h1>
+        <button id="new_employee" class="addBtn"></button>
+    </div>
+    <div class="myIngredients">
+        <table class="table-container ingredients_table">
+            <thead>
+                <th style="border-radius: 6px 0 0 0;">No.</th>
+                <th>Nombre</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>E-Mail</th>
+                <th>Registrado</th>
+                <th style="border-radius: 0 6px 0 0;"></th>
+            </thead>
+            <tbody id="ingredients"></tbody>
+        </table>
+    </div>
 </body>
 </html>

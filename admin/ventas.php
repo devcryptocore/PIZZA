@@ -58,6 +58,15 @@
                 </div>
                 <div class="devcontainer">
                     <h2 id="devuelta">Cambio: $0</h2>
+                    <select name="metodopago" id="metodoPago">
+                        <option value="efectivo" selected>Efectivo</option>
+                        <option value="nequi">Nequi</option>
+                        <option value="daviplata">Daviplata</option>
+                        <option value="bancolombia">Bancolombia</option>
+                        <option value="davivienda">Davivienda</option>
+                        <option value="consignacion">Consignación</option>
+                        <option value="otro">Otro</option>
+                    </select>
                 </div>
             </div>
             <div class="sell_actions">

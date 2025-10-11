@@ -27,6 +27,9 @@
                 <button class="source-option" data-source="ingredientes">
                     <img src="../res/icons/ingredient.svg">
                 </button>
+                <button class="source-option" data-source="obligaciones">
+                    <img src="../res/icons/debt.svg">
+                </button>
                 <button class="source-option" data-source="reportes">
                     <img src="../res/icons/report.svg">
                 </button>

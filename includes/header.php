@@ -12,6 +12,8 @@
     <script src="../js/sweetAlert.js"></script>
     <script src="../res/izi/js/iziToast.js"></script>
     <script src="../js/jquery.min.js"></script>
+    <script src="../js/exportXLS.js"></script>
     <script src="../js/script.js?v=<?=$version;?>"></script>
     <script type="module" src="../js/validator.js?v=<?=$version;?>"></script>
+    <script src="../js/charts.js"></script>
 </head>
