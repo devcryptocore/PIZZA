@@ -16,6 +16,162 @@ document.addEventListener("DOMContentLoaded",()=>{
         })
     }(jQuery));
 
+    if(document.querySelector("#categories")){
+        const categs = document.querySelector("#categories");
+        categs.addEventListener('click', async () => {
+            const categs = `../${uris.get_categories}&table`;
+            try {
+                const cats = await fetch(categs);
+                if(!cats.ok){
+                    throw new Error(`Error: ${cats.status} / ${cats.statusText}`);
+                }
+                const resp = await cats.json();
+                Swal.fire({
+                    title: "Categorías",
+                    html: `
+                        <div class="offerbtn">
+                            <button id="addbutton" class="stkbutton add">Nueva</button>
+                        </div>
+                        <table class="table-container ingredients_table" style="width:100%;margin-top:50px;">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:11px;">Categoría</th>
+                                    <th style="font-size:11px;">Estado</th>
+                                    <th style="font-size:11px;">Imagen</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>${resp.message}</tbody>
+                        </table>
+                    `,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+                document.querySelector("#addbutton").addEventListener('click', () => {
+                    Swal.fire({
+                        title: "Nueva categoría",
+                        html: `
+                            <div class="form-container">
+                                <form id="newCategory" enctype="multipart/form-data" novalidate>
+                                    <div class="oneInput">
+                                        <div class="inputContainer" style="background-image:url(../res/icons/barcode.svg)">
+                                            <input type="text" name="categoria" class="inputField" id="categoria" required autocomplete="off">
+                                            <label for="categoria">Categoría</label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <div class="inputContainer con-image" style="justify-content:center;">
+                                            <input type="file" name="foto_category" id="foto_category" class="form-image" required>
+                                            <label for="foto_category" class="fore-photo"></label>
+                                        </div>
+                                    </div>
+                                    <div class="oneInput">
+                                        <input type="submit" value="Guardar" class="send-button">
+                                    </div>
+                                </form>
+                            </div>
+                        `,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        showCloseButton: true
+                    });
+                    if(document.querySelector(".form-image")){
+                        const pimage = document.querySelectorAll(".form-image");
+                        pimage.forEach(f => {
+                            f.addEventListener("change",()=>{
+                                let inpid = f.id;
+                                let inpimg = f.files[0];
+                                if(inpimg && inpimg.type.startsWith("image/")){
+                                    let bkg = URL.createObjectURL(inpimg);
+                                    document.querySelectorAll(".fore-photo").forEach(l =>  {
+                                        let lbl = l.getAttribute("for");
+                                        if(lbl == inpid){
+                                            l.style.background = `url(${bkg}) center / cover no-repeat`;
+                                        }
+                                    });
+                                }
+                                else {
+                                    iziToast.error({
+                                        title: "Seleccione un archivo válido!",
+                                        message: `Debe elegir un archivo en formato .jpg, .png o .webp`,
+                                        position: "topCenter"
+                                    });
+                                }
+                            });
+                        });
+                    }
+                    activelabel();
+                    if(document.querySelector("#newCategory")){
+                        const categoryForm = document.querySelector("#newCategory");
+                        categoryForm.addEventListener('submit',async (e) => {
+                            e.preventDefault();
+                            const url = `../${uris.set_category}`;
+                            const form = e.target;
+                            const data = new FormData(form);
+                            try {
+                                const sendata = await fetch(url,{
+                                    method: "POST",
+                                    body: data
+                                });
+                                let response = await sendata.json();
+                                Swal.fire({
+                                    title: response.title,
+                                    text: response.message,
+                                    icon: response.status
+                                }).then(()=>{
+                                    if(response.status == "error"){
+                                        location.reload();
+                                    }
+                                    get_ingredients();
+                                });
+                            }
+                            catch (error){
+                                console.error(`Ha ocurrido un error: ${error}`);
+                            }
+                        });
+                    }
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
+    window.deleteCat = async (id) => {
+        Swal.fire({
+            title: "Eliminar categoría",
+            text: "Desea eliminar esta categoría?",
+            icon: "question",
+            showConfirmButton: true,
+            confirmButtonText: "Sí, eliminar",
+            showCancelButton: true,
+            cancelButtonText: "Cancelar"
+        }).then(async (respuesta) => {
+            if(respuesta.isConfirmed) {
+                const uri = `../${uris.del_category}`;
+                const ida = new FormData();
+                try {
+                    ida.append('id',id);
+                    const sdat = await fetch(uri,{
+                        method: "POST",
+                        body: ida
+                    });
+                    const res = await sdat.json();
+                    Swal.fire({
+                        title: res.title,
+                        text: res.message,
+                        icon: res.status
+                    });
+                }
+                catch (err) {
+                    console.error(err);
+                }
+            }
+        });        
+    }
+
     if(document.querySelector("#add_ingredient")){
         const addingredient =  document.querySelector("#add_ingredient");
         addingredient.addEventListener("click",()=>{
@@ -63,14 +219,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                             </div>
                             <div class="oneInput">
                                 <div class="inputContainer" style="background-image:url(../res/icons/category.svg)">
-                                    <select name="categoria" id="category" class="inputField" required autocomplete="off">
-                                        <option value="pizza" selected>Pizzas</option>
-                                        <option value="hamburguesa">Hamburguesas</option>
-                                        <option value="perrocaliente">Perros calientes</option>
-                                        <option value="salchipapa">Salchipapas</option>
-                                        <option value="jugo">Jugos</option>
-                                        <option value="refresco">Refrescos</option>
-                                    </select>
+                                    <select name="categoria" id="category" class="inputField" required autocomplete="off"></select>
                                     <label for="category">Categoría</label>
                                 </div>
                             </div>
@@ -126,6 +275,15 @@ document.addEventListener("DOMContentLoaded",()=>{
                 showConfirmButton: false,
                 showCloseButton: true
             });
+            (async () => {
+                const ucat = `../${uris.get_categories}`;
+                const cat = await fetch(ucat);
+                if(!cat.ok){
+                    throw new Error(`${cat.status} / ${cat.statusText}`);
+                }
+                const categ = await cat.json();
+                document.querySelector("#category").innerHTML = categ.message;
+            })();
             if(document.querySelector(".form-image")){
                 const pimage = document.querySelectorAll(".form-image");
                 pimage.forEach(f => {
@@ -386,13 +544,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                                     </div>
                                     <div class="oneInput">
                                         <div class="inputContainer" style="background-image:url(../res/icons/category.svg)">
-                                            <select name="categoria" id="category" class="inputField" required autocomplete="off">
-                                                <option class="cat_opt" value="pizza">Pizzas</option>
-                                                <option class="cat_opt" value="hamburguesa">Hamburguesas</option>
-                                                <option class="cat_opt" value="perrocaliente">Perros calientes</option>
-                                                <option class="cat_opt" value="salchipapa">Salchipapas</option>
-                                                <option class="cat_opt" value="jugo">Jugos</option>
-                                            </select>
+                                            <select name="categoria" id="category" class="inputField" required autocomplete="off"></select>
                                             <label for="category">Categoría</label>
                                         </div>
                                     </div>
@@ -428,6 +580,15 @@ document.addEventListener("DOMContentLoaded",()=>{
                         showConfirmButton: false,
                         showCloseButton: true
                     });
+                    (async () => {
+                        const ucat = `../${uris.get_categories}`;
+                        const cat = await fetch(ucat);
+                        if(!cat.ok){
+                            throw new Error(`${cat.status} / ${cat.statusText}`);
+                        }
+                        const categ = await cat.json();
+                        document.querySelector("#category").innerHTML = categ.message;
+                    })();
                     if(document.querySelector(".cat_opt")){
                         const catops = document.querySelectorAll(".cat_opt");
                         catops.forEach(c => {

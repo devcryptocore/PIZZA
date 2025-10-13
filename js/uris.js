@@ -55,3 +55,7 @@ export const set_mod_employee = "php/employee.php?set_mod_employee=bWF4cGl6emFsY
 export const del_employee = "php/employee.php?del_employee=bWF4cGl6emFsYXVuaW9u";
 export const getroulette = "utils/page.php?get_roulette=cGFnZW1heHBpenph";
 export const set_roulette = "php/admin.php?set_roulette=bWF4cGl6emFsYXVuaW9u";
+export const get_categories = "php/categories.php?get_categories=bWF4cGl6emFsYXVuaW9u";
+export const set_category = "php/categories.php?set_category=bWF4cGl6emFsYXVuaW9u";
+export const del_category = "php/categories.php?del_category=bWF4cGl6emFsYXVuaW9u";
+export const set_principal = "php/categories.php?set_principal=bWF4cGl6emFsYXVuaW9u";

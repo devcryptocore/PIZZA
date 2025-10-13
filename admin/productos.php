@@ -11,6 +11,7 @@
         <div class="search-container">
             <input type="text" id="FiltrarContenido" placeholder="Buscar producto" class="search-bar">
         </div>
+        <button class="stkbutton add" id="categories">Categorías</button>
         <button id="get_barcodes"></button>
         <button id="add_ingredient"></button>
     </div>

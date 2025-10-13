@@ -9,9 +9,11 @@
 <body>
     <div class="headbar">
         <h1>Administración</h1>
+        <button id="set_roulette" class="stkbutton movement">Ruleta</button>
+        <button id="set_principal" class="stkbutton transfer">Principal</button>
     </div>
     <div class="myIngredients">
-        <button id="set_roulette" class="stkbutton movement">Ruleta</button>
+    
     </div>
 </body>
 </html>

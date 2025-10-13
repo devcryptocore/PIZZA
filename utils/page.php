@@ -24,7 +24,8 @@
                     "premio6" => $rl['premio6'],
                     "premiada" => $rl['premiada'],
                     "premio" => $rl['premio'],
-                    "unico" => $rl['unico']
+                    "intentos" => $rl['intentos'],
+                    "uniqid" => $rl['unico']
                 ]
             ]);
         }
@@ -33,6 +34,413 @@
                 "status" => "empty"
             ]);
         }
+    }
+
+    if(isset($_GET['get_pizzas']) && $_GET['get_pizzas'] === $exclav) {
+        $dummie = "../res/images/pizza_dummie.png";
+        try {
+            $sql = "SELECT p.*,ap.porciones,ap.precio AS precioporcion FROM productos p INNER JOIN
+             active_products ap ON ap.id_producto = p.id WHERE p.categoria = (SELECT categoria FROM categoria_principal) AND p.estado = 1";
+            $result = $con->query($sql);
+            $pzz = [];
+            $description = [];
+            while ($row = $result->fetch_assoc()) {
+                $portadax = $row['portada'] ?? $dummie;
+                $portada = str_replace("../","",$portadax);
+                $pzz[] = $portada;
+                $description[$row['producto']] = [
+                    'id' => $row['id'],
+                    'talla' => $row['talla'],
+                    'porciones' => $row['porciones'],
+                    'precio' => $row['precio'],
+                    'precioporcion' => $row['precioporcion'],
+                    'descripcion' => $row['descripcion']
+                ];
+            }
+            echo json_encode([
+                'status' => 'success',
+                'pzz' => $pzz,
+                'description' => $description
+            ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    if(isset($_GET['get_categories']) && $_GET['get_categories'] === $exclav) {
+        $estado = 1;
+        $cons = $con -> prepare("SELECT * FROM categorias WHERE estado = ?");
+        $cons -> bind_param('i',$estado);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0) {
+            $cats = "";
+            while($c = $Rcons -> fetch_assoc()){
+                $cats .= '
+                    <div class="cat_card">
+                        <img src="'.str_replace("../","",$c['imagen']).'" class="catimage" alt="category image"/>
+                        <p>'.$c['categoria'].'</p>
+                    </div>
+                ';
+            }
+        }
+        else {
+            $cats = "No se han registrado categorías";
+        }
+        echo json_encode([
+            "status" => "success",
+            "title" => "Ok",
+            "message" => $cats
+        ]);
+    }
+
+    if(isset($_GET['add_to_cart']) && $_GET['add_to_cart'] === $exclav) {
+        $idsesion = $_POST['idsesion'];
+        $idproducto = $_POST['idproducto'];
+        $cantidad = $_POST['cantidad'] ?? 1;
+        $estado = 1;
+        $cprod = $con -> prepare("SELECT p.*,ap.precio AS precioporcion FROM productos p
+        INNER JOIN active_products ap ON ap.id_producto = p.id WHERE p.id = ? AND p.estado = ?");
+        $cprod -> bind_param('ii',$idproducto,$estado);
+        $cprod -> execute();
+        $Rcprod = $cprod -> get_result();
+        if($Rcprod -> num_rows > 0) {
+            $prod = $Rcprod -> fetch_assoc();
+            $talla = $prod['talla'];
+            $nomprod = $prod['producto'];
+            $precio = $talla == 'L' ? $prod['precioporcion'] : $prod['precio'];
+            $subtotal = $precio * $cantidad;
+            $cons = $con -> prepare("SELECT * FROM shopping_cart WHERE idsesion = ? AND idproducto = ?");
+            $cons -> bind_param('si',$idsesion,$idproducto);
+            $cons -> execute();
+            $Rcons = $cons -> get_result();
+            if($Rcons -> num_rows > 0) {
+                $cart = $Rcons -> fetch_assoc();
+                $can = $cart['cantidad'];
+                $ncan = $can + $cantidad;
+                $subtotal = $precio * $ncan;
+                $upd = $con -> prepare("UPDATE shopping_cart SET cantidad = ?, subtotal = ?
+                WHERE idsesion = ? AND idproducto = ?");
+                $upd -> bind_param('iisi',$ncan,$subtotal,$idsesion,$idproducto);
+                if($upd -> execute()){
+                    $countprod = $con -> query("SELECT * FROM shopping_cart WHERE idsesion = '$idsesion'");
+                    $tot = $con -> prepare("SELECT COALESCE(SUM(subtotal),0) AS total FROM shopping_cart WHERE idsesion = ?");
+                    $tot -> bind_param('s',$idsesion);
+                    $tot -> execute();
+                    $Rtot = $tot -> get_result();
+                    $total = $Rtot -> fetch_assoc()['total'];
+                    echo json_encode([
+                        "status" => "success",
+                        "title" => "Producto agregado correctamente",
+                        "countprod" => $countprod -> num_rows
+                    ]);
+                }
+                else {
+                    echo json_encode([
+                        "status" => "error",
+                        "title" => "Error!",
+                        "message" => "No se hapodido agregar el producto seleccionado"
+                    ]);
+                }
+                exit;
+            }
+            else {
+                $ins = $con -> prepare("INSERT INTO shopping_cart (idsesion,idproducto,producto,cantidad,precio,subtotal) VALUES (?,?,?,?,?,?)");
+                $ins -> bind_param('sisiii',$idsesion,$idproducto,$nomprod,$cantidad,$precio,$subtotal);
+                if($ins -> execute()) {
+                    $countprod = $con -> query("SELECT * FROM shopping_cart WHERE idsesion = '$idsesion'");
+                    $tot = $con -> prepare("SELECT COALESCE(SUM(subtotal),0) AS total FROM shopping_cart WHERE idsesion = ?");
+                    $tot -> bind_param('s',$idsesion);
+                    $tot -> execute();
+                    $Rtot = $tot -> get_result();
+                    $total = $Rtot -> fetch_assoc()['total'];
+                    echo json_encode([
+                        "status" => "success",
+                        "title" => "Producto agregado correctamente",
+                        "prodcount" => $countprod -> num_rows
+                    ]);
+                }
+                else {
+                    echo json_encode([
+                        "status" => "error",
+                        "title" => "Error!",
+                        "message" => "No se hapodido agregar el producto seleccionado"
+                    ]);
+                }
+            }
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "No disponible!",
+                "message" => "Este producto no está disponible"
+            ]);
+        }
+    }
+
+    if(isset($_GET['get_my_cart']) && $_GET['get_my_cart'] === $exclav) {
+        $total = 0;
+        $idsesion = $_POST['idsesion'];
+        $cons = $con -> prepare("SELECT * FROM shopping_cart WHERE idsesion = ?");
+        $cons -> bind_param('s',$idsesion);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0) {
+            $cart_prod = "";
+            $count = 0;
+            while($cart = $Rcons -> fetch_assoc()) {
+                $total += $cart['subtotal'];
+                $count += $cart['cantidad'];
+                $cart_prod .= '
+                    <tr>
+                        <td>'.$cart['producto'].'</td>
+                        <td>'.$cart['cantidad'].'</td>
+                        <td>$'.miles($cart['precio']).'</td>
+                        <td>$'.miles($cart['subtotal']).'</td>
+                        <td class="delprod" onclick="removeFromCart(\''.$cart['id'].'\')"></td>
+                    </tr>
+                ';
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "Ok",
+                "message" => [
+                    "products" => $cart_prod,
+                    "total" => miles($total)
+                ],
+                "count" => $count
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "empty",
+                "title" => "Ok",
+                "message" => "
+                    <div class='vacont'>
+                        <img src='res/images/pizzawalk.webp' alt='pizza walk' class='pizzawalk'>
+                        <h3>Su carrito está vacío</h3>
+                    </div>
+                ",
+                "count" => 0
+            ]);
+        }
+    }
+
+    if(isset($_GET['del_from_cart']) && $_GET['del_from_cart'] === $exclav) {
+        $id = $_POST['id'];
+        $del = $con -> prepare("DELETE FROM shopping_cart WHERE id = ?");
+        $del -> bind_param('i',$id);
+        if($del -> execute()){
+            echo json_encode([
+                "status" => "success",
+                "title" => "Correcto!",
+                "message" => "Se ha quitado el producto del carrito"
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "No se ha podido quitar el producto"
+            ]);
+        }
+    }
+
+    if(isset($_GET['clean_cart']) && $_GET['clean_cart'] === $exclav) {
+        $id = $_POST['idsesion'];
+        $del = $con -> prepare("DELETE FROM shopping_cart WHERE idsesion = ?");
+        $del -> bind_param('s',$id);
+        if($del -> execute()){
+            echo json_encode([
+                "status" => "success",
+                "title" => "Correcto!",
+                "message" => "Se ha limpiado el carrito"
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "No se ha podido limpiar el producto"
+            ]);
+        }
+    }
+
+    if(isset($_GET['get_product_info']) && $_GET['get_product_info'] === $exclav) {
+        $idprod = $_POST['idprod'];
+        $cons = $con -> prepare("SELECT p.*,ap.porciones,ap.precio AS prepor FROM productos p INNER JOIN
+             active_products ap ON ap.id_producto = p.id WHERE p.id = ?");
+        $cons -> bind_param('i',$idprod);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0){
+            $default_img = "../res/icons/image.svg";
+            $prod = $Rcons -> fetch_assoc();
+            $precio = $prod['talla'] == 'L' ? miles($prod['prepor']) . '<span class="smlt"> * porción</span>' : miles($prod['precio']);
+            echo json_encode([
+                    "status" => "success",
+                    "title" => "ok",
+                    "message" => [
+                        "producto" => $prod['producto'],
+                        "precio" => $precio,
+                        "categoria" => $prod['categoria'],
+                        "descripcion" => $prod['descripcion'],
+                        "talla" => $prod['talla'],
+                        "oferta" => $prod['oferta'],
+                        "portada" => str_replace("../","",$prod['portada'] ?? $default_img),
+                        "foto_1" => str_replace("../","",$prod['foto_1'] ?? $default_img),
+                        "foto_2" => str_replace("../","",$prod['foto_2'] ?? $default_img),
+                        "foto_3" => str_replace("../","",$prod['foto_3'] ?? $default_img)
+                    ]
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "No encontrado",
+                "message" => "No se ha encontrado información de este producto"
+            ]);
+        }
+    }
+
+    if(isset($_GET['get_some_products']) && $_GET['get_some_products'] === $exclav) {
+        $estado = 1;
+        $cons = $con -> prepare("SELECT p.*,ap.porciones,ap.precio AS prepor FROM productos p INNER JOIN
+             active_products ap ON ap.id_producto = p.id WHERE p.estado = ? ORDER BY p.id DESC LIMIT 8");
+        $cons -> bind_param('i',$estado);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0) {
+            $prods = "";
+            while($pr = $Rcons -> fetch_assoc()){
+                $precio = $pr['talla'] == 'L' ? miles($pr['prepor']) . '<span class="smlt"> * porción</span>' : miles($pr['precio']);
+                $portada = $pr['portada'] ?? '';
+                $prods .= '
+                    <div class="prod-card">
+                        <div class="up-to-card">
+                            <h3 class="card-title" style="white-space: nowrap; display: inline-block; font-size: 11.3798px;">'.$pr['producto'].'</h3>
+                        </div>
+                        <div onclick="this_product(\''.$pr['id'].'\')" class="prod-image" style="background-image:url('.str_replace("../","",$portada).')"></div>
+                        <div class="price-cont">
+                            <span>$'.$precio.'</span>
+                        </div>
+                        <div class="prod-form">
+                            <div id="sell_this">
+                                <input type="hidden" name="id" value="10">
+                                <div class="counter-cont">
+                                    <span class="counter-bt minus">-</span>
+                                    <input type="number" name="cantidad" value="1">
+                                    <span class="counter-bt more">+</span>
+                                </div>
+                                <input type="submit" value="Agregar" class="send-button" onclick="addToCart(\''.$pr['id'].'\',1)">
+                            </div>
+                        </div>
+                    </div>
+                ';
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => $prods
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => "<h3>Sin productos para mostrar</h3>"
+            ]);
+        }
+    }
+
+    if(isset($_GET['set_pedido']) && $_GET['set_pedido'] === $exclav) {
+        header('Content-Type: application/json; charset=utf-8');
+        $est = 1;
+        $idpedido = uniqid();
+        $idsesion = $_POST['idsesion'];
+        $nombre = htmlspecialchars($_POST['nombre']);
+        $telefono = sanear_string($_POST['telefono']);
+        $direccion = htmlspecialchars($_POST['direccion']);
+        $coordenadas = $_POST['coordenadas'] ?? '';
+        $comentario = htmlspecialchars($_POST['comentario']);
+        $estado = "recibido";
+        $fechahora = date('d/m/Y H:i:s');
+
+        $cart = $con -> prepare("SELECT sc.*, p.precio AS prodprecio, p.estado,p.talla FROM shopping_cart sc INNER JOIN productos p
+        ON p.id = sc.idproducto WHERE sc.idsesion = ?");
+        $cart -> bind_param('s',$idsesion);
+        $cart -> execute();
+        $Rcart = $cart -> get_result();
+        if($Rcart -> num_rows > 0) {
+            $total = 0;
+            $productos = "";
+            $producto = [];
+            while($car = $Rcart -> fetch_assoc()){
+                $idproducto = $car['idproducto'];
+                $precio = $car['precio'];
+                $cantidad = $car['cantidad'];
+                $subtotal = $car['subtotal'];
+
+                $producto[] = [
+                    "idproducto" => $idproducto,
+                    "precio" => $precio,
+                    "cantidad" => $cantidad,
+                    "subtotal" => $subtotal
+                ];
+                $productos .= "%0A-%20" . urlencode($cantidad) . "%20" . urlencode($car['producto']) . "%20. . . . . %20$" . urlencode(miles($subtotal));
+                $total += $subtotal;
+            }
+            $producto = json_encode($producto, JSON_UNESCAPED_UNICODE);
+            $con -> begin_transaction();
+            try {
+                $insr = $con -> prepare("INSERT INTO pedidos (
+                idpedido,
+                idsesion,
+                pedido,
+                nombre,
+                telefono,
+                direccion,
+                coordenadas,
+                comentario
+                ) VALUES (?,?,?,?,?,?,?,?)");
+                $insr -> bind_param('ssssssss',$idpedido,$idsesion,$producto,$nombre,$telefono,$direccion,$coordenadas,$comentario);
+                $insr -> execute();
+                $cleancart = $con -> prepare("DELETE FROM shopping_cart WHERE idsesion = ?");
+                $cleancart -> bind_param('s',$idsesion);
+                $cleancart -> execute();
+                $con -> commit();
+                if (ob_get_length()) ob_end_clean();
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Correcto!",
+                    "message" => [
+                        "text" => "Su pedido se ha registrado con éxito, será redirigido a Whatsapp",
+                        "nombre" => urlencode($nombre),
+                        "telefono" => urlencode($telefono),
+                        "direccion" => urlencode($direccion),
+                        "pedido" => $productos,
+                        "total" => miles($total),
+                        "fecha" => $fechahora,
+                        "comentario" => urlencode($comentario)
+                    ]
+                ],JSON_UNESCAPED_UNICODE);
+            }
+            catch (Exception $e) {
+                $con -> rollback();
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => [
+                        "text" => "No se ha podido procesar su pedido " . $e -> getMessage()
+                    ]
+                ]);
+            }
+            
+        }
+
     }
 
 ?>

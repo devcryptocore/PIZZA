@@ -12,7 +12,7 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 8px solid #333;
+    border: 8px solid #f9d000;
     position: relative;
     transform: rotate(0deg);
     transition: transform 4s cubic-bezier(.17,.67,.83,.67);
@@ -54,16 +54,17 @@
 .sector6 { transform: rotate(330deg) translate(-50%, -100%); }
 .flecha {
     position: absolute;
-    top: 2px;
-    width: 0;
-    height: 0; 
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-bottom: 30px solid #333;
+    top: -8px;
+    width: 75px;
+    height: 75px;
     z-index: 888;
-    transform: rotate(180deg);
 }
-button {
+.flecha img {
+    width: 75px;
+    height: 75px;
+    filter: drop-shadow(2px 4px 4px black);
+}
+#girar {
     margin-top: 30px;
     padding: 10px 20px;
     font-size: 16px;
@@ -73,11 +74,19 @@ button {
     border-radius: 6px;
     cursor: pointer;
 }
-button:hover {
-    background: #555;
-}
 #resultado {
     margin-top: 20px;
     font-size: 18px;
     font-weight: bold;
+}
+#girar {
+    width: 80%;
+    height: 40px;
+    background: #f9d000;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+.hiddebtn {
+    display: none;
 }

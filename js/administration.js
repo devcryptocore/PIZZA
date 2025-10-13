@@ -2,6 +2,60 @@ import * as uris from './uris.js';
 document.addEventListener('DOMContentLoaded',()=>{
 
     const roulette = document.querySelector("#set_roulette");
+    const catprincipal = document.querySelector("#set_principal");
+
+    catprincipal.addEventListener("click", ()=>{
+        Swal.fire({
+            title: "Establecer categoría principal",
+            html: `
+                <div class="form-container">
+                    <form id="setPrincipal">
+                        <div class="oneInput">
+                            <div class="inputContainer" style="background-image:url(../res/icons/category.svg)">
+                                <select name="categoria" id="category" class="inputField" required autocomplete="off"></select>
+                                <label for="category">Categoría principal</label>
+                            </div>
+                        </div>
+                        <div class="oneInput">
+                            <input type="submit" value="Establecer" class="send-button">
+                        </div>
+                    </form>
+                </div>
+            `,
+            showConfirmButton: false,
+            showCancelButton: false,
+            showCloseButton: true
+        });
+        (async () => {
+            const ucat = `../${uris.get_categories}`;
+            const cat = await fetch(ucat);
+            if(!cat.ok){
+                throw new Error(`${cat.status} / ${cat.statusText}`);
+            }
+            const categ = await cat.json();
+            document.querySelector("#category").innerHTML = categ.message;
+        })();
+        document.querySelector("#setPrincipal").addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(e.target);
+            const urik = `../${uris.set_principal}`;
+            try {
+                const rb = await fetch(urik,{
+                    method: "POST",
+                    body: data
+                });
+                const rps = await rb.json();
+                Swal.fire({
+                    title: rps.title,
+                    text: rps.message,
+                    icon: rps.status
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        })
+    });
 
     roulette.addEventListener('click', async () => {
         const uri = `../${uris.getroulette}`;

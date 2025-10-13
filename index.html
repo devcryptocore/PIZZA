@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizza</title>
     <link rel="shortcut icon" href="res/icons/pizza2.svg" type="image/x-icon">
+    <link rel="stylesheet" href="css/ruleta.css" class="versionized">
     <link rel="stylesheet" href="css/style-mobile.css" class="versionized">
     <link rel="stylesheet" href="css/sweetAlert.css">
     <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="res/izi/css/iziToast.css">
     <script type="module" src="js/main-mobile.js" class="versionizedjs"></script>
     <script src="js/aos.js"></script>
     <script src="js/sweetAlert.js"></script>
+    <script src="js/fitty.min.js"></script>
+    <script src="res/izi/js/iziToast.js"></script>
 </head>
 <body>
     <div class="navBar">
         <div class="org-name">
-            <img data-aos="fade-down" data-aos-offset="0" src="res/icons/pizza2.svg" alt="Pizza Logo">
+            <img data-aos="fade-down" data-aos-offset="0" src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
             <h1 data-aos="fade-right" data-aos-offset="0" data-aos-delay="300">MAX<b>PIZZA</b></h1>
         </div>
         <div class="nav-left-cont">
-            <button class="my-cart" id="my_cart" data-aos="fade-left" data-aos-offset="0" data-aos-delay="300"><span></span></button>
+            <button class="my-cart" id="my_cart" data-aos="fade-left" data-aos-offset="0" data-aos-delay="300"><span id="cartCount"></span></button>
             <input type="checkbox" id="burger">
             <label for="burger" class="burguer" data-aos="fade-left" data-aos-offset="0" data-aos-delay="200">
                 <span class="part"></span>
@@ -28,47 +32,21 @@
             </label>
         </div>
     </div>
+    <div class="shopping-cart" id="shopping_cart"></div>
     <div class="header-section">
         <div class="slide-control left-control" id="ctrl-left"></div>
         <div class="slide-control right-control" id="ctrl-right"></div>
         <h1 id="pizza_title"><b>Champiñones</b></h1>
-        <div class="main-section" data-aos="fade-up" data-aos-offset="0" data-aos-delay="300">
-            <section class="img-container">
-                <div>
-                    <div class="big-pizza"></div>
-                </div>
-            </section>
-            <section class="img-container">
-                <div>
-                    <div class="big-pizza"></div>
-                </div>
-            </section>
-            <section class="img-container">
-                <div>
-                    <div class="big-pizza"></div>
-                </div>
-            </section>
-            <section class="img-container">
-                <div>
-                    <div class="big-pizza"></div>
-                </div>
-            </section>
-            <section class="img-container">
-                <div>
-                    <div class="big-pizza"></div>
-                </div>
-            </section>
-            <section class="img-container">
-                <div>
-                    <div class="big-pizza"></div>
-                </div>
-            </section>
-        </div>
+        <div class="main-section" id="mainSect" data-aos="fade-up" data-aos-offset="0" data-aos-delay="300"></div>
     </div>
     <div class="descript">
         <div class="descontainer"></div>
     </div>
+    <section class="content-sec" id="categoriesContainer"></section>
+    <section class="content-sec someprod">
+        <div class="some-pizzas" id="someproducts"></div>
+    </section>
     <section class="content-sec"></section>
-    <section class="content-sec drk"></section>
+    <section class="content-sec"></section>
 </body>
 </html>

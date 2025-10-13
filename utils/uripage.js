@@ -1,1 +1,10 @@
 export const getroulette = "utils/page.php?get_roulette=cGFnZW1heHBpenph";
+export const getpizzas = "utils/page.php?get_pizzas=cGFnZW1heHBpenph";
+export const getcategories = "utils/page.php?get_categories=cGFnZW1heHBpenph";
+export const addtocart = "utils/page.php?add_to_cart=cGFnZW1heHBpenph";
+export const getmycart = "utils/page.php?get_my_cart=cGFnZW1heHBpenph";
+export const delfromcart = "utils/page.php?del_from_cart=cGFnZW1heHBpenph";
+export const cleancart = "utils/page.php?clean_cart=cGFnZW1heHBpenph";
+export const getproductinfo = "utils/page.php?get_product_info=cGFnZW1heHBpenph";
+export const someproducts = "utils/page.php?get_some_products=cGFnZW1heHBpenph";
+export const setcheckout = "utils/page.php?set_pedido=cGFnZW1heHBpenph";
