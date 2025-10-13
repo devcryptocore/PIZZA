@@ -1,3 +1,7 @@
+body {
+    overflow-x: hidden;
+    color: #adadad;
+}
 .myIngredients {
     width: 90vw;
     margin: 0 auto;
@@ -7,6 +11,7 @@
     justify-content: flex-start;
     padding: 20px 0px;
     gap: 20px;
+    overflow-x: hidden;
 }
 .prod-card {
     width: 150px;
@@ -18,6 +23,7 @@
     border-radius: 6px;
     padding: 8px;
     gap: 8px;
+    color: #1f1f1f;
 }
 .up-to-card,
 .price-cont {
@@ -81,4 +87,29 @@
     background: transparent url(../res/icons/delete-red.svg) center / 20px no-repeat;
     cursor: pointer;
     border: 0;
+}
+.myIngredients {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#page-title {
+    text-transform: capitalize;
+    color: #fff;
+    padding: 0px 40px;
+}
+.footer {
+    height: 70vh !important;
+}
+.footersquare {
+    top: 50px !important;
+}
+.banner-cont {
+    width: 95%;
+    height: 150px;
+    border-radius: 18px;
+    margin: 10px auto;
 }

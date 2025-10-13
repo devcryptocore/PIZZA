@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizza</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#545454">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Max Pizza">
+    <link rel="apple-touch-icon" href="res/icons/icon-192x192.png">
     <link rel="shortcut icon" href="res/icons/pizza2.svg" type="image/x-icon">
     <link rel="stylesheet" href="css/ruleta.css" class="versionized">
     <link rel="stylesheet" href="css/style-mobile.css" class="versionized">
@@ -19,13 +25,13 @@
 <body>
     <div class="navBar">
         <div class="org-name">
-            <img data-aos="fade-down" data-aos-offset="0" src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
-            <h1 data-aos="fade-right" data-aos-offset="0" data-aos-delay="300">MAX<b>PIZZA</b></h1>
+            <img data-aos="fade-down" src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
+            <h1 data-aos="fade-right" data-aos-delay="300">MAX<b>PIZZA</b></h1>
         </div>
         <div class="nav-left-cont">
-            <button class="my-cart" id="my_cart" data-aos="fade-left" data-aos-offset="0" data-aos-delay="300"><span id="cartCount"></span></button>
+            <button class="my-cart" id="my_cart" data-aos="fade-left" data-aos-delay="300"><span id="cartCount"></span></button>
             <input type="checkbox" id="burger">
-            <label for="burger" class="burguer" data-aos="fade-left" data-aos-offset="0" data-aos-delay="200">
+            <label for="burger" class="burguer" data-aos="fade-left" data-aos-delay="200">
                 <span class="part"></span>
                 <span class="part"></span>
                 <span class="part"></span>
@@ -33,20 +39,79 @@
         </div>
     </div>
     <div class="shopping-cart" id="shopping_cart"></div>
-    <div class="header-section">
-        <div class="slide-control left-control" id="ctrl-left"></div>
-        <div class="slide-control right-control" id="ctrl-right"></div>
-        <h1 id="pizza_title"><b>Champiñones</b></h1>
-        <div class="main-section" id="mainSect" data-aos="fade-up" data-aos-offset="0" data-aos-delay="300"></div>
+    <div class="main-container" id="maincontainer">
+        <div class="header-section">
+            <div class="slide-control left-control" id="ctrl-left"></div>
+            <div class="slide-control right-control" id="ctrl-right"></div>
+            <h1 id="pizza_title"><b>Champiñones</b></h1>
+            <div class="main-section" id="mainSect" data-aos="fade-up" data-aos-offset="0" data-aos-delay="300"></div>
+        </div>
+        <div class="descript">
+            <div class="descontainer"></div>
+        </div>
+        <section class="content-sec" id="categoriesContainer"></section>
+        <section class="content-sec someprod">
+            <div class="some-pizzas" id="someproducts" data-aos="fade-left" data-aos-offset="250"></div>
+        </section>
+        <section class="content-sec picont">
+            <div class="ifimage" data-aos="fade-down" data-aos-offset="280"></div>
+            <div class="message-com" data-aos="fade-up" data-aos-offset="280">
+                Desde la vibra relajada de nuestro local hasta la primera rebanada que se te escape de la mano, cada detalle está pensado para una experiencia 100% real. 
+            </div>
+        </section>
+        <section class="content-sec" style="background: unset;">
+            <div class="delivery-desc">
+                <div class="delivery-text" data-aos="fade-left" data-aos-offset="285">
+                    <h3>De nuestro horno, hasta su casa en 30 minutos!</h3>
+                    <span>Entrega rápida</span>
+                    <span>Ingredientes frescos 100%</span>
+                    <span>Delicioso y a 1 click</span>
+                </div>
+                <div class="deliveryman" data-aos="fade-right" data-aos-offset="285">
+                    <img src="res/images/deliveryman.png" alt="delivery man" data-aos="fade-left" data-aos-offset="285" data-aos-delay="150">
+                </div>
+            </div>
+        </section>
+        <section class="footer">
+            <div class="footersquare" data-aos="fade-down" data-aos-offset="290">
+                <div class="btcontent">
+                    <h3>La pizza está a un clic. ¡Pídela ya!</h3>
+                    <span>¿Listo para ordenar? ¡Te esperamos!</span>
+                    <button class="dwapp" id="installPWA" data-aos="fade-up" data-aos-offset="290" data-aos-delay="100">Descarga la app</button>
+                </div>
+            </div>
+            <div class="footercontent">
+                <div class="org-name">
+                    <img data-aos="fade-down" data-aos-offset="0" src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
+                    <h1 data-aos="fade-right" data-aos-offset="0" data-aos-delay="290">MAX<b>PIZZA</b></h1>
+                </div>
+                <div class="powered">
+                    Developed by &copy; Cryptocore
+                </div>
+                <div class="sourcelist">
+                    <div class="sourcecontainer">
+                        <a href="#" class="source">Menú</a>
+                        <a href="#" class="source">Ubicaciones</a>
+                        <a href="#" class="source">Nosotros</a>
+                        <a href="#" class="source">FAQs</a>
+                        <a href="#" class="source">Contacto</a>
+                    </div>
+                    <div class="socialcon">
+                        <div class="datatext">
+                            "Alimentos preparados con pasión. Servidos con cariño,
+                            la auténtica pizza que mereces solo está aquí, somos
+                            siempre la mejor elección, pruebanos!"
+                        </div>
+                        <div class="social">
+                            <a href="#" class="socialsource facebook"></a>
+                            <a href="#" class="socialsource whatsapp"></a>
+                            <a href="#" class="socialsource instagram"></a>
+                            <a href="#" class="socialsource tiktok"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-    <div class="descript">
-        <div class="descontainer"></div>
-    </div>
-    <section class="content-sec" id="categoriesContainer"></section>
-    <section class="content-sec someprod">
-        <div class="some-pizzas" id="someproducts"></div>
-    </section>
-    <section class="content-sec"></section>
-    <section class="content-sec"></section>
 </body>
 </html>

@@ -7,12 +7,31 @@ document.addEventListener('DOMContentLoaded',()=>{
     const btnRight = document.querySelector("#ctrl-right");
     const shopingcart = document.querySelector("#shopping_cart");
     const somepr = document.querySelector("#someproducts");
+    const installBtn = document.getElementById('installPWA');
+    let deferredPrompt;
     let v = Date.now();
     let temps = "session_" + v;
     let cartstate = 0;
     let fechax = new Date();
     let year = fechax.getFullYear();
     const esmovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.hidden = false;
+    });
+    installBtn.addEventListener('click', async () => {
+        installBtn.hidden = true;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('✅ Usuario instaló la app');
+        }
+        deferredPrompt = null;
+    });
+
     //localStorage.removeItem('tempses')
     (async ()=>{
         const ts = localStorage.getItem('tempses');
@@ -312,13 +331,15 @@ document.addEventListener('DOMContentLoaded',()=>{
             const description = data.description;
             const nms = Object.keys(description);
             pzz.forEach(e => {
-                document.querySelector("#mainSect").innerHTML += `
-                    <section class="img-container">
-                        <div>
-                            <div class="big-pizza"></div>
-                        </div>
-                    </section>
-                `;
+                if(document.querySelector("#mainSect")){
+                    document.querySelector("#mainSect").innerHTML += `
+                        <section class="img-container">
+                            <div>
+                                <div class="big-pizza"></div>
+                            </div>
+                        </section>
+                    `;
+                }
             });
             const animatedDiv = document.querySelectorAll(".big-pizza");
             animatedDiv.forEach((x, j) => {
@@ -462,7 +483,9 @@ document.addEventListener('DOMContentLoaded',()=>{
             const cat = await fetch(uricat);
             if (!cat.ok) throw new Error(`Error: ${cat.status} / ${cat.statusText}`);
             const resp = await cat.json();
-            document.querySelector("#categoriesContainer").innerHTML = resp.message;
+            if(document.querySelector("#categoriesContainer")){
+                document.querySelector("#categoriesContainer").innerHTML = resp.message;
+            }
         }
         catch (err) {
             console.error(err);
@@ -815,7 +838,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     }
 
+    window.loadPage = async (page) => {
+        location.href = page;
+    }
+
 })
+
 
 function milesjs(mil){
 	var mlts = mil.toString();

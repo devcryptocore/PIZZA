@@ -8,3 +8,4 @@ export const cleancart = "utils/page.php?clean_cart=cGFnZW1heHBpenph";
 export const getproductinfo = "utils/page.php?get_product_info=cGFnZW1heHBpenph";
 export const someproducts = "utils/page.php?get_some_products=cGFnZW1heHBpenph";
 export const setcheckout = "utils/page.php?set_pedido=cGFnZW1heHBpenph";
+export const makemenu = "utils/page.php?menu_products=cGFnZW1heHBpenph";

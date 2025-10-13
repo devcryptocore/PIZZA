@@ -117,7 +117,7 @@ body {
     top: 0;
 }
 #pizza_title {
-    width: 100vw;
+    width: 100%;
     position: relative;
     display: flex;
     align-items: center;
@@ -197,8 +197,11 @@ body {
     background: url(../res/icons/right.svg) center / 100% no-repeat;
     right: 10px;
 }
+.main-container {
+    overflow-x: hidden;
+}
 .main-section {
-    width: 100vw;
+    width: 100%;
     display: flex;
     position: relative;
     overflow-x: scroll;
@@ -212,7 +215,7 @@ body {
     color: #00000000;
 }
 .img-container {
-    width: 100vw;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -239,7 +242,7 @@ body {
     background-repeat: no-repeat;
 }
 .separator {
-    width: 100vw;
+    width: 100%;
     height: 8vh;
     background: url(../res/images/yellow-separator.svg) center / cover no-repeat;
 }
@@ -268,7 +271,7 @@ body {
     background: url(../res/images/dark-separator.png) center / cover no-repeat;
 }
 .descript {
-    width: 100vw;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -386,7 +389,7 @@ body {
     color: #fff;
 }
 .content-sec {
-    width: 100vw;
+    width: 100%;
     min-height: 50vh;
     background: url(../res/images/dark-separator.png) bottom / 100% no-repeat, #fff;
     box-shadow: 0px -5px 0 0 #fff;
@@ -403,7 +406,7 @@ body {
     to {transform: scaleY(0);}
 }
 .shopping-cart {
-    width: 100vw;
+    width: 100%;
     min-height: 50vh;
     background: #fff;
     border-top: 4px solid #f9d000;
@@ -861,4 +864,188 @@ input[type='number'] {
 }
 .prod-form .send-button {
     width: 140px !important;
+}
+.footer {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    gap: 15px;
+    background: #121619;
+}
+.footersquare {
+    width: 80%;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px 0px 0px 20px;
+    position: absolute;
+    top: -50px;
+    border-radius: 18px;
+    background: #fff url(../res/images/loader.gif) 120% 15px / 50% no-repeat;
+}
+.btcontent {
+    display: flex;
+    flex-direction: column;
+}
+.footersquare h3 {
+    margin: 0;
+    font-size: 14px;
+}
+.footersquare span {
+    font-size: 12px;
+}
+.dwapp {
+    width: 145px;
+    height: 40px;
+    transform: translateY(10px);
+    border: 1px solid var(--dark-grey);
+    border-radius: 8px;
+    background: var(--amarillo) url(../res/icons/download.svg) 5px / 20px no-repeat;
+    color: #1f1f1f;
+    font-size: 12px;
+    padding: 0 0 0 15px;
+}
+.footercontent {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+.powered {
+    font-size: 12px;
+    color: #fff;
+}
+.sourcelist {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sourcecontainer {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+}
+.sourcecontainer .source {
+    font-size: 12px;
+    text-decoration: none;
+    color: var(--amarillo);
+}
+.socialcon {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 10px;
+}
+.datatext {
+    font-size: 11px;
+    color: #ababab;
+    text-align: left;
+    padding: 0 0 0 40px;
+}
+.social {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+.socialsource {
+    width: 30px;
+    display: flex;
+    aspect-ratio: 1/1;
+    text-decoration: none;
+}
+.facebook {
+    background: url(../res/icons/facebook.svg) center / 28px no-repeat;
+}
+.whatsapp {
+    background: url(../res/icons/whatsapp.svg) center / 28px no-repeat;
+}
+.instagram {
+    background: url(../res/icons/instagram.svg) center / 28px no-repeat;
+}
+.tiktok {
+    background: url(../res/icons/tiktok.svg) center / 28px no-repeat;
+}
+.picont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0px;
+}
+.ifimage {
+    width: 90%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: url(../res/images/amigos.webp) center / 100% no-repeat;
+}
+.message-com {
+    font-size: 13px;
+    padding: 15px;
+    text-align: center;
+}
+.delivery-desc {
+    width: 100%;
+    height: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.delivery-text {
+    font-size: 12px;
+    color: #ababab;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 15px;
+}
+.delivery-text h3 {
+    color: var(--amarillo);
+}
+.delivery-text span {
+    font-size: 11px;
+    padding: 5px 5px 5px 30px;
+}
+.delivery-text span:nth-child(2) {
+    background: url(../res/icons/clock-white.svg) 5px / 20px no-repeat;
+}
+.delivery-text span:nth-child(3) {
+    background: url(../res/icons/hoja-white.svg) 5px / 20px no-repeat;
+}
+.delivery-text span:nth-child(4) {
+    background: url(../res/icons/click-white.svg) 5px / 20px no-repeat;
+}
+.deliveryman {
+    height: 100%;
+    width: 50%;
+    display: flex;
+    background: #fff;
+    border-radius: 230% 0% 90% 190%;
+    overflow: hidden;
+    align-items: flex-end;
+    justify-content: flex-end;
+    box-shadow: inset 7px -1px 6px 0 #00000052;
+}
+.deliveryman img {
+    height: 100%;
+    filter: drop-shadow(3px 3px 4px #00000056);
 }

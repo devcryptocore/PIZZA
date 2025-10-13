@@ -80,7 +80,8 @@
             $cats = "";
             while($c = $Rcons -> fetch_assoc()){
                 $cats .= '
-                    <div class="cat_card">
+                    <div class="cat_card" onclick="loadPage(\'categories.php?c='.$c['categoria'].'\')"
+                    data-aos="fade-right" data-aos-offset="150" data-aos-delay="100">
                         <img src="'.str_replace("../","",$c['imagen']).'" class="catimage" alt="category image"/>
                         <p>'.$c['categoria'].'</p>
                     </div>
@@ -441,6 +442,57 @@
             
         }
 
+    }
+
+    if(isset($_GET['menu_products']) && $_GET['menu_products'] === $exclav){
+        $categoria = $_GET['c'];
+        $estado = 1;
+        $cons = $con -> prepare("SELECT p.*,ap.porciones,ap.precio AS prepor FROM productos p INNER JOIN
+             active_products ap ON ap.id_producto = p.id WHERE p.categoria = ? AND p.estado = ? ORDER BY p.id DESC");
+        $cons -> bind_param('si',$categoria,$estado);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0) {
+            $prods = "";
+            while($pr = $Rcons -> fetch_assoc()){
+                $precio = $pr['talla'] == 'L' ? miles($pr['prepor']) . '<span class="smlt"> * porción</span>' : miles($pr['precio']);
+                $portada = $pr['portada'] ?? '';
+                $prods .= '
+                    <div class="prod-card">
+                        <div class="up-to-card">
+                            <h3 class="card-title" style="white-space: nowrap; display: inline-block; font-size: 11.3798px;">'.$pr['producto'].'</h3>
+                        </div>
+                        <div onclick="this_product(\''.$pr['id'].'\')" class="prod-image" style="background-image:url('.str_replace("../","",$portada).')"></div>
+                        <div class="price-cont">
+                            <span>$'.$precio.'</span>
+                        </div>
+                        <div class="prod-form">
+                            <div id="sell_this">
+                                <input type="hidden" name="id" value="10">
+                                <div class="counter-cont">
+                                    <span class="counter-bt minus">-</span>
+                                    <input type="number" name="cantidad" value="1">
+                                    <span class="counter-bt more">+</span>
+                                </div>
+                                <input type="submit" value="Agregar" class="send-button" onclick="addToCart(\''.$pr['id'].'\',1)">
+                            </div>
+                        </div>
+                    </div>
+                ';
+            }
+            echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => $prods
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => "<h3>Sin productos para mostrar</h3>"
+            ]);
+        }
     }
 
 ?>
