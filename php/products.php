@@ -649,17 +649,22 @@
         $id = $_POST['id'];
         $product = $_POST['producto'];
         $cat = $_POST['categoria'];
+        $con -> begin_transaction();
         try {
             $dl = $con -> prepare("DELETE FROM productos WHERE id = ?");
             $dl -> bind_param('i',$id);
             $dl -> execute();
             if($dl){
+                $ping = $con -> prepare("DELETE FROM product_ingredients WHERE id_product = ?");
+                $ping -> bind_param('i',$id);
+                $ping -> execute();
                 $cpr = $con -> query("SELECT * FROM active_products WHERE id_producto = $id");
                 if($cpr -> num_rows > 0){
                     $apr = $con -> prepare("DELETE FROM active_products WHERE id_producto = ?");
                     $apr -> bind_param('i',$id);
                     $apr -> execute();
                 }
+                $con -> commit();
                 $dir = "../res/images/products/" . sanear_string($cat) . preg_replace('/[^a-zA-Z0-9-_]/', '_', $product);
                 eliminarDirectorio($dir);
                 echo json_encode([
@@ -679,6 +684,7 @@
             }
         }
         catch (mysqli_sql_exception $e) {
+            $con -> rollback();
             echo json_encode([
                 "status" => "error",
                 "title" => "Error!",

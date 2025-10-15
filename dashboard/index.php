@@ -1,15 +1,8 @@
 <?php
-    include('../includes/header.php');
+    include('../config/connector.php');
+    include('../includes/verificator.php');
+    include('../includes/dashboard-header.php');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard MaxPizza</title>
-    <link rel="stylesheet" href="../css/dashboadrd.css?v=<?=$version;?>">
-    <script src="../js/dashboard.js?v=<?=$version;?>"></script>
-</head>
 <body>
     <div class="parent">
         <div class="div2 option-container">
@@ -45,13 +38,16 @@
                 <button class="source-option" data-source="acercade">
                     <img src="../res/icons/about.svg">
                 </button>
+                <button class="source-option" data-source="installap" id="installPWA">
+                    <img src="icon-512x512.png" style="width: 35px;">
+                </button>
             </div>
             <button class="source-option" data-source="logout" id="logout_button">
                 <img src="../res/icons/exit.svg">
             </button>
         </div>
         <div class="div3 source-container" id="sources">
-            <iframe src="../admin/active_products.php" frameborder="0" id="sites_container"></iframe>
+            <iframe src="../admin/caja.php" frameborder="0" id="sites_container"></iframe>
         </div>
     </div>
 </body>

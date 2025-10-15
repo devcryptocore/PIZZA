@@ -15,6 +15,11 @@
     <script type="module" src="../js/login.js" class="versionized"></script>
 </head>
 <body>
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
     <div class="form-container">
         <form action="" id="loginForm">
             <div class="logoContainer"></div>
@@ -26,7 +31,7 @@
             </div>
             <div class="oneInput">
                 <div class="inputContainer" style="background-image: url(../res/icons/password.svg);">
-                    <input type="password" name="userpasswd" id="upasswd" required class="inputField">
+                    <input type="password" name="userpasswd" id="upasswd" required class="inputField" autocomplete="on">
                     <label for="upasswd">Contraseña</label>
                 </div>
             </div>

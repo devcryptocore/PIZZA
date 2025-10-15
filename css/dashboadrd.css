@@ -106,6 +106,12 @@
 .source-option:nth-child(10):after {
     content: "Acerca de";
 }
+.source-option:nth-child(11):after {
+    content: "Descargar App";
+}
+.source-option:focus {
+    background: var(--amarillo);
+}
 #logout_button {
     border: 0;
 }
@@ -131,13 +137,29 @@
     }
 }
 @media screen and (max-width: 900px) {
+    .parent {
+        height: 100svh;
+        flex-direction: column-reverse;
+    }
     .div2 {
-        display: none;
+        width: 100%;
+        height: 20vw;
+        flex-direction: row;
     }
     .div3 {
         width: 100vw;
     }
     .source-container {
-        height: 100vh;
+        width: 100%;
+        height: 80vh;
+    }
+    .source-option-container {
+        flex-direction: row;
+        height: 8vh;
+        padding: 0px 10px 0px 10px;
+        align-items: center;
+    }
+    .logo-container {
+        width: 60px;
     }
 }

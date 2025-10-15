@@ -20,6 +20,19 @@
         return $serie;
     }
 
+    function statebox(){
+        global $con,$sesion,$sucursal;
+        $est = 1;
+        $box = $con -> prepare("SELECT estado FROM caja WHERE estado = ? AND usuario = ? AND sucursal = ?");
+        $box -> bind_param('iss',$est,$sesion,$sucursal);
+        $box -> execute();
+        $Rbox = $box -> get_result();
+        if($Rbox -> num_rows > 0) {
+            return true;
+        }
+        return false;
+    }
+
     function boxcode() {
         global $con,$sesion,$sucursal;
         $bcon = $con -> prepare("SELECT codcaja FROM caja WHERE usuario = ? AND sucursal = ? ORDER BY codcaja DESC LIMIT 1");
@@ -45,6 +58,15 @@
         $seriefac = get_last_serie();
         $idcaja   = boxcode();
         $errors   = [];
+
+        if(!statebox()){
+            echo json_encode([
+                "status" => "warning",
+                "title"  => "Sin apertura de caja!",
+                "message"=> "No puede procesar ventas sin hacer apertura caja!"
+            ]);
+            exit;
+        }
 
         $con->begin_transaction();
         try {

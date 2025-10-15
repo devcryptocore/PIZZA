@@ -450,7 +450,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 });
                 const rta = await sdata.json();
                 if(action === 'disponible'){
-                    if(rta.message.categoria == 'pizza' && talla == 'L'){
+                    if(talla == 'L'){
                         espizza = `
                             <div class="oneInput">
                                 <div class="inputContainer" style="background-image:url(../res/icons/pizza-dark.svg)">

@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                         </div>
                         <div class="oneInput">
                             <div class="inputContainer" style="background: url(res/icons/whatsapp-white.svg) 5px / 20px no-repeat;">
-                                <input type="text" id="telefono" name="telefono" class="inputField" autocomplete="off">
+                                <input type="tel" id="telefono" name="telefono" class="inputField" autocomplete="off">
                                 <label for="telefono">Teléfono</label>
                             </div>
                         </div>
@@ -480,22 +480,9 @@ document.addEventListener("DOMContentLoaded",()=>{
                         timer: 2000,
                         timerProgressBar: true
                     }).then(()=>{
-                        let wsp = '';
-                        let texto = "┗━━━━━━⊱ 𝑵𝒖𝒆𝒗𝒐 𝒑𝒆𝒅𝒊𝒅𝒐 ⊰━━━━━━┛";
-                        if(esmovil){
-                            wsp =`
-                                https://wa.me/+573106574835?text=%0A${texto}%0A%0A➢%20*Nombre:*%20%20_${rpa.message.nombre}_%0A%0A➢%20*Número%20de%20teléfono:*%20%20_${rpa.message.telefono}_%0A%0A➢%20*Dirección:*%20%20_${rpa.message.direccion}_%0A%0A➢%20*Pedido:*%0A${rpa.message.pedido}%0A%0A➢%20*Total:%20$${rpa.message.total}*%0A%0A➢%20*Nota:*%0A_${rpa.message.comentario}_%0A%0A➢%20*Realizado%20el:*%20_${rpa.message.fecha}_%0A%0A%0A%0Aᴾᵒʷᵉʳᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ
-                            `;
-                        }
-                        else {
-                            wsp =`
-                                https://web.whatsapp.com/send/?phone=%2B573106574835&text=%0A${texto}%0A%0A➢%20*Nombre:*%20%20_${rpa.message.nombre}_%0A%0A➢%20*Número%20de%20teléfono:*%20%20_${rpa.message.telefono}_%0A%0A➢%20*Dirección:*%20%20_${rpa.message.direccion}_%0A%0A➢%20*Pedido:*%0A${rpa.message.pedido}%0A%0A➢%20*Total:%20$${rpa.message.total}*%0A%0A➢%20*Nota:*%0A_${rpa.message.comentario}_%0A%0A➢%20*Realizado%20el:*%20_${rpa.message.fecha}_%0A%0A%0A%0Aᴾᵒʷᵉʳᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ&type=phone_number&app_absent=0
-                            `;
-                        }
                         numelems();
                         get_mycart();
-                        window.open(wsp,"_blank");
-                        window.focus();
+                        abrirWhatsAppPedido(rpa,rpa.message.telefono);
                     });
                 }
                 else {
@@ -511,6 +498,56 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 
 });
+
+function abrirWhatsAppPedido(rpa,phone) {
+    
+
+const mensaje = `
+▁▂▃▅▆ ɴᴜᴇᴠᴏ ᴘᴇᴅɪᴅᴏ ▆▅▃▂▁
+
+➢ *Nombre:* _${rpa.message.nombre}_
+➢ *Número de teléfono:* _${rpa.message.telefono}_
+➢ *Dirección:* _${rpa.message.direccion}_
+➢ *Pedido:*
+${rpa.message.pedido}
+﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊
+➢ *Total: $${rpa.message.total}*
+
+➢ *Nota:*
+_${rpa.message.comentario}_
+
+*Pedido realizado el:* _${rpa.message.fecha}_
+
+ᴰᵉᵛᵉˡᵒᵖᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ
+`;
+    const encodedMsg = mensaje
+    .replace(/\n/g, "%0A") // mantener saltos de línea
+    .replace(/ /g, "%20");
+
+    //const encodedMsg = encodeURIComponent(mensaje.trim());
+    const isDesktop = !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    let webUrl = `https://api.whatsapp.com/send?phone=%2B57${phone}&text=${encodedMsg}`;
+    if (isDesktop || esIOS()) {
+        if(esIOS()){
+            location.href = webUrl;
+            return;
+        }
+        window.open(webUrl, "_blank");
+        return;
+    }
+    webUrl = `https://wa.me/+57${phone}?text=${encodedMsg}`;
+    window.open(webUrl, "_blank");
+    return;
+}
+
+
+function esIOS() {
+    const userAgent = navigator.userAgent;
+    const isIPDevice = /iPhone|iPad|iPod/i.test(userAgent);
+    const isModernIPad = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 0;
+    return isIPDevice || isModernIPad;
+}
+
 async function prods() {
     const categ = document.querySelector("#category");
     const uriprod = `${source.makemenu}&c=${categ.value}`;

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const roulette = document.querySelector("#set_roulette");
     const catprincipal = document.querySelector("#set_principal");
+    const setclean = document.querySelector("#set_clean");
 
     catprincipal.addEventListener("click", ()=>{
         Swal.fire({
@@ -172,6 +173,75 @@ document.addEventListener('DOMContentLoaded',()=>{
         catch(err){
             console.error(err);
         }
+    });
+
+    setclean.addEventListener('click', () => {
+        Swal.fire({
+            title: "Reestablecer sistema",
+            text: "Está seguro de reestablecer el sistema? esto eliminará todo y no es posible deshacer",
+            icon: "question",
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Sí, reestablecer",
+            cancelButtonText: "Cancelar",
+        }).then(async (conf) => {
+            if(conf.isConfirmed) {
+                Swal.fire({
+                    title: "Ingrese su contraseña de administrador",
+                    html: `
+                        <div class="form-container">
+                            <form id="setClean">
+                                <div class="oneInput">
+                                    <div class="inputContainer" style="background-image:url(../res/icons/password.svg)">
+                                        <input type="password" name="contrasena" class="inputField" id="contrasena" required autocomplete="off">
+                                        <label for="contrasena">Contraseña</label>
+                                    </div>
+                                </div>
+                                <div class="oneInput">
+                                    <div class="inputContainer" style="background-image:url(../res/icons/admin.svg)">
+                                        <input type="number" name="verif" class="inputField" id="verif" required autocomplete="off">
+                                        <label for="verif" class="active-label" id="veriff"></label>
+                                    </div>
+                                </div>
+                                <div class="oneInput">
+                                    <input type="submit" value="Reestablecer" class="send-button">
+                                </div>
+                            </form>
+                        </div>
+                    `,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+                let verifnum = Math.floor(Math.random()*(9678-1574+1)+1574);
+                const veriflabel = document.querySelector("#veriff");
+                veriflabel.innerHTML = `Escriba: <b>${verifnum}</b>`;
+                const uridel = `../${uris.set_clean}`;
+                const cleanform = document.querySelector("#setClean");
+                cleanform.addEventListener('submit', async (c) => {
+                    c.preventDefault();
+                    const dataclean = new FormData(c.target);
+                    try {
+                        dataclean.append("gene",verifnum);
+                        const clean = await fetch(uridel,{
+                            method: "POST",
+                            body: dataclean
+                        });
+                        const reps = await clean.json();
+                        Swal.fire({
+                            title: reps.title,
+                            text: reps.message,
+                            icon: reps.status
+                        }).then(()=>{
+                            location.href = '../php/logout.php';
+                        });
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        });
     });
 
 });

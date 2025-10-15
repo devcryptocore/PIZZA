@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     <form id="abonoForm">
                         <div class="oneInput">
                             <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
-                                <input type="number" id="valor" name="valor" class="inputField" autocomplete="off" required onkeyup="moneyFormat(this)">
+                                <input type="text" id="valor" name="valor" class="inputField" autocomplete="off" required onkeyup="moneyFormat(this)">
                                 <label for="valor">Valor</label>
                             </div>
                         </div>

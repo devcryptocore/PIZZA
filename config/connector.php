@@ -27,5 +27,4 @@
     include('../php/logger.php');
     $default_image = "../res/icons/image.svg";
 
-//MaxPizza+2025
 ?>

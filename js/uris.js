@@ -20,6 +20,9 @@ export const makemenu = "php/mymenu.php?menu_products=bWF4cGl6emFsYXVuaW9u";
 export const conscart = "php/mymenu.php?cons_cart=bWF4cGl6emFsYXVuaW9u";
 export const setnewemployee = "php/employee.php?set_new_employee=bWF4cGl6emFsYXVuaW9u";
 export const login = "php/users.php?go_login=bWF4cGl6emFsYXVuaW9u";
+export const orgdata = "php/users.php?orgdata=bWF4cGl6emFsYXVuaW9u";
+export const set_orgdata = "php/users.php?set_orgdata=bWF4cGl6emFsYXVuaW9u";
+export const set_admindata = "php/users.php?set_admindata=bWF4cGl6emFsYXVuaW9u";
 export const search_product = "php/products.php?find_product=bWF4cGl6emFsYXVuaW9u";
 export const add_sell_product = "php/products.php?add_sell_product=bWF4cGl6emFsYXVuaW9u";
 export const get_added_products = "php/products.php?get_added_products=bWF4cGl6emFsYXVuaW9u";
@@ -59,3 +62,4 @@ export const get_categories = "php/categories.php?get_categories=bWF4cGl6emFsYXV
 export const set_category = "php/categories.php?set_category=bWF4cGl6emFsYXVuaW9u";
 export const del_category = "php/categories.php?del_category=bWF4cGl6emFsYXVuaW9u";
 export const set_principal = "php/categories.php?set_principal=bWF4cGl6emFsYXVuaW9u";
+export const set_clean = "php/admin.php?set_clean=bWF4cGl6emFsYXVuaW9u";

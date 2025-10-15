@@ -370,6 +370,11 @@
         $estado = "recibido";
         $fechahora = date('d/m/Y H:i:s');
 
+        $org = $con -> prepare("SELECT ptelefono FROM company");
+        $org -> execute();
+        $Rorg = $org -> get_result();
+        $telefonorg = $Rorg -> fetch_assoc()['ptelefono'] ?? '3100000000';
+
         $cart = $con -> prepare("SELECT sc.*, p.precio AS prodprecio, p.estado,p.talla FROM shopping_cart sc INNER JOIN productos p
         ON p.id = sc.idproducto WHERE sc.idsesion = ?");
         $cart -> bind_param('s',$idsesion);
@@ -391,7 +396,7 @@
                     "cantidad" => $cantidad,
                     "subtotal" => $subtotal
                 ];
-                $productos .= "%0A-%20" . urlencode($cantidad) . "%20" . urlencode($car['producto']) . "%20. . . . . %20$" . urlencode(miles($subtotal));
+                $productos .= "- " . $cantidad . " ⬌ " . $car['producto'] . " ⬌ $" . miles($subtotal) ."\n";
                 $total += $subtotal;
             }
             $producto = json_encode($producto, JSON_UNESCAPED_UNICODE);
@@ -425,7 +430,8 @@
                         "pedido" => $productos,
                         "total" => miles($total),
                         "fecha" => $fechahora,
-                        "comentario" => urlencode($comentario)
+                        "comentario" => urlencode($comentario),
+                        "telefono" => $telefonorg
                     ]
                 ],JSON_UNESCAPED_UNICODE);
             }

@@ -16,6 +16,23 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const barcode_reciever = document.querySelector("#barcode_reciever");
     const barcodefocus = document.querySelector("#barcodefocus");
     const metodopago = document.querySelector("#metodoPago");
+    const logo = document.querySelector('.logo-container');
+    
+    (async () => {
+        const ur = `../${uris.orgdata}`;
+        try {
+            const cons = await fetch(ur);
+            if(!cons.ok){throw new Error(`${cons.status} / ${cons.statusText}`);}
+            const rpa = await cons.json();
+            if(rpa.status == "success"){
+                company.innerHTML = `<b>Organización: </b><span>${rpa.message.organizacion}</span>`;
+                logo.style.background = `url(${rpa.message.logotipo}) center / 100% no-repeat`;
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+    })();
 
     document.addEventListener('keydown', (k)=>{
         k = k || event;
@@ -37,7 +54,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
     (async ()=>{
         let info = await sys_data();
-        company.innerHTML = `<b>Organización: </b><span>Max Pizza</span>`;
         sucursalname.innerHTML = `<b>Sucursal: </b><span>${info.sucursal}</span>`;
         sellername.innerHTML = `<b>Vendedor: </b><span>${info.nombre}</span>`;
         selledvalue.innerHTML = `<b>Vendido: </b><span>$${info.vendido}</span>`;

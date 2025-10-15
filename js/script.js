@@ -1,3 +1,10 @@
+window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    setTimeout(() => {
+        loader.classList.add("hidden");
+        setTimeout(() => loader.remove(), 800);
+    },1000);
+});
 document.addEventListener('DOMContentLoaded', ()=>{
 	let v = Date.now();
 

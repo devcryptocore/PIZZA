@@ -20,7 +20,7 @@
 
     function boxcode() {
         global $con,$sesion,$sucursal;
-        $bcon = $con -> prepare("SELECT codcaja FROM caja WHERE usuario = ? AND sucursal = ?");
+        $bcon = $con -> prepare("SELECT codcaja FROM caja WHERE id = (SELECT MAX(id) FROM caja) AND usuario = ? AND sucursal = ?");
         $bcon -> bind_param('ss',$sesion,$sucursal);
         $bcon -> execute();
         $Rbcon = $bcon -> get_result();
@@ -91,6 +91,7 @@
         $cons -> bind_param('ssi',$sesion,$sucursal,$mes);
         $cons -> execute();
         $Rcons = $cons -> get_result();
+        $bcaja = boxcode();
         $trs = "";
         if($Rcons -> num_rows > 0) {
             while($box = mysqli_fetch_array($Rcons)){
@@ -184,6 +185,14 @@
             $cent = $con -> prepare("SELECT {$entidad} FROM entidades");
             $cent -> execute();
             $Rcent = $cent -> get_result();
+            if($Rcent -> num_rows == 0){
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error de apertura!",
+                    "message" => "Debe inicializar la entidad " . $entidad . " para dar apertura de caja."
+                ]);
+                exit;
+            }
             $vcent = $Rcent -> fetch_assoc()[$entidad];
             if($vcent < $base){
                 echo json_encode([
@@ -264,7 +273,8 @@
         $ventas = 0;
         $ingresos = 0;
         $egresos = 0;
-        $fech = $_POST['codcaja'];
+        $are = "";
+        $fech = $_POST['codcaja'] ?? '';
         $consl = $con -> prepare("SELECT * FROM movimientos WHERE codcaja = ?");
         $consl -> bind_param('s',$fech);
         $consl -> execute();

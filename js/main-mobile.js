@@ -1,4 +1,13 @@
 import * as source from '../utils/uripage.js';
+
+window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    setTimeout(() => {
+        loader.classList.add("hidden");
+        setTimeout(() => loader.remove(), 800);
+    },1000);
+});
+
 document.addEventListener('DOMContentLoaded',()=>{
     AOS.init();
     const wrapper = document.querySelector(".main-section");
@@ -27,7 +36,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
-            console.log('✅ Usuario instaló la app');
+            console.log('Usuario instaló la app');
         }
         deferredPrompt = null;
     });
@@ -405,19 +414,19 @@ document.addEventListener('DOMContentLoaded',()=>{
                 newB.innerHTML = pza;
                 const datos = description[pza];
                 const container = document.querySelector(".descontainer");
-                let talla = datadesc.talla;
-                let porciones = datadesc.porciones;
-                let preciopizza = talla == 'L' ? `${milesjs(datadesc.precioporcion)}<span class="smlt"> * porción</span>` : milesjs(datos.precio);
+                let talla = datadesc?.talla;
+                let porciones = datadesc?.porciones;
+                let preciopizza = talla == 'L' ? `${milesjs(datadesc?.precioporcion ?? 0)}<span class="smlt"> * porción</span>` : milesjs(datos?.precio ?? 0);
                 container.innerHTML = `
                     <div class="separator"></div>
                     <div class="props" data-aos="" data-aos-offset="0">
                         <div class="up_scont">
                             <b data-aos="fade-left" data-aos-offset="0"><span>$</span>${preciopizza}</b>
-                            <button onclick="addToCart('${datos.id}',1)" class="add_cart_btn" data-aos="fade-right" data-aos-offset="0"></button>
+                            <button onclick="addToCart('${datos?.id}',1)" class="add_cart_btn" data-aos="fade-right" data-aos-offset="0"></button>
                         </div>
                         <h2 data-aos="fade-up" data-aos-offset="0">${pza}</h2>
                         <ul id="ingredients" data-aos="fade-right" data-aos-offset="0"></ul>
-                        <p data-aos="fade-left" data-aos-offset="0">${datos.descripcion}</p>
+                        <p data-aos="fade-left" data-aos-offset="0">${datos?.descripcion ?? ''}</p>
                     </div>
                     <div class="separator srotat"></div>
                 `;
@@ -705,7 +714,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                         </div>
                         <div class="oneInput">
                             <div class="inputContainer" style="background: url(res/icons/whatsapp-white.svg) 5px / 20px no-repeat;">
-                                <input type="text" id="telefono" name="telefono" class="inputField" autocomplete="off">
+                                <input type="tel" id="telefono" name="telefono" class="inputField" autocomplete="off">
                                 <label for="telefono">Teléfono</label>
                             </div>
                         </div>
@@ -755,7 +764,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(mostrarUbicacion, mostrarError);
             } else {
-                //alert("Tu navegador no soporta geolocalización.");
+                console.log("Tu navegador no soporta geolocalización.");
             }
             function mostrarUbicacion(position) {
                 const latitud = position.coords.latitude;
@@ -782,7 +791,6 @@ document.addEventListener('DOMContentLoaded',()=>{
                     break;
                 }
             }
-            //ua = navigator.userAgent;
         })();
 
         const checkoutform = document.querySelector("#checkoutForm");
@@ -809,22 +817,9 @@ document.addEventListener('DOMContentLoaded',()=>{
                         timer: 2000,
                         timerProgressBar: true
                     }).then(()=>{
-                        let wsp = '';
-                        let texto = "┗━━━━━━⊱ 𝑵𝒖𝒆𝒗𝒐 𝒑𝒆𝒅𝒊𝒅𝒐 ⊰━━━━━━┛";
-                        if(esmovil){
-                            wsp =`
-                                https://wa.me/+573106574835?text=%0A${texto}%0A%0A➢%20*Nombre:*%20%20_${rpa.message.nombre}_%0A%0A➢%20*Número%20de%20teléfono:*%20%20_${rpa.message.telefono}_%0A%0A➢%20*Dirección:*%20%20_${rpa.message.direccion}_%0A%0A➢%20*Pedido:*%0A${rpa.message.pedido}%0A%0A➢%20*Total:%20$${rpa.message.total}*%0A%0A➢%20*Nota:*%0A_${rpa.message.comentario}_%0A%0A➢%20*Realizado%20el:*%20_${rpa.message.fecha}_%0A%0A%0A%0Aᴾᵒʷᵉʳᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ
-                            `;
-                        }
-                        else {
-                            wsp =`
-                                https://web.whatsapp.com/send/?phone=%2B573106574835&text=%0A${texto}%0A%0A➢%20*Nombre:*%20%20_${rpa.message.nombre}_%0A%0A➢%20*Número%20de%20teléfono:*%20%20_${rpa.message.telefono}_%0A%0A➢%20*Dirección:*%20%20_${rpa.message.direccion}_%0A%0A➢%20*Pedido:*%0A${rpa.message.pedido}%0A%0A➢%20*Total:%20$${rpa.message.total}*%0A%0A➢%20*Nota:*%0A_${rpa.message.comentario}_%0A%0A➢%20*Realizado%20el:*%20_${rpa.message.fecha}_%0A%0A%0A%0Aᴾᵒʷᵉʳᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ&type=phone_number&app_absent=0
-                            `;
-                        }
                         numelems();
                         get_mycart();
-                        window.open(wsp,"_blank");
-                        window.focus();
+                        abrirWhatsAppPedido(rpa,rpa.message.telefono);
                     });
                 }
                 else {
@@ -844,10 +839,57 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 })
 
+function abrirWhatsAppPedido(rpa,phone) {
+
+const mensaje = `
+
+▁▂▃▅▆ ɴᴜᴇᴠᴏ ᴘᴇᴅɪᴅᴏ ▆▅▃▂▁
+
+➢ *Nombre:* _${rpa.message.nombre}_
+➢ *Número de teléfono:* _${rpa.message.telefono}_
+➢ *Dirección:* _${rpa.message.direccion}_
+➢ *Pedido:*
+${rpa.message.pedido}
+﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊﹊
+➢ *Total: $${rpa.message.total}*
+
+➢ *Nota:*
+_${rpa.message.comentario}_
+
+*Pedido realizado el:* _${rpa.message.fecha}_
+
+ᴰᵉᵛᵉˡᵒᵖᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ
+`;
+    const encodedMsg = mensaje
+    .replace(/\n/g, "%0A")
+    .replace(/ /g, "%20");
+
+    const isDesktop = !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    let webUrl = `https://api.whatsapp.com/send?phone=%2B57${phone}&text=${encodedMsg}`;
+    if (isDesktop || esIOS()) {
+        if(esIOS()){
+            location.href = webUrl;
+            return;
+        }
+        window.open(webUrl, "_blank");
+        return;
+    }
+    webUrl = `https://wa.me/+57${phone}?text=${encodedMsg}`;
+    window.open(webUrl, "_blank");
+    return;
+}
+
+
+function esIOS() {
+    const userAgent = navigator.userAgent;
+    const isIPDevice = /iPhone|iPad|iPod/i.test(userAgent);
+    const isModernIPad = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 0;
+    return isIPDevice || isModernIPad;
+}
 
 function milesjs(mil){
-	var mlts = mil.toString();
-	var miles = mlts.length;
+	var mlts = mil?.toString();
+	var miles = mlts?.length;
 	if (miles === 4) {
 		mil = mlts.substr(0, miles -3)+"."+mlts.substr(-3);
 	}

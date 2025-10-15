@@ -4,7 +4,7 @@
     if(isset($_GET['num'])){
         $rev = isset($_GET['rev']) ? 1 : 0;
         $facnum = $_GET['num'];
-        $vendedor = "";
+        $vend = "";
         $sucursal = "";
         $fechareg = "";
         $recibido = "";
@@ -12,6 +12,11 @@
         $metodopago = "";
         $cambio = 0;
         $total = 0;
+
+        $org = $con -> prepare("SELECT * FROM company");
+        $org -> execute();
+        $Rorg = $org -> get_result();
+        $company = $Rorg -> fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -109,7 +114,7 @@
 </style>
 <body>
     <div class="container">
-        <img src="../res/images/logo.jpeg" alt="company logo" class="logo">
+        <img src="<?=$company['logotipo'] ?? '../res/images/logo.jpeg';?>" alt="company logo" class="logo">
         <div class="cinfo">
             <div class="cdata">
                 <b>Factura No.</b><span><?=$facnum;?></span>
@@ -127,10 +132,12 @@
                 <b>Sucursal:</b><span id="sucursal">Sucursal</span>
             </div>
             <div class="cdata">
-                <b>Dirección:</b><span id="sucursal">Cra 7a #15-18 B/Las Américas</span>
+                <b>Dirección:</b><span id="sucursal"><?=$company['direccion'] ?? 'Dirección';?></span>
             </div>
             <div class="cdata">
-                <b>Contacto:</b><span id="sucursal">310 000 0000 - 312 000 0000</span>
+                <b>Contacto:</b><span id="sucursal">
+                    <?=$company['ptelefono'] ?? '310 000 0000';?> - <?=$company['stelefono'] ?? '312 000 0000';?>
+                </span>
             </div>
         </div>
         <table>
@@ -179,7 +186,9 @@
                         $cuser -> execute();
                         $Rcuser = $cuser -> get_result();
                         $nom = $Rcuser -> fetch_assoc();
-                        $vendedor = $nom['nombre'] ?? $vendedor . " " . $nom['apellido'] ?? '';
+                        $vnom = $nom['nombre'] ?? 'Vendedor';
+                        $vape = $nom['apellido'] ?? '';
+                        $vend = $vnom . " " . $vape;
                         echo '
                             <tr style="background:#1f1f1f;"><td></td><td></td><td></td><td></td></tr>
                             <tr>
@@ -225,13 +234,14 @@
             <b style="margin: 0 auto;margin-top:10px;">¡Gracias por preferirnos!</b>
             <i style="margin: 0 auto;">Seguiremos trabajando para brindarle la mejor atención.</i>
         </div>
-        <div class="footer"><span>&copy; Cryptocore <?=date('Y');?></span></div>
+        <b style="font-size: 9px;text-align:center;"><?=$company['organizacion'];?><br>NIT: <?=$company['nit'];?></b>
+        <div class="footer"><span>Developed by &copy; Cryptocore <?=date('Y');?></span></div>
     </div>
     <script>
         (()=>{
             let rev = '<?=$rev;?>';
             document.querySelector("#fechafac").textContent = '<?=$fechareg;?>';
-            document.querySelector("#vendedor").textContent = '<?=$vendedor;?>';
+            document.querySelector("#vendedor").textContent = '<?=$vend;?>';
             document.querySelector("#sucursal").textContent = '<?=$sucursal;?>';
             document.querySelector("#clinom").textContent = '<?=$cliente . " / " . $clidoc;?>';
             window.print();

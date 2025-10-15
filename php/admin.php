@@ -3,6 +3,7 @@
     include('../config/connector.php');
     include('../config/errorhandler.php');
     include('../php/optimizador.php');
+    include('../includes/verificator.php');
 
     if(isset($_GET['set_roulette']) && $_GET['set_roulette'] === $clav) {
         $estado = 1;
@@ -39,6 +40,76 @@
                 "status" => "error",
                 "title" => "Error!",
                 "message" => "No se ha podido activar la ruleta: " . $ins -> error
+            ]);
+        }
+    }
+
+    if(isset($_GET['set_clean']) && $_GET['set_clean'] === $clav) {
+        $pass = trim($_POST['contrasena']);
+        $vrf = $_POST['gene'];
+        $campo = $_POST['verif'];
+        $cons = $con -> prepare("SELECT rol,usuario,contrasena FROM usuarios WHERE usuario = ?");
+        $cons -> bind_param('s',$sesion);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0){
+            $us = $Rcons -> fetch_assoc();
+            if($us['rol'] !== 'administrador'){
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Usted no tiene autorización para realizar esta acción!"
+                ]);
+                exit;
+            }
+            if(!password_verify($pass,$us['contrasena'])){
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Contraseña incorrecta!"
+                ]);
+                exit;
+            }
+            if($campo !== $vrf) {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Código de verificación incorrecto!"
+                ]);
+                exit;
+            }
+            try {
+                $nombreDB = $con->query("SELECT DATABASE()")->fetch_row()[0];
+                $con->query("SET FOREIGN_KEY_CHECKS = 0");
+                $tablas = $con->query("SHOW TABLES");
+                while ($fila = $tablas->fetch_array()) {
+                    $tabla = $fila[0];
+                    $con->query("TRUNCATE TABLE `$tabla`");
+                }
+                $triggers = $con->query("SHOW TRIGGERS FROM `$nombreDB`");
+                while ($fila = $triggers->fetch_assoc()) {
+                    $trigger = $fila['Trigger'];
+                    $con->query("DROP TRIGGER IF EXISTS `$trigger`");
+                }
+                $con->query("SET FOREIGN_KEY_CHECKS = 1");
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Correcto!",
+                    "message" => "El sistema se ha reestablecido correctamente"
+                ]);
+            } catch (Exception $e) {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "No se ha podido reestablecer el sistema: " . $e -> getMessage()
+                ]);
+            }
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Usuario no encontrado"
             ]);
         }
     }

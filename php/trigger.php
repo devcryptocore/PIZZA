@@ -1,9 +1,9 @@
 <?php
 
-    include('../config/connector.php');
+    /*include('../config/connector.php');
     include('../config/errorhandler.php');
     include('optimizador.php');
-    include('../includes/verificator.php');
+    include('../includes/verificator.php');*/
 
     if(isset($_GET['create_triggers']) && $_GET['create_triggers'] === $clav){
          $mess = "";
@@ -230,11 +230,11 @@
             $mess .= "<span>Error creando after_delete_venta: " . $con->error . "</span><br>";
         }
 
-        echo json_encode([
+        /*echo json_encode([
             "status" => "info",
             "title"  => "Triggers",
             "message"=> $mess
-        ]);
+        ]);*/
 
     }
 
