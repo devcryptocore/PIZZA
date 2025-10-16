@@ -1,10 +1,6 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('optimizador.php');
-    $sucursal = "las_americas";
-    $sesion = "admin";//DUMMIE PARA SESION DE USUARIO
+    include('../includes/verificator.php');
 
     if(isset($_GET['set_new_employee']) && $_GET['set_new_employee'] === $clav) {
         $nombre = $_POST['nombre'];
@@ -48,10 +44,25 @@
         $Rcons = $cons -> get_result();
         if($Rcons -> num_rows > 0) {
             $data = "";
+            $isuser = "";
             while($obl = mysqli_fetch_array($Rcons)){
+                $ido = $con -> prepare("SELECT documento FROM usuarios WHERE documento = ?");
+                $ido -> bind_param('s',$obl['documento']);
+                $ido -> execute();
+                $Rido = $ido -> get_result();
+                if($Rido -> num_rows > 0){
+                    $isuser = "";
+                }
+                else {
+                    $isuser = '<button class="actButton def" onclick="opr_action(\'def\',\''.$obl['documento'].'\')"></button>';
+                }
+                $fotoem = $obl['foto'] ?? '../res/icons/user.svg';
                 $data .= '
                     <tr>
                         <td>'.$obl['id'].'</td>
+                        <td>
+                            <div class="emphoto" style="background-image:url(\''.$fotoem.'\')"></div>
+                        </td>
                         <td>'.$obl['nombre'] . ' ' . $obl['apellido'] . '</td>
                         <td>'.$obl['documento'].'</td>
                         <td><a href="https://wa.me/+57'.$obl['telefono'].'" target="_blank">'.$obl['telefono'].'</a></td>
@@ -59,6 +70,7 @@
                         <td><a href="mailto:'.$obl['email'].'" target="_blank">'.$obl['email'].'</td>
                         <td>'.$obl['fecharegistro'].'</td>
                         <td>
+                            '.$isuser.'
                             <button class="actButton mod" onclick="opr_action(\'mod\',\''.$obl['id'].'\')"></button>
                             <button class="actButton del" onclick="opr_action(\'del\',\''.$obl['id'].'\')"></button>
                         </td>
@@ -123,6 +135,7 @@
                         </div>
                         <div class="oneInput">
                             <div class="inputContainer con-image" style="justify-content:center;">
+                                <input type="hidden" name="old_ephoto" value="'.$opr['foto'].'">
                                 <input type="file" name="foto_empleado" id="portada" class="form-image" value="'.($opr['foto'] ?? '').'">
                                 <label for="portada" id="forPortada" class="fore-photo" style="background:url('.($opr['foto'] ?? '').') center / cover no-repeat;"></label>
                             </div>
@@ -152,7 +165,7 @@
         $telefono = $_POST['telefono'];
         $direccion = $_POST['direccion'];
         $email = $_POST['email'];
-        if(isset($_FILES['foto_empleado'])) {
+        if(isset($_FILES['foto_empleado']) && $_FILES['foto_empleado']['error'] === UPLOAD_ERR_OK) {
             $dir = "../res/images/empleados/" . sanear_string($documento);
             if(!is_dir($dir)){
                 mkdir($dir, 0777, true);
@@ -160,8 +173,26 @@
             $fempleado = guardarFoto("foto_empleado", sanear_string($documento), $dir);
         }
         else {
-            $fempleado = "../res/icons/image.svg";
+            $fempleado = $_POST['old_ephoto'] ?? "../res/icons/image.svg";
         }
+        $consdoc = $con -> prepare("SELECT documento FROM operadores WHERE id = ?");
+        $consdoc -> bind_param('i',$id);
+        $consdoc -> execute();
+        $Rconsdoc = $consdoc -> get_result();
+        $dcu = $Rconsdoc -> fetch_assoc()['documento'];
+
+        $coad = $con -> prepare("SELECT * FROM usuarios WHERE documento = ?");
+        $coad -> bind_param('s',$dcu);
+        $coad -> execute();
+        $Rcoad = $coad -> get_result();
+        if($Rcoad -> num_rows > 0){
+            $i = $Rcoad -> fetch_assoc();
+            $idu = $i['id'];
+            $upus = $con -> prepare("UPDATE usuarios SET documento = ? WHERE id = ?");
+            $upus -> bind_param('si',$documento,$idu);
+            $upus -> execute();
+        }
+        
         $ins = $con -> prepare("UPDATE operadores SET nombre = ?,apellido = ?,documento = ?,telefono = ?,direccion = ?,email = ?, foto = ? WHERE id = ?");
         $ins -> bind_param('sssssssi',$nombre,$apellido,$documento,$telefono,$direccion,$email,$fempleado,$id);
         if($ins -> execute()) {
@@ -185,6 +216,22 @@
         $dl = $con -> prepare("DELETE FROM operadores WHERE id = ?");
         $dl -> bind_param('i',$id);
         if($dl -> execute()){
+            $consdoc = $con -> prepare("SELECT documento FROM operadores WHERE id = ?");
+            $consdoc -> bind_param('i',$id);
+            $consdoc -> execute();
+            $Rconsdoc = $consdoc -> get_result();
+            $dcu = $Rconsdoc -> fetch_assoc()['documento'];
+            $coad = $con -> prepare("SELECT * FROM usuarios WHERE documento = ?");
+            $coad -> bind_param('s',$dcu);
+            $coad -> execute();
+            $Rcoad = $coad -> get_result();
+            if($Rcoad -> num_rows > 0){
+                $i = $Rcoad -> fetch_assoc();
+                $idu = $i['id'];
+                $upus = $con -> prepare("DELETE FROM usuarios WHERE id = ?");
+                $upus -> bind_param('i',$idu);
+                $upus -> execute();
+            }
             echo json_encode([
                 "status" => "success",
                 "title" => "Correcto!",
@@ -196,6 +243,43 @@
                 "status" => "error",
                 "title" => "Error!",
                 "message" => "No se ha podido eliminar los datos del empleado"
+            ]);
+        }
+    }
+
+    if(isset($_GET['set_admindata']) && $_GET['set_admindata'] === $clav) {
+        $usuario = sanear_string(htmlspecialchars($_POST['usuario']));
+        $confcontrasena = htmlspecialchars($_POST['conf-contrasena']);
+        $contrasena = htmlspecialchars($_POST['contrasena']);
+        $documento = htmlspecialchars($_POST['documento']);
+        $rol = htmlspecialchars($_POST['rol']);
+        $sucursal = htmlspecialchars($_POST['sucursal']);
+        $estado = 1;
+        $password = password_hash($contrasena, PASSWORD_DEFAULT);
+
+        if($contrasena !== $confcontrasena){
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Las contraseñas no coinciden"
+            ]);
+            exit;
+        }
+
+        $ins = $con -> prepare("INSERT INTO usuarios (documento,rol,usuario,contrasena,sucursal,estado) VALUES (?,?,?,?,?,?)");
+        $ins -> bind_param('sssssi',$documento,$rol,$usuario,$password,$sucursal,$estado);
+        if($ins -> execute()) {
+            echo json_encode([
+                "status" => "success",
+                "title" => "Acceso creado!",
+                "message" => "Ahora el usuario tiene acceso al sistema como " . $rol
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "No se ha podido realizar el registro del usuario: " . $con -> error
             ]);
         }
     }

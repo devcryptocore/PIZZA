@@ -1,8 +1,5 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('optimizador.php');
     include('../includes/verificator.php');
 
     if(isset($_GET['new_ingredient']) && $_GET['new_ingredient'] === $clav){

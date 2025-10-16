@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     const shopingcart = document.querySelector("#shopping_cart");
     const somepr = document.querySelector("#someproducts");
     const installBtn = document.getElementById('installPWA');
+    const orgname = document.querySelectorAll(".org-name");
+    const setsucinfo = document.querySelector(".sucs_section");
+    const aboutus = document.querySelector("#aboutus");
+
     let deferredPrompt;
     let v = Date.now();
     let temps = "session_" + v;
@@ -24,6 +28,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     let fechax = new Date();
     let year = fechax.getFullYear();
     const esmovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let marker;
+    var mapa = L.map('mapa').setView([1.604526, -77.131243], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://devcryptocore.github.io">Cryptocore</a>'
+    }).addTo(mapa);
 
 
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -59,6 +68,48 @@ document.addEventListener('DOMContentLoaded',()=>{
         catch (err) {
             console.error(err);
         }
+
+        const urc = source.get_company_data;
+        try {
+            const comp = await fetch(urc);
+            if(!comp.ok){throw new Error(`${comp.status} / ${comp.statusText}`);}
+            const respu = await comp.json();
+            let sucur = respu.message.sucursales;
+            let stlnom = respu.message.organizacion;
+            if(stlnom.split(" ").length > 1) {
+                stlnom = stlnom.split(" ");
+                stlnom = `${stlnom[0]}<b> ${stlnom.slice(1)}</b>`;
+            }
+            else {
+                let nlt = parseInt(stlnom.length / 2);
+                stlnom = `${stlnom.slice(0,nlt)}<b>${stlnom.slice(nlt)}</b>`;
+            }
+            orgname.forEach(on => {
+                on.innerHTML = `
+                    <img data-aos="fade-down" src="${respu.message.logotipo.replace("../","")}" alt="Pizza Logo" id="companylogo">
+                    <h1 data-aos="fade-right">${stlnom}</b></h1>
+                `;
+            });
+            aboutus.innerHTML = `
+                <video autoplay muted loop playsinline>
+                    <source src="res/images/bkvid.mp4" type="video/mp4">
+                </video>
+                <h2 data-aos="fade-left">Nosotros:</h2>
+                <p data-aos="fade-right">${respu.message.nosotros}</p>
+            `;
+            for(const k in sucur) {
+                marker = L.marker([sucur[k].sucubicacion.split(',')[0], sucur[k].sucubicacion.split(',')[1]]).addTo(mapa);
+                marker.bindPopup(`<a href="https://www.google.com/maps/place/${sucur[k].sucubicacion}" target="_blank"><b>${k}</b></a>`);
+
+                setsucinfo.innerHTML += `
+                    <span class="dircontainer" data-aos="fade-up">${sucur[k].sucdireccion}</span>
+                `; 
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+
     })();
 
     window.get_mycart = async () => {
@@ -336,9 +387,12 @@ document.addEventListener('DOMContentLoaded',()=>{
             if (!response.ok) throw new Error(`Error: ${response.status} / ${response.statusText}`);
             const data = await response.json();
             if (data.status !== "success") throw new Error("Error en datos de pizzas");
-            const pzz = data.pzz;
-            const description = data.description;
+            let pzz = data?.pzz;
+            const description = data?.description;
             const nms = Object.keys(description);
+            if(pzz.length === 0){
+                pzz = ["res/images/p1.png","res/images/p2.png","res/images/p3.png","res/images/p4.png"];
+            }
             pzz.forEach(e => {
                 if(document.querySelector("#mainSect")){
                     document.querySelector("#mainSect").innerHTML += `
@@ -354,7 +408,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             animatedDiv.forEach((x, j) => {
                 x.style.backgroundImage = `url(${pzz[j]})`;
                 x.addEventListener('click', async () => {
-                    const produc = description[nms[j]].id;
+                    const produc = description[nms[j]]?.id ?? 0;
                     const uip = source.getproductinfo;
                     const pid = new FormData();
                     try {
@@ -363,6 +417,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                             method: "POST",
                             body: pid
                         });
+                        if(!inprod.ok){throw new Error(``);}
                         const rprod = await inprod.json();
                         Swal.fire({
                             title: rprod.message.producto,
@@ -410,7 +465,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                 const oldB = pizzaTittle.querySelector("b");
                 if (oldB) oldB.remove();
                 const newB = document.createElement("b");
-                const pza = nms[index];
+                const pza = nms[index] ?? 'Principales';
                 newB.innerHTML = pza;
                 const datos = description[pza];
                 const container = document.querySelector(".descontainer");
@@ -492,8 +547,8 @@ document.addEventListener('DOMContentLoaded',()=>{
             const cat = await fetch(uricat);
             if (!cat.ok) throw new Error(`Error: ${cat.status} / ${cat.statusText}`);
             const resp = await cat.json();
-            if(document.querySelector("#categoriesContainer")){
-                document.querySelector("#categoriesContainer").innerHTML = resp.message;
+            if(document.querySelector("#categs")){
+                document.querySelector("#categs").innerHTML = resp.message;
             }
         }
         catch (err) {

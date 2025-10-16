@@ -1,8 +1,5 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('optimizador.php');
     include('../includes/verificator.php');
     include('vendor/autoload.php');
     use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -16,6 +13,12 @@
         if($Rconsul -> num_rows > 0){
             $list = "";
             while($ing = mysqli_fetch_array($Rconsul)){
+                if($ing['unidad'] == 'unidad'){
+                    $valorcan = 'value="1" readonly';
+                }
+                else {
+                    $valorcan = '';
+                }
                 $list .= '
                     <li class="elem-ingrediente">
                         <div class="chb">
@@ -23,7 +26,7 @@
                             <label for="ing_'.$ing['id'].'">'.$ing['nombre'].'</label>
                         </div>
                         <div class="chcant">
-                            <input type="number" name="cantidades['.$ing['id'].']" id="cant_'.$ing['id'].'" placeholder="Cant. '.units($ing['unidad']).'">
+                            <input type="number" '.$valorcan.' name="cantidades['.$ing['id'].']" id="cant_'.$ing['id'].'" placeholder="Cant. '.units($ing['unidad']).'">
                         </div>
                     </li>
                 ';
@@ -86,7 +89,7 @@
             foreach ($_POST['ingredientes'] as $id) {
                 $cantidad = intval($_POST['cantidades'][$id]);
                 $cns = $con -> prepare("SELECT * FROM ingredientes WHERE id = ? AND sucursal = ?");
-                $cns -> bind_param('is',$id,$sucursal);
+                $cns -> bind_param('is',$id,$sucursal);//SE ESTÁ DESCONTANDO UNA UNIDAD SIN SABER POR QUE
                 $cns -> execute();
                 $Rcns = $cns -> get_result();
                 if($Rcns -> num_rows > 0){

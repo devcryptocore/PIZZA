@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
         });
     }
 
+	if(document.querySelector(".versionizedog")){
+        document.querySelectorAll('.versionizedog').forEach(verjs => {
+            let scjs = verjs.getAttribute("content");
+            verjs.setAttribute("src",`${scjs}?${v}`);
+        });
+    }
+
 	if(document.querySelector(".inputField")){
 		const inputs = document.querySelectorAll('.inputField');
 		inputs.forEach(inp => {

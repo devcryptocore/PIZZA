@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     (async ()=> {
         const urix = `../${uris.orgdata}`;
-        try {
+        //try {
             const org = await fetch(urix);
             if(!org.ok){throw new Error(`${org.status} / ${org.statusText}`);}
             const resp = await org.json();
@@ -289,10 +289,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     });
                 }
             }
-        }
+        /*}
         catch (err) {
             console.error(err);
-        }
+        }*/
     })();
 
     if(document.querySelector(".footerSignature")) {
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                         method: "POST",
                         body: userdata
                     });
-                    const resp = await send.json();
+                    const resp = await send.json();console.log(resp);
                     Swal.fire({
                         title: resp.title,
                         text: resp.message.text,

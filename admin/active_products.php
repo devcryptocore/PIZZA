@@ -7,7 +7,7 @@
 <script type="module" src="../js/active-product.js?v=<?=$version;?>"></script>
 <body>
     <div class="headbar">
-        <h1>Nueva venta</h1>
+        <h1>Productos activos</h1>
         <div class="total-container"></div>
         <div class="search-container">
             <input type="text" id="FiltrarContenido" placeholder="Buscar producto" class="search-bar">

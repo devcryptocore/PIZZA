@@ -9,6 +9,17 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Max Pizza">
+    <meta name="description" content="Max Pizza App">
+    <meta name="theme-color" content="#d6d6d6">
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Max Pizza" />
+    <meta property="og:description" content="La Pizza de la Corona. Come como un Rey!" />
+    <meta property="og:image" class="versionizedog" content="https://pizzamaxpizza.com/pizzabanner.jpg" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="632" />
+    <meta property="og:url" content="https://pizzamaxpizza.com/" />
+    <meta property="og:site_name" content="Pizzería Max Pizza" />
+    <meta property="fb:app_id" content="368569449013481" />
     <link rel="apple-touch-icon" href="res/icons/icon-192x192.png">
     <link rel="shortcut icon" href="res/icons/pizza2.svg" type="image/x-icon">
     <link rel="stylesheet" href="css/ruleta.css" class="versionized">
@@ -16,11 +27,13 @@
     <link rel="stylesheet" href="css/sweetAlert.css">
     <link rel="stylesheet" href="css/aos.css">
     <link rel="stylesheet" href="res/izi/css/iziToast.css">
+    <link rel="stylesheet" href="css/leaflet.css">
     <script type="module" src="js/main-mobile.js" class="versionizedjs"></script>
     <script src="js/aos.js"></script>
     <script src="js/sweetAlert.js"></script>
     <script src="js/fitty.min.js"></script>
     <script src="res/izi/js/iziToast.js"></script>
+    <script src="js/mapsJS/leaflet.js"></script>
 </head>
 <body>
     <div id="loader">
@@ -31,7 +44,7 @@
     <div class="navBar">
         <div class="org-name">
             <img data-aos="fade-down" src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
-            <h1 data-aos="fade-right">MAX<b>PIZZA</b></h1>
+            <h1 data-aos="fade-right">NEXT<b>FLOW</b></h1>
         </div>
         <div class="nav-left-cont">
             <button class="my-cart" id="my_cart" data-aos="fade-left"><span id="cartCount"></span></button>
@@ -54,15 +67,29 @@
         <div class="descript">
             <div class="descontainer"></div>
         </div>
-        <section class="content-sec" id="categoriesContainer"></section>
+        <section class="content-sec" id="categoriesContainer">
+            <h2 data-aos='fade-right'>Categorías</h2>
+            <div id="categs"></div>
+        </section>
         <section class="content-sec someprod">
-            <div class="some-pizzas" id="someproducts" data-aos="fade-left"></div>
+            <div class="some-pizzas" id="someproducts" data-aos="fade-rigth"></div>
         </section>
         <section class="content-sec picont">
-            <div class="ifimage" data-aos="fade-down"></div>
-            <div class="message-com" data-aos="fade-up">
+            <div class="ifimage" data-aos="fade-left"></div>
+            <div class="message-com" data-aos="fade-right">
                 Desde la vibra relajada de nuestro local hasta la primera rebanada que se te escape de la mano, cada detalle está pensado para una experiencia 100% real. 
             </div>
+        </section>
+        <section class="content-sec" id="mapContainer">
+            <div id="sucinfo">
+                <h2 data-aos="fade-left">Visítanos</h2>
+                <div class="sucs_section"></div>
+            </div>
+            <div id="mapa" data-aos="fade-right"></div>
+        </section>
+        <section class="content-sec" id="aboutus">
+            <h2 data-aos="fade-left">Nosotros:</h2>
+            <p data-aos="fade-right">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum iusto nobis culpa nostrum quaerat quam repudiandae tenetur neque. Necessitatibus harum placeat nulla eligendi tenetur similique a dolore explicabo consequatur ad!</p>
         </section>
         <section class="content-sec" style="background: unset;">
             <div class="delivery-desc">
@@ -82,7 +109,7 @@
                 <div class="btcontent">
                     <h3>La pizza está a un clic. ¡Pídela ya!</h3>
                     <span>¿Listo para ordenar? ¡Te esperamos!</span>
-                    <button class="dwapp" id="installPWA" data-aos="fade-up" data-aos-offset="290" data-aos-delay="100">Descarga la app</button>
+                    <button class="dwapp" id="installPWA" data-aos="fade-right" data-aos-offset="290">Descarga la app</button>
                 </div>
             </div>
             <div class="footercontent">

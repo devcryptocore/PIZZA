@@ -14,3 +14,18 @@
     background: #ff00573d url(../res/icons/delete-red.svg) center / 15px no-repeat;
     color: #E91E63;
 }
+.def {
+    background: #bababa url(../res/icons/medal.svg) center / 15px no-repeat;
+    color: #1f1f1f;
+    border: 1px solid #1f1f1f;
+    border-radius: 6px;
+}
+.emphoto {
+    width: 40px;
+    aspect-ratio: 1/1;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    border: 2px solid var(--dark-grey);
+}

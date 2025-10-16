@@ -1,5 +1,4 @@
 <?php
-    include('../config/connector.php');
     include('../includes/header.php');
     $inicio = $_GET['inicio'] ?? '';
     $fin    = $_GET['fin'] ?? '';

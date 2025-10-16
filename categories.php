@@ -42,6 +42,11 @@
     <script src="res/izi/js/iziToast.js"></script>
     <script type="module" src="js/active-product.js?v=<?=$version;?>"></script>
 </head>
+<style>
+    body {
+        background: #121619 url(res/images/pizafondo.webp) center / 100% repeat-y;
+    }
+</style>
 <body>
     <div class="navBar">
         <div class="org-name">

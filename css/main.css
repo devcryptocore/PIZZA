@@ -294,6 +294,9 @@ input[type='number']::-webkit-inner-spin-button {
     justify-content: space-between;
     border-bottom: 1px dotted var(--dark-grey);
 }
+.hidden-element {
+    display: none;
+}
 @media screen and (max-width: 1024px) {
     ::-webkit-scrollbar {
         width: 4px;

@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                         </div>
                         <div class="oneInput">
                             <div class="inputContainer con-image" style="justify-content:center;">
-                                <input type="file" name="foto_empleado" id="portada" class="form-image" required>
+                                <input type="file" name="foto_empleado" id="portada" class="form-image">
                                 <label for="portada" id="forPortada" class="fore-photo"></label>
                             </div>
                         </div>
@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             showCancelButton: false,
             showConfirmButton: false
         });
+        activelabel();
         if(document.querySelector(".form-image")){
             const pimage = document.querySelectorAll(".form-image");
             pimage.forEach(f => {
@@ -109,6 +110,139 @@ document.addEventListener("DOMContentLoaded",()=>{
     window.opr_action = async (act,id) => {
         const ism = new FormData();
         ism.append("id",id);
+        if(act == 'def'){
+            Swal.fire({
+                title: "Crear acceso al sistema",
+                html: `
+                    <style>
+                        .form-container h2 {
+                            color: #202020ff;
+                            font-size: 2em;
+                            margin: 0;
+                        }
+                        .form-container span {
+                            font-size: 12px;
+                            color: #5c5c5cff;
+                            padding: 0px 40px;
+                        }
+                        .inputContainer {
+                            padding: 0 40px 0 40px;
+                            background-size: 15px;
+                        }
+                        .showhiddepass {
+                            width: 35px;
+                            aspect-ratio: 1/1;
+                            padding: 0 !important;
+                            background: transparent url(../res/icons/show-eye.svg) center / 25px no-repeat;
+                            position: absolute;
+                            right: 0;
+                        }
+                        .showhiddepass-active {
+                            background: transparent url(../res/icons/hide-eye.svg) center / 25px no-repeat;
+                        }
+                    </style>
+                    <div class="form-container">
+                        <form id="newAdmin">
+                            <input type="hidden" value="${id}" name="documento">
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/user.svg)">
+                                    <select class="inputField" name="rol" id="rol" required>
+                                        <option value="operador" selected>Operador</option>
+                                        <option value="gestionador">Gestionador</option>
+                                        <option value="administrador">Administrador</option>
+                                    <select>
+                                    <label for="rol" class="active-label">Rol</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/store.svg)">
+                                    <select class="inputField" name="sucursal" id="sucursal" required><select>
+                                    <label for="sucursal" class="active-label">Sucursal</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/user.svg)">
+                                    <input type="text" name="usuario" id="usuario" class="inputField" autocomplete="off" required>
+                                    <label for="usuario">Usuario</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/password.svg)">
+                                    <span class="showhiddepass"></span>
+                                    <input type="password" name="contrasena" id="contrasena" class="inputField" required autocomplete="off">
+                                    <label for="contrasena">Contraseña</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background-image:url(../res/icons/password.svg)">
+                                    <span class="showhiddepass"></span>
+                                    <input type="password" name="conf-contrasena" id="conf-contrasena" class="inputField" required autocomplete="off">
+                                    <label for="conf-contrasena">Confirmar contraseña</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <input type="submit" value="Continuar" class="send-button">
+                            </div>
+                        </form>
+                    </div>
+                `,
+                showCancelButton: false,
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+            activelabel();
+            document.querySelectorAll(".showhiddepass").forEach(p => {
+                let fl = 0;
+                let inp = p.nextElementSibling;
+                p.addEventListener('click', ()=>{
+                    if(fl == 1){
+                        p.classList.remove("showhiddepass-active");
+                        inp.setAttribute("type","password");
+                        fl = 0;
+                    }
+                    else {
+                        p.classList.add("showhiddepass-active");
+                        inp.setAttribute("type","text");
+                        fl = 1;
+                    }
+                });
+            });
+            const urisucs = `../${uris.get_sucursales}`;
+            try{
+                const consu = await fetch(urisucs);
+                if(!consu.ok){throw new Error(`${consu.status} / ${consu.statusText}`)}
+                const respu = await consu.json();
+                if(respu.status != 'empty'){
+                    document.querySelector("#sucursal").innerHTML += respu.message.sucursaleshtml;
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
+            const newadmin = document.querySelector("#newAdmin");
+            newadmin.addEventListener('submit', async (na) => {
+                na.preventDefault();
+                const urd = `../${uris.setadmindata}`;
+                const adata = new FormData(na.target);
+                try {
+                    const sdt = await fetch(urd,{
+                        method: "POST",
+                        body: adata
+                    });
+                    const rpd = await sdt.json();
+                    Swal.fire({
+                        title: rpd.title,
+                        text: rpd.message,
+                        icon: rpd.status
+                    }).then(()=>{
+                        location.reload();
+                    });
+                }
+                catch (err) {
+                    console.error(err);
+                }
+            });
+        }
         if(act == 'mod') {
             const urmod = `../${uris.mod_employee}`;
             const md = await fetch(urmod,{

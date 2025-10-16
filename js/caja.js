@@ -1,9 +1,6 @@
 import * as uris from './uris.js';
 document.addEventListener('DOMContentLoaded', () => {
     const set_box_state = document.querySelector("#set_box_state");
-    const set_entidad = document.querySelector("#set_entidad");
-    const transfer = document.querySelector("#transfer");
-    const movement = document.querySelector("#movement");
     const filtrocaja = document.querySelector("#FiltrarBoxes");
     const buscaja = document.querySelector("#boxsearch");
 
@@ -113,219 +110,228 @@ document.addEventListener('DOMContentLoaded', () => {
         
     });
 
-    set_entidad.addEventListener('click', async () => {
-        Swal.fire({
-            title: "Inicializar entidades",
-            html: `
-                <div class="form-container">
-                    <form id="entidadForm">
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
-                                <select name="entidad" id="metodoPago">
-                                    <option value="efectivo" selected>Efectivo</option>
-                                    <option value="nequi">Nequi</option>
-                                    <option value="daviplata">Daviplata</option>
-                                    <option value="bancolombia">Bancolombia</option>
-                                    <option value="davivienda">Davivienda</option>
-                                    <option value="consignacion">Consignación</option>
-                                    <option value="otro">Otro</option>
-                                </select>
+    if(document.querySelector("#set_entidad")){
+        const set_entidad = document.querySelector("#set_entidad");
+        set_entidad.addEventListener('click', async () => {
+            Swal.fire({
+                title: "Inicializar entidades",
+                html: `
+                    <div class="form-container">
+                        <form id="entidadForm">
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
+                                    <select name="entidad" id="metodoPago">
+                                        <option value="efectivo" selected>Efectivo</option>
+                                        <option value="nequi">Nequi</option>
+                                        <option value="daviplata">Daviplata</option>
+                                        <option value="bancolombia">Bancolombia</option>
+                                        <option value="davivienda">Davivienda</option>
+                                        <option value="consignacion">Consignación</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
-                                <input type="text" name="inicial" id="monto" required class="inputField" onkeyup="moneyFormat(this)">
-                                <label for="monto">Monto inicial</label>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
+                                    <input type="text" name="inicial" id="monto" required class="inputField" onkeyup="moneyFormat(this)">
+                                    <label for="monto">Monto inicial</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="oneInput">
-                            <input type="submit" class="send-button" value="Registrar">
-                        </div>
-                    </form>
-                </div>
-            `,
-            showConfirmButton: false,
-            showCancelButton: false,
-            showCloseButton: true
+                            <div class="oneInput">
+                                <input type="submit" class="send-button" value="Registrar">
+                            </div>
+                        </form>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCancelButton: false,
+                showCloseButton: true
+            });
+            activelabel();
+            const formentidad = document.querySelector("#entidadForm");
+            const ure = `../${uris.set_entidad}`;
+            formentidad.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = new FormData(e.target);
+                try {
+                    const ent = await fetch(ure,{
+                        method: "POST",
+                        body: data
+                    });
+                    const resp = await ent.json();
+                    Swal.fire({
+                        title: resp.title,
+                        text: resp.message,
+                        icon: resp.status
+                    }).then(()=>{
+                        location.reload();
+                    });
+                }
+                catch (er) {
+                    console.error(er);
+                }
+            });
+            
         });
-        activelabel();
-        const formentidad = document.querySelector("#entidadForm");
-        const ure = `../${uris.set_entidad}`;
-        formentidad.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = new FormData(e.target);
-            try {
-                const ent = await fetch(ure,{
-                    method: "POST",
-                    body: data
-                });
-                const resp = await ent.json();
-                Swal.fire({
-                    title: resp.title,
-                    text: resp.message,
-                    icon: resp.status
-                }).then(()=>{
-                    location.reload();
-                });
-            }
-            catch (er) {
-                console.error(er);
-            }
+    }
+    
+    if(document.querySelector("#transfer")){
+        const transfer = document.querySelector("#transfer");
+        transfer.addEventListener('click', ()=>{
+            Swal.fire({
+                title: "Transferencia de fondos",
+                html: `
+                    <div class="form-container">
+                        <form id="transferForm">
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
+                                    <select name="desde_entidad" id="desde">
+                                        <option value="efectivo" selected>Efectivo</option>
+                                        <option value="nequi">Nequi</option>
+                                        <option value="daviplata">Daviplata</option>
+                                        <option value="bancolombia">Bancolombia</option>
+                                        <option value="davivienda">Davivienda</option>
+                                        <option value="consignacion">Consignación</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                    <label for="desde">Desde</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
+                                    <select name="hacia_entidad" id="hacia">
+                                        <option value="efectivo" selected>Efectivo</option>
+                                        <option value="nequi">Nequi</option>
+                                        <option value="daviplata">Daviplata</option>
+                                        <option value="bancolombia">Bancolombia</option>
+                                        <option value="davivienda">Davivienda</option>
+                                        <option value="consignacion">Consignación</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                    <label for="hacia">Hacia</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
+                                    <input type="text" name="monto" id="monto" required class="inputField" onkeyup="moneyFormat(this)">
+                                    <label for="monto">Monto</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <input type="submit" class="send-button" value="Transferir">
+                            </div>
+                        </form>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCancelButton: false,
+                showCloseButton: true
+            });
+            const transferForm = document.querySelector("#transferForm");
+            transferForm.addEventListener('submit', async (t) => {
+                t.preventDefault();
+                const urit = `../${uris.transfer}`;
+                try {
+                    const dataTransfer = new FormData(transferForm);
+                    const transf = await fetch(urit,{
+                        method: "POST",
+                        body: dataTransfer
+                    });
+                    const resp = await transf.json();
+                    Swal.fire({
+                        title: resp.title,
+                        text: resp.message,
+                        icon: resp.status
+                    }).then(()=>{
+                        getboxes();
+                    });
+                }
+                catch (err) {
+                    console.error(err);
+                }
+            });
         });
-        
-    });
+    }
 
-    transfer.addEventListener('click', ()=>{
-        Swal.fire({
-            title: "Transferencia de fondos",
-            html: `
-                <div class="form-container">
-                    <form id="transferForm">
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
-                                <select name="desde_entidad" id="desde">
-                                    <option value="efectivo" selected>Efectivo</option>
-                                    <option value="nequi">Nequi</option>
-                                    <option value="daviplata">Daviplata</option>
-                                    <option value="bancolombia">Bancolombia</option>
-                                    <option value="davivienda">Davivienda</option>
-                                    <option value="consignacion">Consignación</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                                <label for="desde">Desde</label>
+    if(document.querySelector("#movement")) {
+        const movement = document.querySelector("#movement");
+        movement.addEventListener('click', ()=>{
+            Swal.fire({
+                title: "Nuevo movimiento",
+                html: `
+                    <div class="form-container">
+                        <form id="movementForm">
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
+                                    <select name="tipo" id="desde">
+                                        <option value="egreso" selected>Gasto</option>
+                                        <option value="ingreso">Entrada</option>
+                                    </select>
+                                    <label for="desde">Tipo</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
-                                <select name="hacia_entidad" id="hacia">
-                                    <option value="efectivo" selected>Efectivo</option>
-                                    <option value="nequi">Nequi</option>
-                                    <option value="daviplata">Daviplata</option>
-                                    <option value="bancolombia">Bancolombia</option>
-                                    <option value="davivienda">Davivienda</option>
-                                    <option value="consignacion">Consignación</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                                <label for="hacia">Hacia</label>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
+                                    <select name="entidad" id="entidad">
+                                        <option value="efectivo" selected>Efectivo</option>
+                                        <option value="nequi">Nequi</option>
+                                        <option value="daviplata">Daviplata</option>
+                                        <option value="bancolombia">Bancolombia</option>
+                                        <option value="davivienda">Davivienda</option>
+                                        <option value="consignacion">Consignación</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                    <label for="entidad">Fondos</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
-                                <input type="text" name="monto" id="monto" required class="inputField" onkeyup="moneyFormat(this)">
-                                <label for="monto">Monto</label>
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
+                                    <input type="text" name="monto" id="monto" required class="inputField" onkeyup="moneyFormat(this)">
+                                    <label for="monto">Monto</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="oneInput">
-                            <input type="submit" class="send-button" value="Transferir">
-                        </div>
-                    </form>
-                </div>
-            `,
-            showConfirmButton: false,
-            showCancelButton: false,
-            showCloseButton: true
+                            <div class="oneInput">
+                                <div class="inputContainer" style="background:url(../res/icons/about.svg) 5px / 20px no-repeat;">
+                                    <input type="text" name="concepto" id="concepto" required class="inputField">
+                                    <label for="concepto">Concepto</label>
+                                </div>
+                            </div>
+                            <div class="oneInput">
+                                <input type="submit" class="send-button" value="Registrar">
+                            </div>
+                        </form>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCancelButton: false,
+                showCloseButton: true
+            });
+            activelabel();
+            const movementForm = document.querySelector("#movementForm");
+            const urim = `../${uris.movement}`;
+            movementForm.addEventListener('submit', async (m) => {
+                m.preventDefault();
+                try {
+                    const datmov = new FormData(movementForm);
+                    const mov = await fetch(urim, {
+                        method: "POST",
+                        body: datmov
+                    });
+                    const resp = await mov.json();
+                    Swal.fire({
+                        title: resp.title,
+                        text: resp.message,
+                        icon: resp.status
+                    }).then(()=>{
+                        getboxes();
+                    });
+                }
+                catch (err) {
+                    console.error(err);
+                }
+            });
         });
-        const transferForm = document.querySelector("#transferForm");
-        transferForm.addEventListener('submit', async (t) => {
-            t.preventDefault();
-            const urit = `../${uris.transfer}`;
-            try {
-                const dataTransfer = new FormData(transferForm);
-                const transf = await fetch(urit,{
-                    method: "POST",
-                    body: dataTransfer
-                });
-                const resp = await transf.json();
-                Swal.fire({
-                    title: resp.title,
-                    text: resp.message,
-                    icon: resp.status
-                }).then(()=>{
-                    getboxes();
-                });
-            }
-            catch (err) {
-                console.error(err);
-            }
-        });
-    });
-
-    movement.addEventListener('click', ()=>{
-        Swal.fire({
-            title: "Nuevo movimiento",
-            html: `
-                <div class="form-container">
-                    <form id="movementForm">
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
-                                <select name="tipo" id="desde">
-                                    <option value="egreso" selected>Gasto</option>
-                                    <option value="ingreso">Entrada</option>
-                                </select>
-                                <label for="desde">Tipo</label>
-                            </div>
-                        </div>
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/money-dollar.svg) 5px / 20px no-repeat;">
-                                <select name="entidad" id="entidad">
-                                    <option value="efectivo" selected>Efectivo</option>
-                                    <option value="nequi">Nequi</option>
-                                    <option value="daviplata">Daviplata</option>
-                                    <option value="bancolombia">Bancolombia</option>
-                                    <option value="davivienda">Davivienda</option>
-                                    <option value="consignacion">Consignación</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                                <label for="entidad">Fondos</label>
-                            </div>
-                        </div>
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/dollar.svg) 5px / 20px no-repeat;">
-                                <input type="text" name="monto" id="monto" required class="inputField" onkeyup="moneyFormat(this)">
-                                <label for="monto">Monto</label>
-                            </div>
-                        </div>
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background:url(../res/icons/about.svg) 5px / 20px no-repeat;">
-                                <input type="text" name="concepto" id="concepto" required class="inputField">
-                                <label for="concepto">Concepto</label>
-                            </div>
-                        </div>
-                        <div class="oneInput">
-                            <input type="submit" class="send-button" value="Registrar">
-                        </div>
-                    </form>
-                </div>
-            `,
-            showConfirmButton: false,
-            showCancelButton: false,
-            showCloseButton: true
-        });
-        activelabel();
-        const movementForm = document.querySelector("#movementForm");
-        const urim = `../${uris.movement}`;
-        movementForm.addEventListener('submit', async (m) => {
-            m.preventDefault();
-            try {
-                const datmov = new FormData(movementForm);
-                const mov = await fetch(urim, {
-                    method: "POST",
-                    body: datmov
-                });
-                const resp = await mov.json();
-                Swal.fire({
-                    title: resp.title,
-                    text: resp.message,
-                    icon: resp.status
-                }).then(()=>{
-                    getboxes();
-                });
-            }
-            catch (err) {
-                console.error(err);
-            }
-        });
-    });
+    }
 
     buscaja.addEventListener('click', async () => {
         const uric = `../${uris.findcaja}`;

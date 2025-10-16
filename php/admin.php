@@ -1,8 +1,5 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('../php/optimizador.php');
     include('../includes/verificator.php');
 
     if(isset($_GET['set_roulette']) && $_GET['set_roulette'] === $clav) {

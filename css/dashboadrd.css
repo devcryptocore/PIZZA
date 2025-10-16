@@ -112,6 +112,12 @@
 .source-option:focus {
     background: var(--amarillo);
 }
+.about:after {
+    content: "Acerca de" !important;
+}
+#installPWA::after {
+    content: "Descargar App";
+}
 #logout_button {
     border: 0;
 }
@@ -121,6 +127,26 @@
 }
 #logout_button::after {
     content: "Salir";
+}
+.opeinfo {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    gap: 10px;
+}
+.opeinfo img {
+    width: 25px;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 2px solid var(--dark-grey);
+}
+.opeinfo span {
+    font-size: 13px;
+    font-weight: 600;
 }
 @media screen and (max-width: 1000px) {
     .div2 {
@@ -134,6 +160,13 @@
     }
     .source-option::after {
         content: "" !important;
+    }
+    .opeinfo {
+        flex-direction: column;
+        gap: 0;
+    }
+    .opeinfo span {
+        font-size: 10px;
     }
 }
 @media screen and (max-width: 900px) {

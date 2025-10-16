@@ -14,6 +14,7 @@
         <table class="table-container ingredients_table">
             <thead>
                 <th style="border-radius: 6px 0 0 0;">No.</th>
+                <th>Foto</th>
                 <th>Nombre</th>
                 <th>Documento</th>
                 <th>Teléfono</th>

@@ -1,4 +1,5 @@
 <?php
+    include('../includes/verificator.php');
     $version = time();
 ?>
 <!DOCTYPE html>

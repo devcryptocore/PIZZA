@@ -2,6 +2,11 @@
     session_start();
     $sesion = $_SESSION['usuario'] ?? '';
 
+    include('../config/connector.php');
+    include('../config/errorhandler.php');
+    include('../php/optimizador.php');
+    include('../php/logger.php');
+
     $verif12 = $con -> prepare("SELECT * FROM usuarios WHERE usuario = ?");
     $verif12 -> bind_param('s',$sesion);
     $verif12 -> execute();
@@ -12,7 +17,7 @@
         $sucursal = $v12['sucursal'];
     }
     else {
-        header("Location: ../php/logout.php");
+        $sesion = "SET_NULL";
     }
 
 ?>

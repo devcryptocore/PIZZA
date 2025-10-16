@@ -48,7 +48,8 @@
                 $portadax = $row['portada'] ?? $dummie;
                 $portada = str_replace("../","",$portadax);
                 $pzz[] = $portada;
-                $description[$row['producto']] = [
+                $producto = $row['producto'] ?? '';
+                $description[$producto] = [
                     'id' => $row['id'],
                     'talla' => $row['talla'],
                     'porciones' => $row['porciones'],
@@ -81,9 +82,10 @@
             while($c = $Rcons -> fetch_assoc()){
                 $cats .= '
                     <div class="cat_card" onclick="loadPage(\'categories.php?c='.$c['categoria'].'\')"
-                    data-aos="fade-right" data-aos-offset="150" data-aos-delay="100">
-                        <img src="'.str_replace("../","",$c['imagen']).'" class="catimage" alt="category image"/>
-                        <p>'.$c['categoria'].'</p>
+                    data-aos="fade-right" data-aos-offset="150" data-aos-delay="100" style="background-image: url(\''.str_replace("../","",$c['imagen']).'\');">
+                        <div class="catnom">
+                            <span>'.$c['categoria'].'</span>
+                        </div>
                     </div>
                 ';
             }
@@ -271,40 +273,32 @@
     }
 
     if(isset($_GET['get_product_info']) && $_GET['get_product_info'] === $exclav) {
-        $idprod = $_POST['idprod'];
+        $idprod = $_POST['idprod'] ?? 0;
         $cons = $con -> prepare("SELECT p.*,ap.porciones,ap.precio AS prepor FROM productos p INNER JOIN
              active_products ap ON ap.id_producto = p.id WHERE p.id = ?");
         $cons -> bind_param('i',$idprod);
         $cons -> execute();
         $Rcons = $cons -> get_result();
-        if($Rcons -> num_rows > 0){
-            $default_img = "../res/icons/image.svg";
-            $prod = $Rcons -> fetch_assoc();
-            $precio = $prod['talla'] == 'L' ? miles($prod['prepor']) . '<span class="smlt"> * porción</span>' : miles($prod['precio']);
-            echo json_encode([
-                    "status" => "success",
-                    "title" => "ok",
-                    "message" => [
-                        "producto" => $prod['producto'],
-                        "precio" => $precio,
-                        "categoria" => $prod['categoria'],
-                        "descripcion" => $prod['descripcion'],
-                        "talla" => $prod['talla'],
-                        "oferta" => $prod['oferta'],
-                        "portada" => str_replace("../","",$prod['portada'] ?? $default_img),
-                        "foto_1" => str_replace("../","",$prod['foto_1'] ?? $default_img),
-                        "foto_2" => str_replace("../","",$prod['foto_2'] ?? $default_img),
-                        "foto_3" => str_replace("../","",$prod['foto_3'] ?? $default_img)
-                    ]
-            ]);
-        }
-        else {
-            echo json_encode([
-                "status" => "error",
-                "title" => "No encontrado",
-                "message" => "No se ha encontrado información de este producto"
-            ]);
-        }
+        $default_img = "../res/images/p4.png";
+        $prod = $Rcons -> fetch_assoc();
+        $ta = $prod['talla'] ?? '';
+        $precio = $ta == 'L' ? miles($prod['prepor'] ?? 0) . '<span class="smlt"> * porción</span>' : miles($prod['precio'] ?? 0);
+        echo json_encode([
+                "status" => "success",
+                "title" => "ok",
+                "message" => [
+                    "producto" => $prod['producto'] ?? '',
+                    "precio" => $precio,
+                    "categoria" => $prod['categoria']  ?? '',
+                    "descripcion" => $prod['descripcion']  ?? '',
+                    "talla" => $prod['talla']  ?? '',
+                    "oferta" => $prod['oferta']  ?? 0,
+                    "portada" => str_replace("../","",$prod['portada'] ?? $default_img),
+                    "foto_1" => str_replace("../","",$prod['foto_1'] ?? $default_img),
+                    "foto_2" => str_replace("../","",$prod['foto_2'] ?? $default_img),
+                    "foto_3" => str_replace("../","",$prod['foto_3'] ?? $default_img)
+                ]
+        ]);
     }
 
     if(isset($_GET['get_some_products']) && $_GET['get_some_products'] === $exclav) {
@@ -352,7 +346,7 @@
             echo json_encode([
                 "status" => "success",
                 "title" => "ok",
-                "message" => "<h3>Sin productos para mostrar</h3>"
+                "message" => "<div class='sppm'></div>"
             ]);
         }
     }
@@ -499,6 +493,47 @@
                 "message" => "<h3>Sin productos para mostrar</h3>"
             ]);
         }
+    }
+
+    if(isset($_GET['get_company_data']) && $_GET['get_company_data'] === $exclav) {
+        $cons = $con -> prepare("SELECT c.*,a.* FROM company c LEFT JOIN about_section a ON 1");
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        $org = $Rcons -> fetch_assoc();
+        $sucursales = [];
+        $sucx = $con -> prepare("SELECT * FROM sucursales");
+        $sucx -> execute();
+        $Rsucx = $sucx -> get_result();
+        if($Rsucx -> num_rows > 0) {
+            while($sucs = $Rsucx -> fetch_assoc()) {
+                $sucursales[$sucs['sucursal'] ?? ''] = [
+                    "id" => $sucs['id'] ?? '',
+                    "sucubicacion" => $sucs['ubicacion'] ?? '1.604526, -77.131243',
+                    "sucdireccion" => $sucs['direccion'] ?? 'St 5a #12-45 Center',
+                    "suctelefono" => $sucs['telefono'] ?? '3100000000',
+                    "sucfoto" => $sucs['foto'] ?? 'res/images/default_logo.png'
+                ];
+            }
+        }
+        echo json_encode([
+            "status" => "success",
+            "title" => "ok",
+            "message" => [
+                "organizacion" => $org['organizacion'] ?? 'NextFlow App',
+                "ptelefono" => $org['ptelefono'] ?? '3100000000',
+                "stelefono" => $org['stelefono'] ?? '3100000000',
+                "email" => $org['email'] ?? 'nextflow@example.com',
+                "direccion" => $org['direccion'] ?? 'St 5a #12-45 Center',
+                "nit" => $org['nit'] ?? '123456789-1',
+                "encargado" => $org['encargado'] ?? 'Jhon Doe',
+                "documento" => $org['documento'] ?? '123456789',
+                "logotipo" => $org['logotipo'] ?? 'res/images/default_logo.png',
+                "nosotros" => $org['nosotros'] ?? '',
+                "fecha" => $org['fecharegistro'] ?? '01-01-2000',
+                "faqs" => $org['faqs'] ?? '',
+                "sucursales" => $sucursales
+            ]
+        ], JSON_UNESCAPED_UNICODE);
     }
 
 ?>

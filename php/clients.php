@@ -1,8 +1,5 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('optimizador.php');
     include('../includes/verificator.php');
 
     if (isset($_GET['com_client']) && $_GET['com_client'] === $clav) {

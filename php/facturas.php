@@ -1,8 +1,5 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('optimizador.php');
     include('../includes/verificator.php');
 
     if(isset($_GET['get_invoices']) && $_GET['get_invoices'] === $clav) {

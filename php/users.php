@@ -1,8 +1,6 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('optimizador.php');
+    include('../includes/verificator.php');
 
     if(isset($_GET['set_orgdata']) && $_GET['set_orgdata'] === $clav) {
         $organizacion = htmlspecialchars($_POST['organizacion']);
@@ -62,14 +60,88 @@
 
     }
 
+    if(isset($_GET['mod_orgdata']) && $_GET['mod_orgdata'] === $clav) {
+        $organizacion = htmlspecialchars($_POST['organizacion']);
+        $ptelefono = htmlspecialchars($_POST['ptelefono']);
+        $stelefono = htmlspecialchars($_POST['stelefono']) ?? '';
+        $email = htmlspecialchars($_POST['email']);
+        $direccion = htmlspecialchars($_POST['direccion']);
+        $nit = htmlspecialchars($_POST['nit']);
+        $encargado = htmlspecialchars($_POST['encargado']);
+        $documento = htmlspecialchars($_POST['documento']);
+        $nomlogo = "logo_" . uniqid();
+        if(isset($_FILES['logotipo']) && $_FILES['logotipo']['error'] === UPLOAD_ERR_OK) {
+            $dir = "../res/images/company";
+            if(!is_dir($dir)){
+                mkdir($dir, 0777, true);
+            }
+            $logo = guardarFoto("logotipo", $nomlogo, $dir);
+        }
+        else {
+            $logo = $_POST['old_logo'] ?? "../res/icons/image.svg";
+        }
+        $con -> begin_transaction();
+        try {
+            $ins = $con -> prepare("UPDATE company SET 
+            organizacion = ?,
+            ptelefono = ?,
+            stelefono = ?,
+            email = ?,
+            direccion = ?,
+            nit = ?,
+            encargado = ?,
+            documento = ?,
+            logotipo = ?");
+            $nom = explode(" ",$encargado);
+            $nome = $nom[0] ?? $encargado;
+            $ape = $nom[1] ?? '';
+            $ins -> bind_param('sssssssss',$organizacion,$ptelefono,$stelefono,$email,$direccion,$nit,$encargado,$documento,$logo);
+            if($ins -> execute()) {
+                $empl = $con -> query("UPDATE operadores SET 
+                nombre = '$nome',
+                apellido = '$ape',
+                documento = '$documento',
+                telefono = '$ptelefono',
+                direccion = '$direccion',
+                email = '$email',
+                foto = '$logo' WHERE documento = '$documento'");
+                $upc = $con -> prepare("UPDATE usuarios SET documento = ? WHERE usuario = ?");
+                $upc -> bind_param('ss',$documento,$sesion);
+                $upc -> execute();
+                $con -> commit();
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Correcto!",
+                    "message" => "Se han actualizado los datos de su compañia!"
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Ha ocurrido un error al procesar sus datos: " . $con -> error
+                ]);
+            }
+        }
+        catch (Exception $e){
+            $con -> rollback();
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Ha ocurrido un error al procesar sus datos: " . $e -> getMessage()
+            ]);
+        }
+
+    }
+
     if(isset($_GET['orgdata']) && $_GET['orgdata'] === $clav) {
         $cons = $con -> prepare("SELECT * FROM company");
         $cons -> execute();
         $Rcons = $cons -> get_result();
         if($Rcons -> num_rows > 0) {
             $org = $Rcons -> fetch_assoc();
-            $cus = $con -> prepare("SELECT * FROM usuarios WHERE documento = ?");
-            $cus -> bind_param("s",$org['documento']);
+            $cus = $con -> prepare("SELECT * FROM usuarios");
+            //$cus -> bind_param("s",$org['documento']);
             $cus -> execute();
             $Rcus = $cus -> get_result();
             if($Rcus -> num_rows > 0){
@@ -154,7 +226,6 @@
     }
 
     if(isset($_GET['go_login']) && $_GET['go_login'] === $clav){
-        session_start();
         
         if(empty($_POST['username']) || empty($_POST['userpasswd'])){
             die(json_encode([
@@ -229,5 +300,4 @@
         $con -> close();
 
     }
-
 ?>

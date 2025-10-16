@@ -22,6 +22,7 @@ export const setnewemployee = "php/employee.php?set_new_employee=bWF4cGl6emFsYXV
 export const login = "php/users.php?go_login=bWF4cGl6emFsYXVuaW9u";
 export const orgdata = "php/users.php?orgdata=bWF4cGl6emFsYXVuaW9u";
 export const set_orgdata = "php/users.php?set_orgdata=bWF4cGl6emFsYXVuaW9u";
+export const mod_orgdata = "php/users.php?mod_orgdata=bWF4cGl6emFsYXVuaW9u";
 export const set_admindata = "php/users.php?set_admindata=bWF4cGl6emFsYXVuaW9u";
 export const search_product = "php/products.php?find_product=bWF4cGl6emFsYXVuaW9u";
 export const add_sell_product = "php/products.php?add_sell_product=bWF4cGl6emFsYXVuaW9u";
@@ -63,3 +64,9 @@ export const set_category = "php/categories.php?set_category=bWF4cGl6emFsYXVuaW9
 export const del_category = "php/categories.php?del_category=bWF4cGl6emFsYXVuaW9u";
 export const set_principal = "php/categories.php?set_principal=bWF4cGl6emFsYXVuaW9u";
 export const set_clean = "php/admin.php?set_clean=bWF4cGl6emFsYXVuaW9u";
+export const get_company_data = "php/empresa.php?get_company_data=bWF4cGl6emFsYXVuaW9u";
+export const set_sucursal = "php/empresa.php?set_sucursal=bWF4cGl6emFsYXVuaW9u";
+export const set_us_info = "php/empresa.php?set_us_info=bWF4cGl6emFsYXVuaW9u";
+export const opr_us_info = "php/empresa.php?opr_us_info=bWF4cGl6emFsYXVuaW9u";
+export const get_sucursales = "php/empresa.php?get_sucursales=bWF4cGl6emFsYXVuaW9u";
+export const setadmindata = "php/employee.php?set_admindata=bWF4cGl6emFsYXVuaW9u";
