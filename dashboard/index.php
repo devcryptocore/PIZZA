@@ -111,7 +111,7 @@ error_reporting(E_ALL);
         }
     }
     else {
-        //redirectTo("../php/logout.php");
+        redirectTo("../php/logout.php");
     }
 ?>
 <body>
@@ -130,6 +130,6 @@ error_reporting(E_ALL);
         <div class="div3 source-container" id="sources">
             <iframe src="../admin/caja.php" frameborder="0" id="sites_container"></iframe>
         </div>
-    </div><?="SAASAS";?>
+    </div>
 </body>
 </html>

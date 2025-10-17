@@ -263,6 +263,7 @@
                 $_SESSION['user_id'] = $us['id'];
                 $_SESSION['usuario'] = $us['usuario'];
                 $_SESSION['rol'] = $us['rol'];
+                $_SESSION['sucursal'] = $us['sucursal'];
                 $_SESSION['logged_in'] = true;
 
                 echo json_encode([

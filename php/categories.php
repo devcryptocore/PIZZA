@@ -1,8 +1,6 @@
 <?php
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('../php/optimizador.php');
+    include('../includes/verificator.php');
 
     if(isset($_GET['set_principal']) && $_GET['set_principal'] === $clav) {
         $cat = $_POST['categoria'];

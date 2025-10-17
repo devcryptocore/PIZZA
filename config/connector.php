@@ -6,6 +6,7 @@
     require __DIR__ . '/vendor/autoload.php';
 
     $dotenv = Dotenv::createImmutable(__DIR__);
+    //$dotenv = Dotenv::createImmutable(__DIR__ .'/../../');
     $dotenv -> load();
 
     $dbhost = $_ENV['DB_HOST'];
@@ -26,11 +27,12 @@
     $fullfecha = date('Y-m-d H:i:s');
     $version = time();
     $default_image = "../res/icons/image.svg";
+    $dominio = "https://".$_SERVER['HTTP_HOST'];
 
     function imprimirArchivosDirectorio($directorios) {
         $archivos = [];
         $exclusion_extensiones = ['html', 'json', 'txt'];
-        $exclusion_archivos = ['users.php','connector.php','errorhandler.php','page.php'];
+        $exclusion_archivos = ['users.php','errorhandler.php','page.php'];
         foreach ($directorios as $directorio) {
             if (!is_dir($directorio)) {
                 continue;
@@ -232,8 +234,8 @@
     $script_dir     = dirname($current_script_path);
 
     $exclusiones_completas = [
-        realpath(__DIR__ . '/login/index.html'),
-        realpath(__DIR__ . '/index.html')
+        realpath(__DIR__ . '/../dashboard/index.php'),
+        realpath(__DIR__ . '/../4/index.php')
     ];
     if (!in_array($current_script_path, $exclusiones_completas)) {
         $public_scripts = imprimirArchivosDirectorio([$script_dir]);

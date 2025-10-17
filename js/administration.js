@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                             text: reps.message,
                             icon: reps.status
                         }).then(()=>{
-                            location.href = '../php/logout.php';
+                            location.reload();
                         });
                     }
                     catch (err) {

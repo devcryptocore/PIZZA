@@ -162,6 +162,7 @@
         content: "" !important;
     }
     .opeinfo {
+        width: auto;
         flex-direction: column;
         gap: 0;
     }
@@ -192,7 +193,16 @@
         padding: 0px 10px 0px 10px;
         align-items: center;
     }
+    .opeinfo {
+        width: auto;
+        padding: 0px 0px 0px 10px;
+        flex-direction: column;
+        gap: 0;
+    }
+    .opeinfo span {
+        font-size: 10px;
+    }
     .logo-container {
-        width: 60px;
+        display: none;
     }
 }

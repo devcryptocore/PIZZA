@@ -571,12 +571,11 @@ document.addEventListener('DOMContentLoaded',()=>{
                 if(document.querySelector("#modal")){
                     const mdl = document.querySelector("#modal");
                     mdl.innerHTML = `
-                        <button class="modal-option">Inicio</button>
-                        <button class="modal-option">Menú</button>
-                        <button class="modal-option">Ubicaciones</button>
-                        <button class="modal-option">Nosotros</button>
-                        <button class="modal-option">FAQs</button>
-                        <button class="modal-option">Contacto</button>
+                        <button class="modal-option" onclick=modaloption('#iniccio')>Inicio</button>
+                        <button class="modal-option" onclick=modaloption('#categoriesContainer')>Menú</button>
+                        <button class="modal-option" onclick=modaloption('#mapContainer')>Ubicaciones</button>
+                        <button class="modal-option" onclick=modaloption('#aboutus')>Nosotros</button>
+                        <button class="modal-option" onclick=modaloption('#footerfoot')>Contacto</button>
                     `;
                 }
             }
@@ -590,6 +589,11 @@ document.addEventListener('DOMContentLoaded',()=>{
                 }
             }
         })
+    }
+
+    window.modaloption = (s) => {
+        location.href = s;
+        document.querySelector("#burger").click();
     }
 
     window.addToCart = async (id, cant) => {
@@ -665,36 +669,50 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
 
     window.clean_cart = async () => {
-        const rem = source.cleancart;
-        const dta = new FormData();
-        const idsesion = localStorage.getItem('tempses');
-        try {
-            dta.append('idsesion',idsesion);
-            const dl = await fetch(rem,{
-                method: "POST",
-                body: dta
-            });
-            const rdl = await dl.json();
-            if(rdl.status == 'success'){
-                iziToast.success({
-                    title: rdl.title,
-                    message: rdl.message,
-                    position: "topCenter"
-                });
-                numelems();
-                get_mycart();
+        Swal.fire({
+            title: "Vaciar carrito",
+            text: "Desea vaciar su carrito de compras?",
+            icon: "question",
+            color: "#fff",
+            background: "#1D2026",
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonText: "Sí",
+            cancelButtonText: "Cancelar"
+        }).then(async (p) => {
+            if(p.isConfirmed){
+                const rem = source.cleancart;
+                const dta = new FormData();
+                const idsesion = localStorage.getItem('tempses');
+                try {
+                    dta.append('idsesion',idsesion);
+                    const dl = await fetch(rem,{
+                        method: "POST",
+                        body: dta
+                    });
+                    const rdl = await dl.json();
+                    if(rdl.status == 'success'){
+                        iziToast.success({
+                            title: rdl.title,
+                            message: rdl.message,
+                            position: "topCenter"
+                        });
+                        numelems();
+                        get_mycart();
+                    }
+                    else {
+                        iziToast.error({
+                            title: rdl.title,
+                            message: rdl.message,
+                            position: "topCenter"
+                        });
+                    }
+                }
+                catch (err) {
+                    console.error(err);
+                }
             }
-            else {
-                iziToast.error({
-                    title: rdl.title,
-                    message: rdl.message,
-                    position: "topCenter"
-                });
-            }
-        }
-        catch (err) {
-            console.error(err);
-        }
+        });
     }
 
     window.this_product = async (id) => {
@@ -912,6 +930,7 @@ ${rpa.message.pedido}
 _${rpa.message.comentario}_
 
 *Pedido realizado el:* _${rpa.message.fecha}_
+${rpa.message.page}
 
 ᴰᵉᵛᵉˡᵒᵖᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ
 `;

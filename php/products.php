@@ -14,7 +14,7 @@
             $list = "";
             while($ing = mysqli_fetch_array($Rconsul)){
                 if($ing['unidad'] == 'unidad'){
-                    $valorcan = 'value="1" readonly';
+                    $valorcan = 'value="1"';
                 }
                 else {
                     $valorcan = '';
@@ -89,7 +89,7 @@
             foreach ($_POST['ingredientes'] as $id) {
                 $cantidad = intval($_POST['cantidades'][$id]);
                 $cns = $con -> prepare("SELECT * FROM ingredientes WHERE id = ? AND sucursal = ?");
-                $cns -> bind_param('is',$id,$sucursal);//SE ESTÁ DESCONTANDO UNA UNIDAD SIN SABER POR QUE
+                $cns -> bind_param('is',$id,$sucursal);
                 $cns -> execute();
                 $Rcns = $cns -> get_result();
                 if($Rcns -> num_rows > 0){
@@ -98,7 +98,7 @@
                         echo json_encode([
                             "status" => "error",
                             "title" => "No hay suficiente " . $ig['nombre'],
-                            "message" => "No es posible registrar este producto!"//EL PRECIO DEL PRODUCTO DEBE SER POR UNIDAD
+                            "message" => "No es posible registrar este producto!"
                         ]);
                         $xdel = $con -> query("DELETE FROM productos WHERE id = $idprod");
                         exit;
@@ -120,7 +120,7 @@
                     $ining -> execute();
                     if($ining){
                         if(isset($estado)){
-                            $id_ingr = $ining -> insert_id;
+                            /*$id_ingr = $ining -> insert_id;
                             $newstock = $ig['stock'] - $cantidad;
                             $uping = $con -> prepare("UPDATE ingredientes SET stock = ? WHERE id = ?");
                             $uping -> bind_param('di',$newstock,$id);
@@ -131,7 +131,7 @@
                             else {
                                 $errores += 1;
                                 $dlp = $con -> query("DELETE FROM productos WHERE id = $id");
-                            }
+                            }*/
                         }
                         else {
                             $correcto += 1;
@@ -172,35 +172,49 @@
         $con -> close();
     }
 
-    if(isset($_GET['get_products']) && $_GET['get_products'] === $clav) {//FALTA CALCULAR VALOR DE OFERTA
+    if(isset($_GET['get_products']) && $_GET['get_products'] === $clav) {
         try {
             $sql = "
-                SELECT p.id, p.producto, p.precio, p.categoria, p.talla, p.estado, p.oferta,
+                SELECT 
+                    p.id, 
+                    p.producto, 
+                    p.precio, 
+                    p.categoria, 
+                    p.talla, 
+                    p.estado, 
+                    p.oferta,
+                    p.sucursal,
                     IFNULL(c.costo,0) AS costo,
                     (p.precio - IFNULL(c.costo,0)) AS ganancia,
                     IFNULL(s.stock_disponible,0) AS stock_disponible
                 FROM productos p
                 LEFT JOIN (
-                    SELECT id_product, SUM(costo) AS costo
+                    SELECT 
+                        id_product, 
+                        SUM(costo) AS costo
                     FROM product_ingredients
                     GROUP BY id_product
                 ) c ON c.id_product = p.id
                 LEFT JOIN (
-                    SELECT pi.id_product, MIN(
-                        CASE 
-                        WHEN pi.cantidad > 0 
-                        THEN FLOOR(COALESCE(i.stock,0) / pi.cantidad)
-                        ELSE 0
-                        END
-                    ) AS stock_disponible
+                    SELECT 
+                        pi.id_product, 
+                        MIN(
+                            CASE 
+                                WHEN pi.cantidad > 0 
+                                THEN FLOOR(COALESCE(i.stock,0) / pi.cantidad)
+                                ELSE 0
+                            END
+                        ) AS stock_disponible
                     FROM product_ingredients pi
-                    JOIN ingredientes i ON i.id = pi.ingrediente WHERE pi.sucursal = ?
+                    JOIN ingredientes i ON i.id = pi.ingrediente
+                    WHERE (? = 'system' OR pi.sucursal = ?)
                     GROUP BY pi.id_product
-                ) s ON s.id_product = p.id WHERE p.sucursal = ?
+                ) s ON s.id_product = p.id
+                WHERE (? = 'system' OR p.sucursal = ?)
                 ORDER BY p.fecha_registro DESC
             ";
             $consult = $con->prepare($sql);
-            $consult -> bind_param('ss',$sucursal,$sucursal);
+            $consult -> bind_param('ssss',$sucursal,$sucursal,$sucursal,$sucursal);
             $consult->execute();
             $Rconsult = $consult->get_result();
             if ($Rconsult->num_rows > 0) {
@@ -294,7 +308,14 @@
                         $stk = $row['stock_disponible'];
                     }
 
-                    $talla = $row['talla'] == 'innecesario' ? "⊘" : $row['talla'];
+                    if($_SESSION['sucursal'] === 'system'){
+                        $hf41 = "<td>".$row['sucursal']."</td>";
+                    }
+                    else {
+                        $hf41 = "";
+                    }
+
+                    $talla = $row['talla'] == 'innecesario' ? " " : $row['talla'];
                     $offr = $row['oferta'] > 0 ? $row['oferta']."% Off" : 0 ;
 
                     $productos .= '
@@ -309,6 +330,7 @@
                             <td>'.$stk.'</td>
                             <td>'.$offr.'</td>
                             <td style="position:relative;">'.$row['categoria'].$oferta.'</td>
+                            '.$hf41.'
                             <input type="hidden" id="disponibles_'.$row['id'].'" value="'.$row['stock_disponible'].'">
                         </tr>
                     ';
@@ -337,20 +359,21 @@
     }
 
     if(isset($_GET['get_this_product']) && $_GET['get_this_product'] === $clav) {
+        $scrs = $_SESSION['sucursal'];
+        if($scrs === 'system') {
+            $sucux = "";
+        }
+        else {
+            $sucux = " AND sucursal = '$scrs'";
+        }
         $id = $_POST['id'];
-        $conpr = $con -> prepare("SELECT * FROM productos WHERE id = ? AND sucursal = ?");
-        $conpr -> bind_param('is',$id,$sucursal);
-        $conpr -> execute();
-        $Rconpr = $conpr -> get_result();
-        if($Rconpr -> num_rows > 0) {
-            $prod = $Rconpr -> fetch_assoc();
-            $conig = $con -> prepare("SELECT * FROM product_ingredients WHERE id_product = ? AND sucursal = ?");
-            $conig -> bind_param('is',$id,$sucursal);
-            $conig -> execute();
-            $Rconig = $conig -> get_result();
+        $conpr = $con -> query("SELECT * FROM productos WHERE id = $id {$sucux}");
+        if($conpr -> num_rows > 0) {
+            $prod = $conpr -> fetch_assoc();
+            $conig = $con -> query("SELECT * FROM product_ingredients WHERE id_product = $id {$sucux}");
             $ingreds = [];
-            if($Rconig -> num_rows > 0) {
-                while($in = mysqli_fetch_array($Rconig)){
+            if($conig -> num_rows > 0) {
+                while($in = mysqli_fetch_array($conig)){
                     $ingreds[] = [
                         "ingrediente" => $in['ingrediente'],
                         "cantidad" => $in['cantidad'],
@@ -791,16 +814,17 @@
         $producto = htmlspecialchars($_POST['producto']);
         $estado = 1;
         $cs = "SELECT p.*, ap.*
-            FROM productos p
-            INNER JOIN active_products ap
-            ON ap.id_producto = p.id
-            WHERE (p.producto LIKE CONCAT('%', ?, '%')
-                OR p.categoria LIKE CONCAT('%', ?, '%'))
+        FROM productos p
+        INNER JOIN active_products ap ON ap.id_producto = p.id
+        WHERE (
+                p.producto LIKE CONCAT('%', ?, '%')
+                OR p.categoria LIKE CONCAT('%', ?, '%')
                 OR p.id_code = ?
-            AND p.estado = ?;";
-        //$consl = $con -> prepare("SELECT * FROM productos WHERE (producto LIKE CONCAT('%', ?, '%') OR categoria LIKE CONCAT('%', ?, '%')) AND estado = ?");
+              )
+          AND p.estado = ?
+          AND p.sucursal = ?";
         $consl = $con -> prepare($cs);
-        $consl -> bind_param('ssii', $producto, $producto, $producto, $estado);
+        $consl -> bind_param('ssiis', $producto, $producto, $producto, $estado, $sucursal);
         $consl -> execute();
         $Rconsl = $consl -> get_result();
         if($Rconsl -> num_rows > 0){
@@ -1020,7 +1044,8 @@
     }
 
     if(isset($_GET['get_barcodes']) && $_GET['get_barcodes'] === $clav) {
-        $cons = $con -> prepare("SELECT id_code,producto,barcode FROM productos");
+        $cons = $con -> prepare("SELECT id_code,producto,barcode FROM productos WHERE sucursal = ?");
+        $cons -> bind_param('s',$sucursal);
         $cons -> execute();
         $Rcons = $cons -> get_result();
         $rps = "";
@@ -1054,8 +1079,8 @@
     if(isset($_GET['from_barcode']) && $_GET['from_barcode'] === $clav) {
         $barcode = $_POST['barcode'];
         $stato = 1;
-        $bc = $con -> prepare("SELECT id FROM productos WHERE cod_barras = ? AND estado = ?");
-        $bc -> bind_param('si',$barcode,$stato);
+        $bc = $con -> prepare("SELECT id FROM productos WHERE cod_barras = ? AND estado = ? AND sucursal = ?");
+        $bc -> bind_param('sis',$barcode,$stato,$sucursal);
         $bc -> execute();
         $Rbc = $bc -> get_result();
         if($Rbc -> num_rows > 0) {

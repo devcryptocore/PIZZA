@@ -51,7 +51,7 @@
             echo json_encode([
                 "status" => "success",
                 "title" => "Correcto!",
-                "message" => miles($totalcost)
+                "message" => intval($totalcost)
             ]);
         }
         else {

@@ -50,13 +50,13 @@
 <body>
     <div class="navBar">
         <div class="org-name">
-            <img data-aos="fade-down" data-aos-offset="0" src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
-            <h1 data-aos="fade-right" data-aos-offset="0" data-aos-delay="300">MAX<b>PIZZA</b></h1>
+            <img src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
+            <h1 >MAX<b>PIZZA</b></h1>
         </div>
         <div class="nav-left-cont">
-            <button class="my-cart" id="my_cart" data-aos="fade-left" data-aos-offset="0" data-aos-delay="300"><span id="cartCount"></span></button>
+            <button class="my-cart" id="my_cart"><span id="cartCount"></span></button>
             <input type="checkbox" id="burger">
-            <label for="burger" class="burguer" data-aos="fade-left" data-aos-offset="0" data-aos-delay="200">
+            <label for="burger" class="burguer">
                 <span class="part"></span>
                 <span class="part"></span>
                 <span class="part"></span>

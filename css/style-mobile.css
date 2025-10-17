@@ -531,7 +531,8 @@ body {
     border-radius: 6px;
 }
 #categoriesContainer,
-#categs {
+#categs,
+.someprod {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -546,13 +547,20 @@ body {
     justify-content: space-between;
     padding: 0;
 }
-#categoriesContainer h2 {
+#categoriesContainer h2,
+.secmark {
     font-size: 13px;
     border-radius: 35px;
     padding: 10px 15px 10px 35px;
     box-shadow: 2px 3px 11px 0 #00000070, -1px -1px 5px 0 #ffffff14;
     background: #121619 url(../res/icons/categories.svg) 15px / 15px no-repeat;
     color: #c3c3c3;
+}
+.someprod {
+    align-items: flex-start;
+}
+.someprod .secmark {
+    background: #121619 url(../res/icons/rocket.svg) 15px / 15px no-repeat;
 }
 .cat_card {
     width: 45%;
@@ -743,7 +751,11 @@ body {
 .price-cont {
     width: 100%;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+}
+.price-cont {
+    justify-content: flex-start;
 }
 .up-to-card h3 {
     margin: 0;
@@ -759,6 +771,23 @@ body {
 .prod-form {
     width: 100%;
 }
+.makont {
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.lfcon {
+    display: flex;
+    flex-direction: column;
+}
+.car_add_button {
+    width: 30px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    border: 0;
+    background: var(--amarillo);
+}
 #sell_this {
     width: 100%;
     display: flex;
@@ -768,10 +797,9 @@ body {
     gap: 10px;
 }
 .counter-cont {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
-    gap: 10px;
 }
 .counter-cont input[type='number'] {
     width: 30px;
@@ -815,10 +843,8 @@ input[type='number'] {
     color: var(--dark-grey);
     -moz-appearance: none;
 }
-.someprod {
-    padding: 20px 0px;
-}
 .some-pizzas {
+    width: 100%;
     display: flex;
     gap: 15px;
     overflow: auto;
@@ -1161,8 +1187,8 @@ input[type='number'] {
 }
 .sppm {
     width: 100%;
-    height: 100px;
-    background: url(../res/images/pzz23.gif) center / 80% no-repeat;
+    aspect-ratio: 1/1;
+    background: url(../res/images/default_logo.png) center / 80% no-repeat;
 }
 .sucs_section {
     display: flex;

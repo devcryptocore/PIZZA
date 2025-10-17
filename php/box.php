@@ -2,34 +2,6 @@
 
     include('../includes/verificator.php');
 
-    function statebox(){
-        global $con,$sesion,$sucursal;
-        $est = 1;
-        $box = $con -> prepare("SELECT estado FROM caja WHERE estado = ? AND usuario = ? AND sucursal = ?");
-        $box -> bind_param('iss',$est,$sesion,$sucursal);
-        $box -> execute();
-        $Rbox = $box -> get_result();
-        if($Rbox -> num_rows > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    function boxcode() {
-        global $con,$sesion,$sucursal;
-        $bcon = $con -> prepare("SELECT codcaja FROM caja WHERE id = (SELECT MAX(id) FROM caja) AND usuario = ? AND sucursal = ?");
-        $bcon -> bind_param('ss',$sesion,$sucursal);
-        $bcon -> execute();
-        $Rbcon = $bcon -> get_result();
-        if($Rbcon -> num_rows > 0) {
-            $nc = $Rbcon -> fetch_assoc()['codcaja'];
-            return $nc;
-        }
-        else {
-            return 1;
-        }
-    }
-
     if(isset($_GET['constate'])) {
         $estado = statebox() ? "open" : "close";
         echo json_encode([
@@ -51,30 +23,36 @@
         $davivienda = $ent['davivienda'] ?? 0;
         $consignacion = $ent['consignacion'] ?? 0;
         $otros = $ent['otros'] ?? 0;
-        $are = '
-            <div class="entcon xlsbutton" onclick="xls(\'#boxtable\')"></div>
-            <div class="entcon">
-                <b>Efectivo</b><span>$'.miles($efectivo).'</span>
-            </div>
-            <div class="entcon">
-                <b>Nequi</b><span>$'.miles($nequi).'</span>
-            </div>
-            <div class="entcon">
-                <b>Daviplata</b><span>$'.miles($daviplata).'</span>
-            </div>
-            <div class="entcon">
-                <b>Bancolombia</b><span>$'.miles($bancolombia).'</span>
-            </div>
-            <div class="entcon">
-                <b>Davivienda</b><span>$'.miles($davivienda).'</span>
-            </div>
-            <div class="entcon">
-                <b>Consignación</b><span>$'.miles($consignacion).'</span>
-            </div>
-            <div class="entcon">
-                <b>Otros</b><span>$'.miles($otros).'</span>
-            </div>
-        ';
+        if($_SESSION['rol'] === 'administrador'){
+            $are = '
+                <div class="entcon xlsbutton" onclick="xls(\'#boxtable\')"></div>
+                <div class="entcon">
+                    <b>Efectivo</b><span>$'.miles($efectivo).'</span>
+                </div>
+                <div class="entcon">
+                    <b>Nequi</b><span>$'.miles($nequi).'</span>
+                </div>
+                <div class="entcon">
+                    <b>Daviplata</b><span>$'.miles($daviplata).'</span>
+                </div>
+                <div class="entcon">
+                    <b>Bancolombia</b><span>$'.miles($bancolombia).'</span>
+                </div>
+                <div class="entcon">
+                    <b>Davivienda</b><span>$'.miles($davivienda).'</span>
+                </div>
+                <div class="entcon">
+                    <b>Consignación</b><span>$'.miles($consignacion).'</span>
+                </div>
+                <div class="entcon">
+                    <b>Otros</b><span>$'.miles($otros).'</span>
+                </div>
+            ';
+        }
+        else {
+            $are = "";
+        }
+        
         echo json_encode([
             "status" => "success",
             "title" => "ok",
@@ -169,7 +147,7 @@
                 echo json_encode([
                     "status" => "error",
                     "title" => "Error de cierre!",
-                    "message" => "Estado de caja incorrecto"
+                    "message" => "Estado de caja incorrecto " . $con -> error
                 ]);
                 exit;
             }

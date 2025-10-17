@@ -713,7 +713,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             showConfirmButton: false,
             showCloseButton: true
         });
-        try {
+        //try {
             var disp = true;
             const urip = `../${uris.getthisproduct}`;
             const iddata = new FormData();
@@ -873,10 +873,10 @@ document.addEventListener("DOMContentLoaded",()=>{
                     });
                 });
             }
-        }
+        /*}
         catch (err) {
             console.error(err);
-        }
+        }*/
     }
 
     if(document.querySelector("#get_barcodes")){

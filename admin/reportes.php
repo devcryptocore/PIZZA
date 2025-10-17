@@ -1,59 +1,95 @@
 <?php
-    include('../includes/header.php');
-    $inicio = $_GET['inicio'] ?? '';
-    $fin    = $_GET['fin'] ?? '';
-    if ($inicio && $fin) {
-        $finCompleto = $fin . ' 23:59:59';
-        $whereVentas = "WHERE fechareg BETWEEN '$inicio' AND '$finCompleto'";
-        $whereMov    = "WHERE fecha BETWEEN '$inicio' AND '$finCompleto'";
-        $tituloRango = "Reporte desde $inicio hasta $fin";
-    } else {
-        $whereVentas = "WHERE MONTH(fechareg) = MONTH(CURDATE()) AND YEAR(fechareg) = YEAR(CURDATE())";
-        $whereMov    = "WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())";
-        $tituloRango = "Reporte del mes en curso";
-    }
-    $qVentas = $con->query("SELECT COALESCE(SUM(total),0) AS total_ventas, COALESCE(SUM(descuento),0) AS total_descuentos FROM ventas $whereVentas");
-    $ventas = $qVentas->fetch_assoc();
-    $qEgresos = $con->query("SELECT COALESCE(SUM(valor),0) AS total_egresos FROM movimientos $whereMov AND tipo='egreso'");
-    $egresos = $qEgresos->fetch_assoc();
-    $qAbonos = $con->query("SELECT COALESCE(SUM(valor),0) AS total_abonos FROM movimientos $whereMov AND tipo='abono'");
-    $abonos = $qAbonos->fetch_assoc();
-    $qMovs = $con->query("SELECT tipo, concepto, entidad, valor, fecha FROM movimientos $whereMov ORDER BY fecha DESC");
-    $ganancia = ($ventas['total_ventas'] - $egresos['total_egresos'] - $abonos['total_abonos']);
-    $ventasDia = [];
-    $egresosDia = [];
-    $labels = [];
-    $qVD = $con->query("SELECT DATE(fechareg) AS dia, SUM(total) AS total
-                        FROM ventas $whereVentas
-                        GROUP BY dia ORDER BY dia ASC");
-    while($v = $qVD->fetch_assoc()){
-        $labels[] = $v['dia'];
-        $ventasDia[$v['dia']] = $v['total'];
-    }
-    $qED = $con->query("SELECT DATE(fecha) AS dia, SUM(valor) AS total
-                        FROM movimientos $whereMov AND tipo='egreso'
-                        GROUP BY dia ORDER BY dia ASC");
-    while($e = $qED->fetch_assoc()){
-        $egresosDia[$e['dia']] = $e['total'];
-    }
-    $fechas = array_unique(array_merge(array_keys($ventasDia), array_keys($egresosDia)));
-    sort($fechas);
-    $valVentas = [];
-    $valEgresos = [];
-    foreach($fechas as $f){
-        $valVentas[]  = $ventasDia[$f]  ?? 0;
-        $valEgresos[] = $egresosDia[$f] ?? 0;
-    }
+include('../includes/header.php');
+
+$inicio     = $_GET['inicio'] ?? '';
+$fin        = $_GET['fin'] ?? '';
+$sucursal   = $_GET['sucursal'] ?? 'system';
+
+$qSuc = $con->query("SELECT sucursal FROM sucursales ORDER BY sucursal ASC");
+$sucursales = [];
+while($s = $qSuc->fetch_assoc()) {
+    $sucursales[] = $s['sucursal'];
+}
+
+if ($inicio && $fin) {
+    $finCompleto = $fin . ' 23:59:59';
+    $whereVentas = "WHERE fechareg BETWEEN '$inicio' AND '$finCompleto'";
+    $whereMov    = "WHERE fecha BETWEEN '$inicio' AND '$finCompleto'";
+    $tituloRango = "Reporte desde $inicio hasta $fin";
+} else {
+    $whereVentas = "WHERE MONTH(fechareg) = MONTH(CURDATE()) AND YEAR(fechareg) = YEAR(CURDATE())";
+    $whereMov    = "WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())";
+    $tituloRango = "Reporte del mes en curso";
+}
+
+if ($sucursal !== 'system') {
+    $whereVentas .= " AND sucursal = '$sucursal'";
+    $whereMov    .= " AND sucursal = '$sucursal'";
+    $tituloRango .= " - Sucursal: $sucursal";
+}
+
+$qVentas = $con->query("SELECT COALESCE(SUM(total),0) AS total_ventas, COALESCE(SUM(descuento),0) AS total_descuentos FROM ventas $whereVentas");
+$ventas = $qVentas->fetch_assoc();
+
+$qEgresos = $con->query("SELECT COALESCE(SUM(valor),0) AS total_egresos FROM movimientos $whereMov AND tipo='egreso'");
+$egresos = $qEgresos->fetch_assoc();
+
+$qAbonos = $con->query("SELECT COALESCE(SUM(valor),0) AS total_abonos FROM movimientos $whereMov AND tipo='abono'");
+$abonos = $qAbonos->fetch_assoc();
+
+$qMovs = $con->query("SELECT tipo, concepto, entidad, valor, fecha FROM movimientos $whereMov ORDER BY fecha DESC");
+
+$ganancia = ($ventas['total_ventas'] - $egresos['total_egresos'] - $abonos['total_abonos']);
+
+$ventasDia = [];
+$egresosDia = [];
+$labels = [];
+
+$qVD = $con->query("SELECT DATE(fechareg) AS dia, SUM(total) AS total
+                    FROM ventas $whereVentas
+                    GROUP BY dia ORDER BY dia ASC");
+while($v = $qVD->fetch_assoc()){
+    $labels[] = $v['dia'];
+    $ventasDia[$v['dia']] = $v['total'];
+}
+
+$qED = $con->query("SELECT DATE(fecha) AS dia, SUM(valor) AS total
+                    FROM movimientos $whereMov AND tipo='egreso'
+                    GROUP BY dia ORDER BY dia ASC");
+while($e = $qED->fetch_assoc()){
+    $egresosDia[$e['dia']] = $e['total'];
+}
+
+$fechas = array_unique(array_merge(array_keys($ventasDia), array_keys($egresosDia)));
+sort($fechas);
+
+$valVentas = [];
+$valEgresos = [];
+foreach($fechas as $f){
+    $valVentas[]  = $ventasDia[$f]  ?? 0;
+    $valEgresos[] = $egresosDia[$f] ?? 0;
+}
 ?>
 <link rel="stylesheet" href="../css/reportes.css?<?=$version;?>">
 <body>
 <div class="container">
     <h2>Reporte Financiero - <?php echo $tituloRango; ?></h2>
+
     <form method="get">
-        <input class="search-bar-date" type="date" name="inicio" value="<?php echo $inicio; ?>">
-        <input class="search-bar-date" type="date" name="fin" value="<?php echo $fin; ?>">
-        <button type="submit">Consultar</button>
-        <a href="reportes.php" style="margin-left:10px;color:#007bff;text-decoration:none;">Ver mes actual</a>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <select name="sucursal" style="padding:6px;">
+                <option value="system" <?= $sucursal === 'system' ? 'selected' : '' ?>>Todas las sucursales</option>
+                <?php foreach($sucursales as $s): ?>
+                    <option value="<?= htmlspecialchars($s) ?>" <?= $sucursal === $s ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($s) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <input class="search-bar-date" type="date" name="inicio" value="<?php echo $inicio; ?>">
+            <input class="search-bar-date" type="date" name="fin" value="<?php echo $fin; ?>">
+            <button type="submit">Consultar</button>
+            <a href="reportes.php" style="margin-left:10px;color:#007bff;text-decoration:none;">Ver mes actual</a>
+        </div>
     </form>
 
     <div class="summary">
@@ -78,6 +114,7 @@
             <p>$<?php echo number_format($abonos['total_abonos']); ?></p>
         </div>
     </div>
+
     <div class="charts">
         <div class="chart-box">
             <canvas id="chartResumen"></canvas>
@@ -86,9 +123,11 @@
             <canvas id="chartEvolucion"></canvas>
         </div>
     </div>
+
     <div class="export">
         <button onclick="window.print()">Exportar a PDF</button>
     </div>
+
     <h3 style="margin-top:30px;">Movimientos Financieros</h3>
     <div class="table-container">
         <table>
@@ -115,6 +154,7 @@
         </table>
     </div>
 </div>
+
 <script>
 new Chart(document.getElementById('chartResumen').getContext('2d'), {
     type: 'bar',

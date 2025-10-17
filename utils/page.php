@@ -316,22 +316,26 @@
                 $prods .= '
                     <div class="prod-card">
                         <div class="up-to-card">
-                            <h3 class="card-title" style="white-space: nowrap; display: inline-block; font-size: 11.3798px;">'.$pr['producto'].'</h3>
+                            <h3 class="card-title" style="white-space: wrap; display: inline-block; font-size: 10px;text-align:center;">'.$pr['producto'].'</h3>
                         </div>
                         <div onclick="this_product(\''.$pr['id'].'\')" class="prod-image" style="background-image:url('.str_replace("../","",$portada).')"></div>
-                        <div class="price-cont">
-                            <span>$'.$precio.'</span>
-                        </div>
-                        <div class="prod-form">
-                            <div id="sell_this">
-                                <input type="hidden" name="id" value="10">
-                                <div class="counter-cont">
-                                    <span class="counter-bt minus">-</span>
-                                    <input type="number" name="cantidad" value="1">
-                                    <span class="counter-bt more">+</span>
+                        <div class="makont">
+                            <div class="lfcon">
+                                <div class="price-cont">
+                                    <span>$'.$precio.'</span>
                                 </div>
-                                <input type="submit" value="Agregar" class="send-button" onclick="addToCart(\''.$pr['id'].'\',1)">
+                                <div class="prod-form">
+                                    <div id="sell_this">
+                                        <input type="hidden" name="id" value="10">
+                                        <div class="counter-cont">
+                                            <span class="counter-bt minus">-</span>
+                                            <input type="number" name="cantidad" value="1">
+                                            <span class="counter-bt more">+</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <input type="submit" value="+" class="car_add_button" onclick="addToCart(\''.$pr['id'].'\',1)">
                         </div>
                     </div>
                 ';
@@ -425,7 +429,8 @@
                         "total" => miles($total),
                         "fecha" => $fechahora,
                         "comentario" => urlencode($comentario),
-                        "telefono" => $telefonorg
+                        "telefono" => $telefonorg,
+                        "page" => $dominio
                     ]
                 ],JSON_UNESCAPED_UNICODE);
             }
@@ -531,6 +536,7 @@
                 "nosotros" => $org['nosotros'] ?? '',
                 "fecha" => $org['fecharegistro'] ?? '01-01-2000',
                 "faqs" => $org['faqs'] ?? '',
+                "page" => $dominio,
                 "sucursales" => $sucursales
             ]
         ], JSON_UNESCAPED_UNICODE);

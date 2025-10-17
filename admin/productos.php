@@ -1,5 +1,11 @@
 <?php
     include('../includes/header.php');
+    if($_SESSION['sucursal'] === 'system'){
+        $su12 = "<th>Sucursal</th>";
+    }
+    else {
+        $su12 = "";
+    }
 ?>
 <link rel="stylesheet" href="../css/ingredients.css?v=<?=$version;?>">
 <link rel="stylesheet" href="../css/products.css?v=<?=$version;?>">
@@ -28,6 +34,7 @@
                 <th>Stock</th>
                 <th>Oferta %</th>
                 <th>Categoría</th>
+                <?=$su12;?>
             </thead>
             <tbody id="ingredients"></tbody>
         </table>

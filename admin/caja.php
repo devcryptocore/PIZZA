@@ -9,6 +9,10 @@
         $roli = $Rve -> fetch_assoc()['rol'];
         if($roli === 'administrador') {
             $opciones = '
+                <div class="search-container">
+                    <button id="boxsearch"></button>
+                    <input type="date" id="FiltrarBoxes" placeholder="Buscar" class="search-bar">
+                </div>
                 <button id="transfer" class="stkbutton transfer">Transferir</button>
                 <button id="movement" class="stkbutton movement">Movimiento</button>
                 <button id="set_entidad" class="stkbutton entityes">Entidades</button>
@@ -17,7 +21,6 @@
         }
         if($roli === 'gestionador') {
             $opciones = '
-                <button id="transfer" class="stkbutton transfer">Transferir</button>
                 <button id="movement" class="stkbutton movement">Movimiento</button>
                 <button id="set_box_state" class="stkbutton close_box">Abrir caja</button>
             ';
@@ -35,10 +38,6 @@
 <body>
     <div class="headbar">
         <h1>Caja</h1>
-        <div class="search-container">
-            <button id="boxsearch"></button>
-            <input type="date" id="FiltrarBoxes" placeholder="Buscar" class="search-bar">
-        </div>
         <?=$opciones;?>
     </div>
     <div class="fondosbar"></div>

@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="sell_actions">
-                <input type="text" id="field_change" placeholder="Recibido">
+                <input type="tel" id="field_change" placeholder="Recibido" autocomplete="off">
                 <button id="make_sell">Realizar venta</button>
             </div>
         </div>

@@ -1,8 +1,6 @@
 import * as uris from './uris.js';
 document.addEventListener('DOMContentLoaded', () => {
     const set_box_state = document.querySelector("#set_box_state");
-    const filtrocaja = document.querySelector("#FiltrarBoxes");
-    const buscaja = document.querySelector("#boxsearch");
 
     getboxes();
 
@@ -333,40 +331,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    buscaja.addEventListener('click', async () => {
-        const uric = `../${uris.findcaja}`;
-        const dts = new FormData();
-        try {
-            dts.append("fecha",filtrocaja.value);
-            const find = await fetch(uric,{
-                method: "POST",
-                body: dts
-            });
-            const resp = await find.json();
-            Swal.fire({
-                title: resp.title,
-                html: `
-                    <table class="table-container ingredients_table">
-                        <thead>
-                            <tr>
-                                <th>Ventas</th>
-                                <th>Sucursal</th>
-                                <th>Usuario</th>
-                                <th>Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody>${resp.message}</tbody>
-                    </table>
-                `,
-                showConfirmButton: false,
-                showCancelButton: false,
-                showCloseButton: true
-            });
-        }
-        catch (err) {
-            console.error(err);
-        }
-    });
+    if(document.querySelector("#FiltrarBoxes")) {
+        const filtrocaja = document.querySelector("#FiltrarBoxes");
+        const buscaja = document.querySelector("#boxsearch");
+        buscaja.addEventListener('click', async () => {
+            const uric = `../${uris.findcaja}`;
+            const dts = new FormData();
+            try {
+                dts.append("fecha",filtrocaja.value);
+                const find = await fetch(uric,{
+                    method: "POST",
+                    body: dts
+                });
+                const resp = await find.json();
+                Swal.fire({
+                    title: resp.title,
+                    html: `
+                        <table class="table-container ingredients_table">
+                            <thead>
+                                <tr>
+                                    <th>Ventas</th>
+                                    <th>Sucursal</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>${resp.message}</tbody>
+                        </table>
+                    `,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    showCloseButton: true
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    }
 
     window.get_details = async (id) => {
         const uric = `../${uris.boxdetails}`;
