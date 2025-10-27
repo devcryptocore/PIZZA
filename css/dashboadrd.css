@@ -105,9 +105,15 @@
     content: "Empresa";
 }
 .source-option:nth-child(10):after {
-    content: "Acerca de";
+    content: "Por agotar";
 }
 .source-option:nth-child(11):after {
+    content: "Por caducar";
+}
+.source-option:nth-child(12):after {
+    content: "Acerca de";
+}
+.source-option:nth-child(13):after {
     content: "Descargar App";
 }
 .source-option:focus {
@@ -137,6 +143,7 @@
     justify-content: flex-start;
     padding: 10px;
     gap: 10px;
+    cursor: pointer;
 }
 .opeinfo img {
     width: 25px;
@@ -169,6 +176,7 @@
     }
     #logout_button {
         max-width: 55px;
+        max-height: 50px;
     }
     .source-option img {
         width: 60%;

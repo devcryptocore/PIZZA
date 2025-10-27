@@ -76,6 +76,8 @@
                 mkdir($dir, 0777, true);
             }
             $logo = guardarFoto("logotipo", $nomlogo, $dir);
+            $rutaicons = '../res/icons';
+            generarIconos($logo,$rutaicons);
         }
         else {
             $logo = $_POST['old_logo'] ?? "../res/icons/image.svg";

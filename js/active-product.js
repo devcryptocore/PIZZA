@@ -80,6 +80,13 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     }
 
+    window.pizzacompleta = (sur, nm) => {
+        let cantid = document.querySelector(sur);
+        cantid.value = 8;
+        addToCart(nm,sur);
+        cantid.value = 1;
+    }
+
     window.numelems = async () => {
         const mycart = source.getmycart;
         const dta = new FormData();
@@ -199,8 +206,28 @@ document.addEventListener("DOMContentLoaded",()=>{
         })
     }
 
+    window.setcan = (mode, cur) => {
+        let cantid = document.querySelector(cur);
+        if(mode == 'minus'){
+            let vcantid = parseFloat(cantid.value);
+            let ncantid = parseFloat(vcantid - 1);
+            if(vcantid > 1){
+                cantid.value = ncantid;
+            }
+        }
+        if(mode == 'more'){
+            let vcantid = parseFloat(cantid.value);
+            let ncantid = parseFloat(vcantid + 1);
+            cantid.value = ncantid;
+        }
+    }
+
     window.addToCart = async (id, cant) => {
         const cart = `${source.addtocart}`;
+        cant = document.querySelector(cant).value;
+        if(cant <= 0){
+            cant = 1;
+        }
         if(localStorage.getItem('tempses') === null){
             iziToast.error({
                 title: "Error!",
@@ -244,7 +271,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         catch (err) {
             console.error(err);
         } 
-    };
+    }
 
     window.removeFromCart = async (id) => {
         const rem = source.delfromcart;
@@ -346,6 +373,17 @@ document.addEventListener("DOMContentLoaded",()=>{
                 showCloseButton: true,
                 showCancelButton: false,
                 showConfirmButton: false
+            });
+            const portada = document.getElementById('portada_product');
+            const otherPhotos = document.querySelectorAll('.fotocolumns img');
+            otherPhotos.forEach(foto => {
+                foto.addEventListener('click', () => {
+                if (!foto.src || foto.style.display === 'none') return;
+                const portadaSrc = portada.src;
+                const clickedSrc = foto.src;
+                portada.src = clickedSrc;
+                foto.src = portadaSrc;
+                });
             });
         }
         catch (err) {

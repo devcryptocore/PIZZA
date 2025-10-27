@@ -69,7 +69,7 @@
     <div class="myIngredients" id="myMenu"></div>
     <input type="hidden" id="category" value="<?=$cat;?>">
     <section class="footer">
-        <div class="footersquare" data-aos="fade-down" data-aos-offset="290">
+        <div class="footersquare">
             <div class="btcontent">
                 <h3>La pizza está a un clic. ¡Pídela ya!</h3>
                 <span>¿Listo para ordenar? ¡Te esperamos!</span>

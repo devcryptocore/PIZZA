@@ -113,7 +113,7 @@
                         exit;
                     }
                     $medida = $ig['unidad'];
-                    $costoxgramo = $ig['costo'];
+                    $costoxgramo = $ig['costo_und'];
                     $costoprod = $cantidad*$costoxgramo;
                     $ining = $con -> prepare("INSERT INTO product_ingredients (id_product, ingrediente, cantidad, medida, costo, sucursal, usuario) VALUES (?, ?, ?, ?, ?, ?, ?)");
                     $ining -> bind_param('iiisiss',$idprod,$id,$cantidad,$medida,$costoprod,$sucursal,$sesion);
@@ -418,8 +418,8 @@
         $cant = isset($_POST['cantid']) ? $_POST['cantid'] : 1;//Cantidad de pizzas a preparar
         $porciones = isset($_POST['porciones']) && $_POST['porciones'] > 0 ? $_POST['porciones'] : 0;//Número de porciones, 1 si no se envía
         $oferta = isset($_POST['oferta']) ? $_POST['oferta'] : 0;
-        $ingreds = $con ->  prepare("SELECT * FROM product_ingredients WHERE id_product = ? AND sucursal = ?");
-        $ingreds -> bind_param('is',$id,$sucursal);
+        $ingreds = $con ->  prepare("SELECT * FROM product_ingredients WHERE id_product = ?");
+        $ingreds -> bind_param('i',$id);
         $ingreds -> execute();
         $Ringreds = $ingreds -> get_result();
         $errores = [];
@@ -434,8 +434,8 @@
                     $cant = $division*$porciones;//0.125*4=0.5 Equivale al valor de las porciones
                     $cantxproduct = $icantidad * $cant;//Calcular por porciones solo si es pizza 100*0.5 Equivale al calculo de ingrediente por valor de porciones
                 }
-                $consing = $con->prepare("SELECT * FROM ingredientes WHERE id = ? AND sucursal = ?");
-                $consing -> bind_param('is',$ingrediente,$sucursal);
+                $consing = $con->prepare("SELECT * FROM ingredientes WHERE id = ?");
+                $consing -> bind_param('i',$ingrediente);
                 $consing -> execute();
                 $Rconsing = $consing -> get_result();
                 if($Rconsing -> num_rows > 0){
@@ -469,21 +469,23 @@
                 }
             }
             if(count($errores) === 0) {
-                $conprod = $con -> prepare("SELECT * FROM productos WHERE id = ? AND sucursal = ?");
-                $conprod -> bind_param('is',$id,$sucursal);
+                $conprod = $con -> prepare("SELECT * FROM productos WHERE id = ?");
+                $conprod -> bind_param('i',$id);
                 $conprod -> execute();
                 $Rconprod = $conprod -> get_result();
                 $prod = $Rconprod -> fetch_assoc();
                 $nombreprod = $prod['producto'];
                 $precioprod = $prod['precio'];
+                $ssucu = $prod['sucursal'];
+                $ussu = $prod['usuario'];
                 if($porciones  > 0) {
                     $dvs = 1/8;
                     $dvs = $dvs * $porciones;
                     $precioprod = $prod['precio'] * $dvs;
                     $precioprod = $precioprod / $porciones;//Precio por porción
                 }
-                $consuacpro = $con -> prepare("SELECT id FROM active_products WHERE id_producto = ? AND sucursal = ?");
-                $consuacpro -> bind_param('is',$id,$sucursal);
+                $consuacpro = $con -> prepare("SELECT id FROM active_products WHERE id_producto = ?");
+                $consuacpro -> bind_param('i',$id);
                 $consuacpro -> execute();
                 $Rconsuacpro = $consuacpro -> get_result();
                 if($Rconsuacpro -> num_rows > 0){
@@ -493,13 +495,13 @@
                 }
                 else {
                     $gprod = $con -> prepare("INSERT INTO active_products (id_producto,unidades,porciones,precio,sucursal,usuario) VALUES (?, ?, ?, ?, ?, ?)");
-                    $gprod -> bind_param('idiiss',$id,$cant,$porciones,$precioprod,$sucursal,$sesion);
+                    $gprod -> bind_param('idiiss',$id,$cant,$porciones,$precioprod,$ssucu,$ussu);
                 }
                 $gprod -> execute();
                 if($gprod){
                     $estado = 1;
-                    $conestado = $con -> prepare("SELECT estado FROM productos WHERE estado = ? AND id = ? AND sucursal = ?");
-                    $conestado -> bind_param('iis',$estado,$id,$sucursal);
+                    $conestado = $con -> prepare("SELECT estado FROM productos WHERE estado = ? AND id = ?");
+                    $conestado -> bind_param('ii',$estado,$id);
                     $conestado -> execute();
                     $Rconestado = $conestado -> get_result();
                     if($Rconestado -> num_rows == 0){
@@ -653,6 +655,23 @@
             $act = $con -> prepare("UPDATE productos SET producto = ?, precio = ?, categoria = ?, descripcion = ?, talla = ? WHERE id = ?");
             $act -> bind_param('sisssi',$producto,$precio,$categoria,$descripcion,$talla,$id);
             if($act -> execute()){
+                $cosac = $con -> prepare("SELECT * FROM active_products WHERE id_producto = ?");
+                $cosac -> bind_param('i',$id);
+                $cosac -> execute();
+                $Rcosac = $cosac -> get_result();
+                if($Rcosac -> num_rows > 0){
+                    $apdat = $Rcosac -> fetch_assoc();
+                    $porciones = $apdat['porciones'];
+                    if($porciones  > 0) {
+                        $dvs = 1/8;
+                        $dvs = $dvs * $porciones;
+                        $precioprod = $precio * $dvs;
+                        $precio = $precioprod / $porciones;//Precio por porción
+                    }
+                    $gprod = $con -> prepare("UPDATE active_products SET precio = ? WHERE id_producto = ?");
+                    $gprod -> bind_param('ii',$precio,$id);
+                    $gprod -> execute();
+                }
                 echo json_encode([
                     "status" => "success",
                     "title" => "Producto actualizado!",
@@ -813,18 +832,33 @@
     if(isset($_GET['find_product']) && $_GET['find_product'] === $clav) {
         $producto = htmlspecialchars($_POST['producto']);
         $estado = 1;
-        $cs = "SELECT p.*, ap.*
-        FROM productos p
-        INNER JOIN active_products ap ON ap.id_producto = p.id
-        WHERE (
-                p.producto LIKE CONCAT('%', ?, '%')
-                OR p.categoria LIKE CONCAT('%', ?, '%')
-                OR p.id_code = ?
-              )
-          AND p.estado = ?
-          AND p.sucursal = ?";
-        $consl = $con -> prepare($cs);
-        $consl -> bind_param('ssiis', $producto, $producto, $producto, $estado, $sucursal);
+        if($_SESSION['sucursal'] == 'system'){
+            $cs = "SELECT p.*, ap.*
+            FROM productos p
+            INNER JOIN active_products ap ON ap.id_producto = p.id
+            WHERE (
+                    p.producto LIKE CONCAT('%', ?, '%')
+                    OR p.categoria LIKE CONCAT('%', ?, '%')
+                    OR p.id_code = ?
+                )
+            AND p.estado = ?";
+            $consl = $con -> prepare($cs);
+            $consl -> bind_param('ssii', $producto, $producto, $producto, $estado);
+        }
+        else {
+            $cs = "SELECT p.*, ap.*
+            FROM productos p
+            INNER JOIN active_products ap ON ap.id_producto = p.id
+            WHERE (
+                    p.producto LIKE CONCAT('%', ?, '%')
+                    OR p.categoria LIKE CONCAT('%', ?, '%')
+                    OR p.id_code = ?
+                )
+            AND p.estado = ?
+            AND p.sucursal = ?";
+            $consl = $con -> prepare($cs);
+            $consl -> bind_param('ssiis', $producto, $producto, $producto, $estado, $sucursal);
+        }
         $consl -> execute();
         $Rconsl = $consl -> get_result();
         if($Rconsl -> num_rows > 0){
@@ -872,6 +906,9 @@
             $concart -> bind_param('isi',$id,$sesion,$term);
             $concart -> execute();
             $Rconcart = $concart -> get_result();
+            if($_SESSION['sucursal'] == 'system'){
+                $sucursal = $p['sucursal'];
+            }
             $incart = $con -> prepare("INSERT INTO sell_cart (unico,id_producto,cantidad,sucursal,usuario) VALUES (?, ?, ?, ?, ?)");
             $incart -> bind_param('iiiss',$term,$id,$cantidad,$sucursal,$sesion);
             if($Rconcart -> num_rows > 0){
@@ -996,8 +1033,8 @@
                     "message" => "La cantidad establecida es mayor a la disponible"
                 ]));
             }
-            $change = $con -> prepare("UPDATE sell_cart SET cantidad = ? WHERE unico = ? AND id_producto = ?");
-            $change -> bind_param('iii',$valor,$term,$id);
+            $change = $con -> prepare("UPDATE sell_cart SET cantidad = ? WHERE unico = ? AND id_producto = ? AND usuario = ?");
+            $change -> bind_param('iiis',$valor,$term,$id,$sesion);
             if($change -> execute()){
                 echo json_encode([
                     "status" => "success",
@@ -1025,8 +1062,8 @@
     if(isset($_GET['del_added_products']) && $_GET['del_added_products'] === $clav){
         $id = $_POST['id'];
         $term = $_POST['terminal'];
-        $dl = $con -> prepare("DELETE FROM sell_cart WHERE unico = ? AND id_producto = ?");
-        $dl -> bind_param('ii',$term,$id);
+        $dl = $con -> prepare("DELETE FROM sell_cart WHERE unico = ? AND id_producto = ? AND usuario = ?");
+        $dl -> bind_param('iis',$term,$id,$sesion);
         if($dl -> execute()){
             echo json_encode([
                 "status" => "success",
@@ -1097,6 +1134,76 @@
                 "title" => "Error",
                 "message" => "No se ha encontrado el producto"
             ]);
+        }
+    }
+
+    if(isset($_GET['rest_actives']) && $_GET['rest_actives'] === $clav)  {
+        $id = $_POST['id'];
+        $rest = $_POST['resta'];
+        $cons = $con -> prepare("SELECT * FROM active_products WHERE id_producto = ?");
+        $cons -> bind_param('i',$id);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0){
+            $ap = $Rcons -> fetch_assoc();
+            $disp = $ap['unidades'];
+            $porc = $ap['porciones'];
+            if($porc > 0){
+                $ncat = $porc - $rest;
+                if($ncat < 0){
+                    echo json_encode([
+                        "status" => "success",
+                        "title" => "Valor no válido!",
+                        "message" => "El valor a restar es mayor a los disponibles"
+                    ]);
+                    exit;
+                }
+                $trozos_restantes = $porc - $rest;
+                $unds = $disp * ($trozos_restantes / $porc);
+                $ups = $con -> prepare("UPDATE active_products SET unidades = ?, porciones = ? WHERE id_producto = ?");
+                $ups -> bind_param('dii',$unds,$ncat,$id);
+                if($ups -> execute()){
+                    echo json_encode([
+                        "status" => "success",
+                        "title" => "Correcto!",
+                        "message" => "Se han restado las porciones disponibles de este producto"
+                    ]);
+                }
+                else {
+                    echo json_encode([
+                        "status" => "error",
+                        "title" => "Error!",
+                        "message" => "No se ha podido restar las porciones disponibles de este producto"
+                    ]);
+                }
+                exit;
+            }
+            $nnu = $disp - $rest;
+            if($nnu < 0){
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Valor no válido!",
+                    "message" => "El valor a restar es mayor a los disponibles"
+                ]);
+                exit;
+            }
+            $upd = $con -> prepare("UPDATE active_products SET unidades = ? WHERE id_producto = ?");
+            $upd -> bind_param('ii',$nnu,$id);
+            if($upd -> execute()){
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Correcto!",
+                    "message" => "Se han restado las unidades disponibles de este producto"
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "No se ha podido restar las unidades disponibles de este producto"
+                ]);
+            }
+            exit;
         }
     }
 

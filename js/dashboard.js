@@ -37,6 +37,49 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
     })();
 
+    (async ()=>{
+        const urc = `../${uris.getcaducadosnf}`;
+        try {
+            const cad = await fetch(urc);
+            if(!cad.ok){throw new Error(`${cad.status} / ${cad.statusText}`)}
+            const resp = await cad.json();
+            if(resp.status === 'caducados' && resp.message.numero > 0) {
+                setTimeout(()=>{
+                    iziToast.warning({
+                        title: 'Atención',
+                        message: resp.message.texto,
+                        timeout: 20000
+                    });
+                    document.querySelector("#notifyc").play();
+                },5000);
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+    })();
+    (async ()=>{
+        const urc = `../${uris.getstockminimonf}`;
+        try {
+            const cad = await fetch(urc);
+            if(!cad.ok){throw new Error(`${cad.status} / ${cad.statusText}`)}
+            const resp = await cad.json();
+            if(resp.status === 'minimo' && resp.message.numero > 0) {
+                setTimeout(()=>{
+                    iziToast.warning({
+                        title: 'Atención',
+                        message: resp.message.texto,
+                        timeout: 20000
+                    });
+                    document.querySelector("#notifyc").play();
+                },7000);
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+    })();
+
     soption.forEach(b => {
         b.addEventListener('click',async ()=>{
             let source = b.getAttribute("data-source");

@@ -262,4 +262,55 @@
 		];
 	}
 
+	function generarIconos($rutaOriginal, $rutaDestino) {
+		if (!file_exists($rutaOriginal)) {
+			return "Error: la imagen original no existe.";
+		}
+		if (!is_dir($rutaDestino)) {
+			mkdir($rutaDestino, 0777, true);
+		}
+		$tamaños = [512, 144, 192, 96, 72];
+		$info = getimagesize($rutaOriginal);
+		$mime = $info['mime'];
+		switch ($mime) {
+			case 'image/jpeg':
+				$imagenOriginal = imagecreatefromjpeg($rutaOriginal);
+				break;
+			case 'image/png':
+				$imagenOriginal = imagecreatefrompng($rutaOriginal);
+				break;
+			case 'image/webp':
+				$imagenOriginal = imagecreatefromwebp($rutaOriginal);
+				break;
+			default:
+				return "Error: formato de imagen no soportado ($mime)";
+		}
+		$anchoOriginal = imagesx($imagenOriginal);
+		$altoOriginal = imagesy($imagenOriginal);
+		$rutasGeneradas = [];
+		foreach ($tamaños as $tamaño) {
+			$imagenNueva = imagecreatetruecolor($tamaño, $tamaño);
+			imagesavealpha($imagenNueva, true);
+			$transparente = imagecolorallocatealpha($imagenNueva, 0, 0, 0, 127);
+			imagefill($imagenNueva, 0, 0, $transparente);
+			imagecopyresampled(
+				$imagenNueva,
+				$imagenOriginal,
+				0, 0, 0, 0,
+				$tamaño, $tamaño,
+				$anchoOriginal, $altoOriginal
+			);
+			$rutaSalida = rtrim($rutaDestino, '/')."/icon-{$tamaño}x{$tamaño}.png";
+			if (file_exists($rutaSalida)) {
+				unlink($rutaSalida);
+			}
+			imagepng($imagenNueva, $rutaSalida, 9);
+			imagedestroy($imagenNueva);
+			$rutasGeneradas[] = $rutaSalida;
+		}
+		imagedestroy($imagenOriginal);
+		return true;
+	}
+
+
 ?>

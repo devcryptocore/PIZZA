@@ -62,8 +62,14 @@
 
     if(isset($_GET['boxhistory']) && $_GET['boxhistory'] === $clav){
         $mes = date('m');
-        $cons = $con -> prepare("SELECT * FROM caja WHERE usuario = ? AND sucursal = ? AND MONTH(fecha) = ? ORDER BY id DESC");
-        $cons -> bind_param('ssi',$sesion,$sucursal,$mes);
+        if($_SESSION['sucursal'] == 'system') {
+            $cons = $con -> prepare("SELECT * FROM caja WHERE MONTH(fecha) = ? ORDER BY id DESC");
+            $cons -> bind_param('i',$mes);
+        }
+        else {
+            $cons = $con -> prepare("SELECT * FROM caja WHERE usuario = ? AND sucursal = ? AND MONTH(fecha) = ? ORDER BY id DESC");
+            $cons -> bind_param('ssi',$sesion,$sucursal,$mes);
+        }
         $cons -> execute();
         $Rcons = $cons -> get_result();
         $bcaja = boxcode();

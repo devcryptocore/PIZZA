@@ -73,7 +73,7 @@
 
     if(isset($_GET['get_categories']) && $_GET['get_categories'] === $exclav) {
         $estado = 1;
-        $cons = $con -> prepare("SELECT * FROM categorias WHERE estado = ?");
+        $cons = $con -> prepare("SELECT DISTINCT categoria,imagen FROM categorias WHERE estado = ?");
         $cons -> bind_param('i',$estado);
         $cons -> execute();
         $Rcons = $cons -> get_result();
@@ -311,8 +311,18 @@
         if($Rcons -> num_rows > 0) {
             $prods = "";
             while($pr = $Rcons -> fetch_assoc()){
-                $precio = $pr['talla'] == 'L' ? miles($pr['prepor']) . '<span class="smlt"> * porción</span>' : miles($pr['precio']);
-                $portada = $pr['portada'] ?? '';
+                //$precio = $pr['talla'] == 'L' ? miles($pr['prepor']) . '<span class="smlt"> * porción</span>' : miles($pr['precio']);
+                if($pr['talla'] == 'L'){
+                    $precio = miles($pr['prepor']) . '<span class="smlt"> * porción</span>';
+                    $allpizza = '
+                        <button class="completbt" onclick="pizzacompleta(\'#cantidb_'.$pr['id'].'\',\''.$pr['id'].'\')">Completa</button>
+                    ';
+                }
+                else {
+                    $precio = miles($pr['precio']);
+                    $allpizza = '';
+                }
+                $portada = $pr['portada'] ?? 'res/icons/image.svg';
                 $prods .= '
                     <div class="prod-card">
                         <div class="up-to-card">
@@ -328,14 +338,17 @@
                                     <div id="sell_this">
                                         <input type="hidden" name="id" value="10">
                                         <div class="counter-cont">
-                                            <span class="counter-bt minus">-</span>
-                                            <input type="number" name="cantidad" value="1">
-                                            <span class="counter-bt more">+</span>
+                                            <span class="counter-bt minus" onclick="setcan(\'minus\',\'#cantidb_'.$pr['id'].'\')">-</span>
+                                            <input type="number" name="cantidad" value="1" id="cantidb_'.$pr['id'].'" readonly>
+                                            <span class="counter-bt more" onclick="setcan(\'more\',\'#cantidb_'.$pr['id'].'\')">+</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <input type="submit" value="+" class="car_add_button" onclick="addToCart(\''.$pr['id'].'\',1)">
+                            <div class="lfcon">
+                                '.$allpizza.'
+                                <input type="submit" value="" class="car_add_button" onclick="addToCart(\''.$pr['id'].'\',\'#cantidb_'.$pr['id'].'\')">
+                            </div>
                         </div>
                     </div>
                 ';
@@ -460,7 +473,18 @@
         if($Rcons -> num_rows > 0) {
             $prods = "";
             while($pr = $Rcons -> fetch_assoc()){
-                $precio = $pr['talla'] == 'L' ? miles($pr['prepor']) . '<span class="smlt"> * porción</span>' : miles($pr['precio']);
+                if($pr['talla'] == 'L'){
+                    $precio = miles($pr['prepor']) . '<span class="smlt"> * porción</span>';
+                    $allpizza = '
+                        <button class="completbt" onclick="pizzacompleta(\'#cantidb_'.$pr['id'].'\',\''.$pr['id'].'\')" style="top:unset;left:unset;right:0px;">
+                        Completa
+                        </button>
+                    ';
+                }
+                else {
+                    $precio = miles($pr['precio']);
+                    $allpizza = '';
+                }
                 $portada = $pr['portada'] ?? '';
                 $prods .= '
                     <div class="prod-card">
@@ -468,18 +492,19 @@
                             <h3 class="card-title" style="white-space: nowrap; display: inline-block; font-size: 11.3798px;">'.$pr['producto'].'</h3>
                         </div>
                         <div onclick="this_product(\''.$pr['id'].'\')" class="prod-image" style="background-image:url('.str_replace("../","",$portada).')"></div>
-                        <div class="price-cont">
+                        <div class="price-cont" style="position:relative;">
                             <span>$'.$precio.'</span>
+                            '.$allpizza.'
                         </div>
                         <div class="prod-form">
                             <div id="sell_this">
                                 <input type="hidden" name="id" value="10">
                                 <div class="counter-cont">
-                                    <span class="counter-bt minus">-</span>
-                                    <input type="number" name="cantidad" value="1">
-                                    <span class="counter-bt more">+</span>
+                                    <span class="counter-bt minus" onclick="setcan(\'minus\',\'#cantidb_'.$pr['id'].'\')">-</span>
+                                    <input type="number" name="cantidad" value="1" id="cantidb_'.$pr['id'].'" readonly>
+                                    <span class="counter-bt more" onclick="setcan(\'more\',\'#cantidb_'.$pr['id'].'\')">+</span>
                                 </div>
-                                <input type="submit" value="Agregar" class="send-button" onclick="addToCart(\''.$pr['id'].'\',1)">
+                                <input type="submit" value="Agregar" class="send-button" onclick="addToCart(\''.$pr['id'].'\',\'#cantidb_'.$pr['id'].'\')">
                             </div>
                         </div>
                     </div>
@@ -533,6 +558,7 @@
                 "encargado" => $org['encargado'] ?? 'Jhon Doe',
                 "documento" => $org['documento'] ?? '123456789',
                 "logotipo" => $org['logotipo'] ?? 'res/images/default_logo.png',
+                "publicidad" => $org['faqs'] ?? 'res/images/amigos.webp',
                 "nosotros" => $org['nosotros'] ?? '',
                 "fecha" => $org['fecharegistro'] ?? '01-01-2000',
                 "faqs" => $org['faqs'] ?? '',

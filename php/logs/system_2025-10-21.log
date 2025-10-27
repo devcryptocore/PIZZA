@@ -1,0 +1,28 @@
+[2025-10-21 00:01:37] [Usuario: root] [IP: ::1] - Insumo modificado (Jugo hit 350mls, cantidad = 12.000und)
+[2025-10-21 00:02:01] [Usuario: root] [IP: ::1] - Insumo modificado (Jugo hit 350mls, cantidad = 12.000und)
+[2025-10-21 00:04:10] [Usuario: anna] [IP: ::1] - Insumo modificado (Jugo hit 350ml, cantidad = 12.000und)
+[2025-10-21 00:05:00] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:05:15] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:05:51] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000gr)
+[2025-10-21 00:11:39] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:12:00] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:12:37] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:15:01] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:16:18] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:18:25] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:22:26] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000.000gr)
+[2025-10-21 00:30:22] [Usuario: root] [IP: ::1] - Insumo modificado (Jugo hit 350ml, cantidad = 12.000und)
+[2025-10-21 00:30:44] [Usuario: root] [IP: ::1] - Insumo modificado (Jugo Hit Caja, cantidad = 6.000und)
+[2025-10-21 00:31:17] [Usuario: anna] [IP: ::1] - Insumo modificado (Jugo hit 350 ml, cantidad = 12.000und)
+[2025-10-21 00:35:03] [Usuario: root] [IP: ::1] - 1000gr de Queso agragados
+[2025-10-21 00:35:30] [Usuario: root] [IP: ::1] - Insumo modificado (Queso, cantidad = 3000gr)
+[2025-10-21 00:37:52] [Usuario: root] [IP: ::1] - 1000gr de Queso agragados
+[2025-10-21 00:45:28] [Usuario: root] [IP: ::1] - 1000gr de Queso restados
+[2025-10-21 01:02:57] [Usuario: root] [IP: ::1] - Producto Jugo hit de mango eliminado.
+[2025-10-21 01:18:25] [Usuario: root] [IP: ::1] - Producto Quesada desactivado.
+[2025-10-21 02:32:53] [Usuario: user] [IP: ::1] - Error al registrar insumo: Field 'costo_und' doesn't have a default value
+[2025-10-21 02:35:33] [Usuario: user] [IP: ::1] - Error al registrar insumo: Column count doesn't match value count at row 1
+[2025-10-21 02:36:29] [Usuario: user] [IP: ::1] - Nuevo insumo registrado (Masa, cantidad = 3000gr)
+[2025-10-21 02:36:46] [Usuario: user] [IP: ::1] - Insumo con id 4 eliminado.
+[2025-10-21 02:37:24] [Usuario: user] [IP: ::1] - Nuevo insumo registrado (Masa, cantidad = 3000gr)
+[2025-10-21 02:53:06] [Usuario: user] [IP: ::1] - Error al modificar el producto: Column 'unidades' cannot be null

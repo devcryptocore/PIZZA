@@ -11,7 +11,7 @@
         <button class="stkbutton" id="modCompany" onclick="modcomp()">Actualizar</button>
         <button class="stkbutton" id="sucursales" onclick="cursals()">Sucursales</button>
         <button class="stkbutton" id="nosotros" onclick="nosotrostext()">Nosotros</button>
-        <button class="stkbutton" id="faqs" onclick="faqstext()">FAQs</button>
+        <button class="stkbutton" id="faqs" onclick="publicyImg()">Pubicidad</button>
     </div>
     <div class="cont-page">
         <div class="sucont">

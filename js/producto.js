@@ -529,6 +529,59 @@ document.addEventListener("DOMContentLoaded",()=>{
                         });
                     });
                 }
+                if(action === 'rest'){
+                    Swal.fire({
+                        title: `Restar stock ${rta.message.producto}`,
+                        html: `
+                            <form id="moreminusing">
+                                <div class="numerator">
+                                    <span class="actioner" id="minus">-</span>
+                                    <input type="number" id="cantid" required name="resta" value="1">
+                                    <span class="actioner" id="more">+</span>
+                                </div>
+                                <input type="hidden" name="id" value="${id}">
+                                <input type="submit" value="Restar" class="send-button">
+                            </form>
+                        `,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        showCloseButton: true
+                    });
+                    let cantid = document.querySelector("#cantid");
+                    const cantidform = document.querySelector("#moreminusing");
+                    document.querySelector("#minus").addEventListener("click",()=>{
+                        let vcantid = parseFloat(cantid.value);
+                        let ncantid = parseFloat(vcantid - 1);
+                        if(vcantid > 0){
+                            cantid.value = ncantid;
+                        }
+                    });
+                    document.querySelector("#more").addEventListener("click",()=>{
+                        let vcantid = parseFloat(cantid.value);
+                        let ncantid = parseFloat(vcantid + 1);
+                        cantid.value = ncantid;
+                    });
+                    cantidform.addEventListener('submit',async (x)=>{
+                        x.preventDefault();
+                        const uric = `../${uris.restactives}`;
+                        const can = new FormData(x.target);
+                        const scant = await fetch(uric,{
+                            method: "POST",
+                            body: can
+                        });
+                        const rssp = await scant.json();
+                        Swal.fire({
+                            title: rssp.title,
+                            text: rssp.message,
+                            icon: rssp.status
+                        }).then(()=>{
+                            if(rssp.status == "error"){
+                                location.reload();
+                            }
+                            get_ingredients();
+                        });
+                    });
+                }
                 if(action === 'modify') {
                     Swal.fire({
                         title: `Modificar ${rta.message.producto}`,
@@ -687,6 +740,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             html: `
                 <div class="offerbtn">
                     <button id="offerbutton" class="stkbutton offer">Oferta</button>
+                    <button class="stkbutton rest" onclick="handleProduct('rest',${id})">Restar</button>
                     <button id="deactivate" class="stkbutton desactivar">Desactivar</button>
                 </div>
                 <div class="oneInput imageInput">

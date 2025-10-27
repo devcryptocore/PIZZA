@@ -4,6 +4,7 @@ export const getingredients = "php/ingredients.php?get_ingredients=bWF4cGl6emFsY
 export const gettotal = "php/ingredients.php?get_values=bWF4cGl6emFsYXVuaW9u";
 export const getthisingredient = "php/ingredients.php?get_this_ingredient=bWF4cGl6emFsYXVuaW9u";
 export const cantidingredient = "php/ingredients.php?cantid=bWF4cGl6emFsYXVuaW9u";
+export const restingredient = "php/ingredients.php?quitar_cantid=bWF4cGl6emFsYXVuaW9u";
 export const modifyingredient = "php/ingredients.php?modify=bWF4cGl6emFsYXVuaW9u";
 export const deleteingredient = "php/ingredients.php?delete=bWF4cGl6emFsYXVuaW9u";
 export const ingredientsforcheck = "php/products.php?getingredientsforlist=bWF4cGl6emFsYXVuaW9u";
@@ -70,3 +71,9 @@ export const set_us_info = "php/empresa.php?set_us_info=bWF4cGl6emFsYXVuaW9u";
 export const opr_us_info = "php/empresa.php?opr_us_info=bWF4cGl6emFsYXVuaW9u";
 export const get_sucursales = "php/empresa.php?get_sucursales=bWF4cGl6emFsYXVuaW9u";
 export const setadmindata = "php/employee.php?set_admindata=bWF4cGl6emFsYXVuaW9u";
+export const restactives = "php/products.php?rest_actives=bWF4cGl6emFsYXVuaW9u";
+export const setpublicyimg = "php/empresa.php?set_publicy_img=bWF4cGl6emFsYXVuaW9u";
+export const getcaducados = "php/caduca.php?get_caducados=bWF4cGl6emFsYXVuaW9u";
+export const getstockminimo = "php/caduca.php?get_minimo=bWF4cGl6emFsYXVuaW9u";
+export const getcaducadosnf = "php/caduca.php?get_caducados_notify=bWF4cGl6emFsYXVuaW9u";
+export const getstockminimonf = "php/caduca.php?get_minimo_notify=bWF4cGl6emFsYXVuaW9u";

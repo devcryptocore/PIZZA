@@ -40,7 +40,7 @@
         $con->begin_transaction();
         try {
             $sql = "SELECT sc.id_producto, sc.cantidad,
-                        p.producto, p.oferta,
+                        p.producto, p.oferta,p.sucursal,
                         ap.precio
                     FROM sell_cart sc
                     INNER JOIN productos p ON p.id = sc.id_producto
@@ -65,6 +65,9 @@
                     $calcular = calculate_offer($precio, $oferta);
                     $precio   = $calcular['newprice'];
                     $descuento = $calcular['discount'] * $cantidad;
+                }
+                if($_SESSION['sucursal'] == 'system'){
+                    $sucursal = $prod['sucursal'];
                 }
 
                 $total = $precio * $cantidad;
@@ -113,8 +116,8 @@
         $ventaId = intval($_POST['venta_id']);
         $devolver = intval($_POST['cantidad']);
         $motivo = !empty($_POST['motivo']) ? trim($_POST['motivo']) : "Sin especificar";
-        $check = $con->prepare("SELECT * FROM ventas WHERE id = ? AND sucursal = ?");
-        $check->bind_param("is", $ventaId, $sucursal);
+        $check = $con->prepare("SELECT * FROM ventas WHERE id = ?");
+        $check->bind_param("i", $ventaId);
         $check->execute();
         $result = $check->get_result();
         if ($result->num_rows > 0) {
@@ -135,14 +138,14 @@
                 $venta['precio'],$totalDev,$sesion,$sucursal,$motivo);
             if ($insertDev->execute()) {
                 if ($devolver == $venta['cantidad']) {
-                    $del = $con->prepare("DELETE FROM ventas WHERE id = ? AND sucursal = ?");
-                    $del->bind_param("is", $ventaId, $sucursal);
+                    $del = $con->prepare("DELETE FROM ventas WHERE id = ?");
+                    $del->bind_param("i", $ventaId);
                     $del->execute();
                 } else {
                     $nuevaCantidad = $venta['cantidad'] - $devolver;
                     $nuevoTotal = $nuevaCantidad * $venta['precio'];
-                    $upd = $con->prepare("UPDATE ventas SET cantidad = ?, total = ? WHERE id = ? AND sucursal = ?");
-                    $upd->bind_param("iiis",$nuevaCantidad,$nuevoTotal,$ventaId,$sucursal);
+                    $upd = $con->prepare("UPDATE ventas SET cantidad = ?, total = ? WHERE id = ?");
+                    $upd->bind_param("iii",$nuevaCantidad,$nuevoTotal,$ventaId);
                     $upd->execute();
                 }
                 echo json_encode([

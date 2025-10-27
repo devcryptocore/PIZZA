@@ -90,9 +90,10 @@ document.addEventListener('DOMContentLoaded',()=>{
                     <h1 data-aos="fade-right">${stlnom}</b></h1>
                 `;
             });
+            document.querySelector(".ifimage").style.background = `url(${respu.message.publicidad.replace("../","")}) center / 100% no-repeat`;
             aboutus.innerHTML = `
                 <video autoplay muted loop playsinline>
-                    <source src="res/images/bkvid.mp4" type="video/mp4">
+                    <source src="res/images/bkvid1.mp4" type="video/mp4">
                 </video>
                 <h2 data-aos="fade-left">Nosotros:</h2>
                 <p data-aos="fade-right">${respu.message.nosotros}</p>
@@ -111,6 +112,29 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
 
     })();
+
+    window.setcan = (mode, cur) => {
+        let cantid = document.querySelector(cur);
+        if(mode == 'minus'){
+            let vcantid = parseFloat(cantid.value);
+            let ncantid = parseFloat(vcantid - 1);
+            if(vcantid > 1){
+                cantid.value = ncantid;
+            }
+        }
+        if(mode == 'more'){
+            let vcantid = parseFloat(cantid.value);
+            let ncantid = parseFloat(vcantid + 1);
+            cantid.value = ncantid;
+        }
+    }
+
+    window.pizzacompleta = (sur, nm) => {
+        let cantid = document.querySelector(sur);
+        cantid.value = 8;
+        addToCart(nm,sur);
+        cantid.value = 1;
+    }
 
     window.get_mycart = async () => {
         const mycart = source.getmycart;
@@ -443,7 +467,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                                         <h2><b>$</b>${rprod.message.precio}</h2>
                                         <span>${rprod.message.descripcion}</span>
                                     </div>
-                                    <button class="addbt" onclick="addToCart('${produc}',1)">Agregar al carrito</button>
+                                    <button class="addbt" onclick="setToCart('${produc}',1)">Agregar al carrito</button>
                                 </div>
                             `,
                             color: "#fff",
@@ -451,6 +475,17 @@ document.addEventListener('DOMContentLoaded',()=>{
                             showCloseButton: true,
                             showCancelButton: false,
                             showConfirmButton: false
+                        });
+                        const portada = document.getElementById('portada_product');
+                        const otherPhotos = document.querySelectorAll('.fotocolumns img');
+                        otherPhotos.forEach(foto => {
+                            foto.addEventListener('click', () => {
+                            if (!foto.src || foto.style.display === 'none') return;
+                            const portadaSrc = portada.src;
+                            const clickedSrc = foto.src;
+                            portada.src = clickedSrc;
+                            foto.src = portadaSrc;
+                            });
                         });
                     }
                     catch (err) {
@@ -473,11 +508,10 @@ document.addEventListener('DOMContentLoaded',()=>{
                 let porciones = datadesc?.porciones;
                 let preciopizza = talla == 'L' ? `${milesjs(datadesc?.precioporcion ?? 0)}<span class="smlt"> * porción</span>` : milesjs(datos?.precio ?? 0);
                 container.innerHTML = `
-                    <div class="separator"></div>
                     <div class="props" data-aos="" data-aos-offset="0">
                         <div class="up_scont">
                             <b data-aos="fade-left" data-aos-offset="0"><span>$</span>${preciopizza}</b>
-                            <button onclick="addToCart('${datos?.id}',1)" class="add_cart_btn" data-aos="fade-right" data-aos-offset="0"></button>
+                            <button onclick="setToCart('${datos?.id}',1)" class="add_cart_btn" data-aos="fade-right" data-aos-offset="0"></button>
                         </div>
                         <h2 data-aos="fade-up" data-aos-offset="0">${pza}</h2>
                         <ul id="ingredients" data-aos="fade-right" data-aos-offset="0"></ul>
@@ -596,7 +630,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         document.querySelector("#burger").click();
     }
 
-    window.addToCart = async (id, cant) => {
+    window.setToCart = async (id, cant) => {
         const cart = `${source.addtocart}`;
         if(localStorage.getItem('tempses') === null){
             iziToast.error({
@@ -641,7 +675,58 @@ document.addEventListener('DOMContentLoaded',()=>{
         catch (err) {
             console.error(err);
         } 
-    };
+    }
+
+    window.addToCart = async (id, cant) => {
+        const cart = `${source.addtocart}`;
+        cant = document.querySelector(cant).value;
+        if(cant <= 0){
+            cant = 1;
+        }
+        if(localStorage.getItem('tempses') === null){
+            iziToast.error({
+                title: "Error!",
+                message: `No se ha podido agregar, por favor intente nuevamente!`,
+                position: "topCenter",
+                onClosed: () => {
+                    location.reload();
+                }
+            });
+            return;
+        }
+        const ses = localStorage.getItem('tempses');
+        const data = new FormData();
+        try {
+            data.append("idsesion",ses);
+            data.append("idproducto",id);
+            data.append("cantidad",cant);
+            const addtocart = await fetch(cart,{
+                method: "POST",
+                body: data
+            });
+            const response = await addtocart.json();
+            if(response.status == 'success'){
+                iziToast.success({
+                    title: response.title,
+                    position: "topCenter",
+                    timeout: 1000
+                });
+                numelems();
+                get_mycart();
+            }
+            else {
+                iziToast.error({
+                    title: response.title,
+                    message: response.message,
+                    position: "topCenter"
+                });
+                return;
+            }
+        }
+        catch (err) {
+            console.error(err);
+        } 
+    }
 
     window.removeFromCart = async (id) => {
         const rem = source.delfromcart;
@@ -757,6 +842,17 @@ document.addEventListener('DOMContentLoaded',()=>{
                 showCloseButton: true,
                 showCancelButton: false,
                 showConfirmButton: false
+            });
+            const portada = document.getElementById('portada_product');
+            const otherPhotos = document.querySelectorAll('.fotocolumns img');
+            otherPhotos.forEach(foto => {
+                foto.addEventListener('click', () => {
+                if (!foto.src || foto.style.display === 'none') return;
+                const portadaSrc = portada.src;
+                const clickedSrc = foto.src;
+                portada.src = clickedSrc;
+                foto.src = portadaSrc;
+                });
             });
         }
         catch (err) {

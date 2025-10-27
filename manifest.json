@@ -1,7 +1,7 @@
 {
-  "name": "Pizzeria Max Pizza",
-  "short_name": "MaxPizza",
-  "description": "La mejor pizza artesanal, a tan solo un click",
+  "name": "NextFlow App",
+  "short_name": "NextFlow",
+  "description": "Tus pedidos a un click!",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",

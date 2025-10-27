@@ -216,4 +216,39 @@
         }
     }
 
+    if(isset($_GET['set_publicy_img']) && $_GET['set_publicy_img'] === $clav) {
+        if(isset($_FILES['foto_sucursal']) && $_FILES['foto_sucursal']['error'] === UPLOAD_ERR_OK) {
+            $dir = "../res/images/publicidades/" . $sucursal;
+            if(!is_dir($dir)){
+                mkdir($dir, 0777, true);
+            }
+            $sucursal_image = guardarFoto("foto_sucursal", $sucursal, $dir);
+        }
+        else {
+            $sucursal_image = $_POST['old_photo'] ?? "../res/icons/image.svg";
+        }
+        $cons = $con -> prepare("SELECT faqs FROM about_section");
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        $aop = $con -> prepare("INSERT INTO about_section (faqs) VALUES (?)");
+        if($Rcons -> num_rows > 0) {
+            $aop = $con -> prepare("UPDATE about_section SET faqs = ?");
+        }
+        $aop -> bind_param('s',$sucursal_image);
+        if($aop -> execute()){
+            echo json_encode([
+                "status" => "success",
+                "title" => "Correcto!",
+                "message" => "Se ha publicado la imagen para publicidad "
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "No se ha podido almacenar la imagen: " . $con -> error
+            ]);
+        }
+    }
+
 ?>

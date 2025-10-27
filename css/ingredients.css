@@ -66,6 +66,10 @@
     background: #007ecc3d url(../res/icons/add-blue.svg) 5px / 30px no-repeat;
     color: #007ecc;
 }
+.rest {
+    background: #b353003d url(../res/icons/minus.svg) 5px / 20px no-repeat;
+    color: #b35300;
+}
 .modify {
     background: #00a34f3d url(../res/icons/edit-green.svg) 5px / 20px no-repeat;
     color: #00a34f;

@@ -49,6 +49,12 @@ error_reporting(E_ALL);
                     <button class="source-option" data-source="empresa">
                         <img src="../res/icons/store.svg">
                     </button>
+                    <button class="source-option" data-source="sinstock">
+                        <img src="../res/icons/empty.svg">
+                    </button>
+                    <button class="source-option" data-source="caducados">
+                        <img src="../res/icons/calendar.svg">
+                    </button>
                     <button class="source-option" data-source="acercade">
                         <img src="../res/icons/about.svg">
                     </button>
@@ -115,6 +121,13 @@ error_reporting(E_ALL);
     }
 ?>
 <body>
+    <script>
+        const nome = '<?=$nome;?>';
+        Swal.fire({
+            title: `Bienvenido ${nome}`,
+            icon: 'success'
+        });
+    </script>
     <div class="parent">
         <div class="div2 option-container">
             <div class="opeinfo">
@@ -131,5 +144,6 @@ error_reporting(E_ALL);
             <iframe src="../admin/caja.php" frameborder="0" id="sites_container"></iframe>
         </div>
     </div>
+    <audio src="../res/sounds/notify.wav" style="display: none;" id="notifyc"></audio>
 </body>
 </html>

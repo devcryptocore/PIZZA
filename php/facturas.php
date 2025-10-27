@@ -4,8 +4,8 @@
 
     if(isset($_GET['get_invoices']) && $_GET['get_invoices'] === $clav) {
         $facnum = $_POST['facnum'];
-        $cons = $con -> prepare("SELECT DISTINCT consecutivo FROM ventas WHERE consecutivo = ? AND sucursal = ?");
-        $cons -> bind_param('ss',$facnum,$sucursal);
+        $cons = $con -> prepare("SELECT DISTINCT consecutivo FROM ventas WHERE consecutivo = ?");
+        $cons -> bind_param('s',$facnum);
         $cons -> execute();
         $Rcons = $cons -> get_result();
         $mess = "";
@@ -30,8 +30,8 @@
 
     if(isset($_GET['get_to_rollback']) && $_GET['get_to_rollback'] === $clav) {
         $idventa = $_POST['idventa'];
-        $cons = $con -> prepare("SELECT * FROM ventas WHERE idventa = ? AND sucursal = ?");
-        $cons -> bind_param('ss',$idventa,$sucursal);
+        $cons = $con -> prepare("SELECT * FROM ventas WHERE idventa = ?");
+        $cons -> bind_param('s',$idventa);
         $cons -> execute();
         $Rcons = $cons -> get_result();
         $mess = "";
@@ -60,8 +60,13 @@
     }
 
     if(isset($_GET['history_invoices']) && $_GET['history_invoices'] === $clav) {
-        $fc = $con -> prepare("SELECT * FROM ventas WHERE usuario = ? AND sucursal = ? ORDER BY consecutivo DESC LIMIT 20");
-        $fc -> bind_param('ss',$sesion,$sucursal);
+        if($_SESSION['sucursal'] == 'system'){
+            $fc = $con -> prepare("SELECT * FROM ventas ORDER BY consecutivo DESC LIMIT 20");
+        }
+        else {
+            $fc = $con -> prepare("SELECT * FROM ventas WHERE usuario = ? ORDER BY consecutivo DESC LIMIT 20");
+            $fc -> bind_param('s',$sesion);
+        }
         $fc -> execute();
         $Rfc = $fc -> get_result();
         $mess = "";

@@ -771,4 +771,76 @@ document.addEventListener('DOMContentLoaded', ()=>{
         });
     }
 
+    window.publicyImg = async () => {
+        Swal.fire({
+            title: "Establecer imagen publicitaria",
+            html: `
+                <div class="form-container">
+                    <form id="newSucursal" enctype="multipart/form-data" novalidate="">
+                        <div class="oneInput">
+                            <div class="inputContainer con-image" style="justify-content:center;">
+                                <input type="file" name="foto_sucursal" id="foto_sucursal" class="form-image" required="">
+                                <label for="foto_sucursal" class="fore-photo"></label>
+                            </div>
+                        </div>
+                        <div class="oneInput">
+                            <input type="submit" value="Publicar" class="send-button">
+                        </div>
+                    </form>
+                </div>
+            `,
+            showCancelButton: false,
+            showConfirmButton: false,
+            showCloseButton: true
+        });
+        if(document.querySelector(".form-image")){
+            const pimage = document.querySelectorAll(".form-image");
+            pimage.forEach(f => {
+                f.addEventListener("change",()=>{
+                    let inpid = f.id;
+                    let inpimg = f.files[0];
+                    if(inpimg && inpimg.type.startsWith("image/")){
+                        let bkg = URL.createObjectURL(inpimg);
+                        document.querySelectorAll(".fore-photo").forEach(l =>  {
+                            let lbl = l.getAttribute("for");
+                            if(lbl == inpid){
+                                l.style.background = `url(${bkg}) center / cover no-repeat`;
+                            }
+                        });
+                    }
+                    else {
+                        iziToast.error({
+                            title: "Seleccione un archivo válido!",
+                            message: `Debe elegir un archivo en formato .jpg, .png o .webp`,
+                            position: "topCenter"
+                        });
+                    }
+                });
+            });
+        }
+        const newsucursal = document.querySelector("#newSucursal");
+        const urs = `../${uris.setpublicyimg}`;
+        newsucursal.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const data = new FormData(e.target);
+            try {
+                const sucu = await fetch(urs, {
+                    method: "POST",
+                    body: data
+                });
+                const rep = await sucu.json();
+                Swal.fire({
+                    title: rep.title,
+                    text: rep.message,
+                    icon: rep.status
+                }).then(()=>{
+                    location.reload();
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
 });
