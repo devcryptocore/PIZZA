@@ -32,7 +32,7 @@
     function imprimirArchivosDirectorio($directorios) {
         $archivos = [];
         $exclusion_extensiones = ['html', 'json', 'txt'];
-        $exclusion_archivos = ['users.php','errorhandler.php','page.php'];
+        $exclusion_archivos = ['users.php','errorhandler.php','page.php','nextflow_bot.php'];
         foreach ($directorios as $directorio) {
             if (!is_dir($directorio)) {
                 continue;

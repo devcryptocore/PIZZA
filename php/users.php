@@ -28,8 +28,9 @@
             $ape = $nom[1] ?? '';
             $ins -> bind_param('sssssssss',$organizacion,$ptelefono,$stelefono,$email,$direccion,$nit,$encargado,$documento,$logo);
             if($ins -> execute()) {
-                $empl = $con -> query("INSERT INTO operadores (nombre,apellido,documento,telefono,direccion,email,foto) VALUES
-                ('$nome','$ape','$documento','$ptelefono','$direccion','$email','$logo')");
+                $empl = $con -> prepare("INSERT INTO operadores (nombre,apellido,documento,telefono,direccion,email,foto) VALUES (?,?,?,?,?,?,?)");
+                $empl -> bind_param('sssssss',$nome,$ape,$documento,$ptelefono,$direccion,$email,$logo);
+                $empl -> execute();
                 $enti = $con -> query("INSERT INTO entidades (efectivo,nequi,daviplata,bancolombia,consignacion,otro)
                 VALUES (0,0,0,0,0,0)");
                 $_GET['create_triggers'] = "bWF4cGl6emFsYXVuaW9u";
@@ -99,14 +100,16 @@
             $ape = $nom[1] ?? '';
             $ins -> bind_param('sssssssss',$organizacion,$ptelefono,$stelefono,$email,$direccion,$nit,$encargado,$documento,$logo);
             if($ins -> execute()) {
-                $empl = $con -> query("UPDATE operadores SET 
-                nombre = '$nome',
-                apellido = '$ape',
-                documento = '$documento',
-                telefono = '$ptelefono',
-                direccion = '$direccion',
-                email = '$email',
-                foto = '$logo' WHERE documento = '$documento'");
+                $empl = $con -> prepare("UPDATE operadores SET 
+                nombre = ?,
+                apellido = ?,
+                documento = ?,
+                telefono = ?,
+                direccion = ?,
+                email = ?,
+                foto = ? WHERE documento = ?");
+                $empl -> bind_param('ssssssss',$nome,$ape,$documento,$ptelefono,$direccion,$email,$logo,$documento);
+                $empl -> execute();
                 $upc = $con -> prepare("UPDATE usuarios SET documento = ? WHERE usuario = ?");
                 $upc -> bind_param('ss',$documento,$sesion);
                 $upc -> execute();

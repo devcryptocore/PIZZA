@@ -22,3 +22,14 @@
     object-fit: contain;
     transition: all .4s cubic-bezier(1, 0, 0, 1);
 }
+.showhiddepass {
+    width: 35px;
+    aspect-ratio: 1/1;
+    padding: 0 !important;
+    background: transparent url(../res/icons/show-eye.svg) center / 25px no-repeat;
+    position: absolute;
+    right: 0;
+}
+.showhiddepass-active {
+    background: transparent url(../res/icons/hide-eye.svg) center / 25px no-repeat;
+}

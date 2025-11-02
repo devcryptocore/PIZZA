@@ -243,7 +243,7 @@
     }
 
     if(isset($_GET['boxdetails']) && $_GET['boxdetails'] === $clav) {
-        $resp = "";
+        $resp = [];
         $efectivo = 0;
         $nequi = 0;
         $daviplata = 0;
@@ -254,7 +254,6 @@
         $ventas = 0;
         $ingresos = 0;
         $egresos = 0;
-        $are = "";
         $fech = $_POST['codcaja'] ?? '';
         $consl = $con -> prepare("SELECT * FROM movimientos WHERE codcaja = ?");
         $consl -> bind_param('s',$fech);
@@ -262,91 +261,121 @@
         $Rconsl = $consl -> get_result();
         if($Rconsl -> num_rows > 0) {
             while($box = $Rconsl -> fetch_assoc()){
+                if($box['tipo'] == 'egreso'){
+                    $egresos += $box['valor'];
+                }
                 if($box['tipo'] == 'venta'){
                     $ventas += $box['valor'];
                 }
                 if($box['tipo'] == 'ingreso'){
                     $ingresos += $box['valor'];
                 }
-                if($box['tipo'] == 'egreso'){
-                    $egresos += $box['valor'];
+                if($box['tipo'] != 'transferencia'){
+                    switch ($box['entidad']) {
+                        case 'efectivo':
+                            if($box['tipo'] == 'egreso'){
+                                $efectivo -= $box['valor'];
+                            }
+                            else {
+                                $efectivo += $box['valor'];
+                            }
+                            break;
+                        case 'nequi':
+                            if($box['tipo'] == 'egreso'){
+                                $nequi -= $box['valor'];
+                            }
+                            else {
+                                $nequi += $box['valor'];
+                            }
+                            break;
+                        case 'daviplata':
+                            if($box['tipo'] == 'egreso'){
+                                $daviplata -= $box['valor'];
+                            }
+                            else {
+                                $daviplata += $box['valor'];
+                            }
+                            break;
+                        case 'bancolombia':
+                            if($box['tipo'] == 'egreso'){
+                                $bancolombia -= $box['valor'];
+                            }
+                            else {
+                                $bancolombia += $box['valor'];
+                            }
+                            break;
+                        case 'davivienda':
+                            if($box['tipo'] == 'egreso'){
+                                $davivienda -= $box['valor'];
+                            }
+                            else {
+                                $davivienda += $box['valor'];
+                            }
+                            break;
+                        case 'consignacion':
+                            if($box['tipo'] == 'egreso'){
+                                $consignacion -= $box['valor'];
+                            }
+                            else {
+                                $consignacion += $box['valor'];
+                            }
+                            break;
+                        case 'otros':
+                            if($box['tipo'] == 'egreso'){
+                                $otros -= $box['valor'];
+                            }
+                            else {
+                                $otros += $box['valor'];
+                            }
+                            break;
+                        default:
+                            if($box['tipo'] == 'egreso'){
+                                $efectivo -= $box['valor'];
+                            }
+                            else {
+                                $efectivo += $box['valor'];
+                            }
+                            break;
+                    }
                 }
-                if($box['entidad'] == 'efectivo' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $efectivo += $box['valor'];
-                }
-                elseif($box['entidad'] == 'nequi' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $nequi += $box['valor'];
-                }
-                elseif($box['entidad'] == 'daviplata' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $daviplata += $box['valor'];
-                }
-                elseif($box['entidad'] == 'bancolombia' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $bancolombia += $box['valor'];
-                }
-                elseif($box['entidad'] == 'davivienda' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $davivienda += $box['valor'];
-                }
-                elseif($box['entidad'] == 'consignacion' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $consignacion += $box['valor'];
-                }
-                elseif($box['entidad'] == 'otros' && $box['tipo'] != 'egreso' || $box['tipo'] != 'transferencia'){
-                    $otros += $box['valor'];
-                }
-                $resp .= '
-                    <tr>
-                        <td style="font-size:10px;">'.$box['tipo'].'</td>
-                        <td style="font-size:10px;">'.$box['concepto'].'</td>
-                        <td style="font-size:10px;">'.$box['entidad'].'</td>
-                        <td style="font-size:10px;">$'.miles($box['valor']).'</td>
-                        <td style="font-size:10px;">'.$box['sucursal'].'</td>
-                        <td style="font-size:10px;">'.$box['fecha'].'</td>
-                    </tr>
-                ';
+                $resp[] = [
+                    "tipo" => $box['tipo'],
+                    "concepto" => $box['concepto'],
+                    "entidad" => $box['entidad'],
+                    "valor" => $box['valor'],
+                    "sucursal" => $box['sucursal'],
+                    "fecha" => $box['fecha']
+                ];
             }
-            $are = '
-                <div class="entcon xlsbutton" onclick="xls(\'#detable\')"></div>
-                <div class="entcon">
-                    <b>Efectivo</b><span>$'.miles($efectivo).'</span>
-                </div>
-                <div class="entcon">
-                    <b>Nequi</b><span>$'.miles($nequi).'</span>
-                </div>
-                <div class="entcon">
-                    <b>Daviplata</b><span>$'.miles($daviplata).'</span>
-                </div>
-                <div class="entcon">
-                    <b>Bancolombia</b><span>$'.miles($bancolombia).'</span>
-                </div>
-                <div class="entcon">
-                    <b>Davivienda</b><span>$'.miles($davivienda).'</span>
-                </div>
-                <div class="entcon">
-                    <b>Consignación</b><span>$'.miles($consignacion).'</span>
-                </div>
-                <div class="entcon">
-                    <b>Otros</b><span>$'.miles($otros).'</span>
-                </div>
-            ';
         }
         else {
-            $resp = '
-                <tr>
-                    <td>Sin</td>
-                    <td>detalles</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            ';
+            $resp[] = [
+                "tipo" => "Sin registros",
+                "concepto" => "",
+                "entidad" => "",
+                "valor" => 0,
+                "sucursal" => "",
+                "fecha" => ""
+            ];
         }
         echo json_encode([
             "status" => "success",
             "title" => "Detalles de caja",
             "message" => [
                 "datatable" => $resp,
-                "entities" => $are,
-                "ventas" => miles($ventas),
-                "ingresos" => miles($ingresos),
-                "egresos" => miles($egresos)
+                "entities" => [
+                    "efectivo" => $efectivo,
+                    "nequi" => $nequi,
+                    "daviplata" => $daviplata,
+                    "bancolombia" => $bancolombia,
+                    "davivienda" => $davivienda,
+                    "consignacion" => $consignacion,
+                    "otros" => $otros
+                ],
+                "ventas" => $ventas,
+                "ingresos" => $ingresos,
+                "egresos" => $egresos,
+                "estacaja" => ($ventas + $ingresos) - $egresos
             ]
         ]);
     }

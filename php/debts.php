@@ -127,6 +127,15 @@
         $entidad = $_POST['entidad'];
         $valor = sanear_string($_POST['valor']);
         $fechahoy = date('d-m-Y H:i:s');
+        $entidades_validas = ['efectivo', 'nequi', 'daviplata', 'bancolombia', 'davivienda', 'consignacion', 'otros'];
+        if (!in_array($entidad, $entidades_validas)) {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Entidad de pago inválida."
+            ]);
+            exit;
+        }
         $cons = $con -> prepare("SELECT * FROM obligaciones WHERE id = ?");
         $cons -> bind_param('i',$id);
         $cons -> execute();
@@ -144,7 +153,7 @@
                 <td> $' . miles($nsaldo ). ' </td>
                 <td> ' . $fechahoy . ' </td></tr>_SEP_
             ';
-            $ent = $con -> prepare("SELECT {$entidad} FROM entidades");
+            $ent = $con -> prepare("SELECT " . $entidad . " FROM entidades");
             $ent -> execute();
             $Rent = $ent -> get_result();
             $fondos = $Rent -> fetch_assoc()[$entidad];
@@ -174,7 +183,7 @@
                 $upd = $con -> prepare("UPDATE obligaciones SET abonado = COALESCE(abonado, 0) + ?
                 ,saldo = COALESCE(saldo, 0) - ?, historico = CONCAT(historico, ?) WHERE id = ?");
                 $upd -> bind_param('iisi',$valor,$valor,$historic,$id);
-                $upent = $con -> prepare("UPDATE entidades SET {$entidad} = COALESCE({$entidad},0) - ?");
+                $upent = $con -> prepare("UPDATE entidades SET " . $entidad . " = COALESCE(" . $entidad . ",0) - ?");
                 $upent -> bind_param('i',$valor);
                 $mov = $con -> prepare("INSERT INTO movimientos (tipo,concepto,entidad,valor,sucursal) VALUES (?,?,?,?,?)");
                 $mov -> bind_param('sssis',$tipo,$conc,$entidad,$valor,$sucursal);

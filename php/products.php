@@ -1207,4 +1207,93 @@
         }
     }
 
+    if(isset($_GET['destacar_product']) && $_GET['destacar_product'] === $clav) {
+        $id = $_POST['id'];
+        $cons = $con -> prepare("SELECT * FROM categoria_principal WHERE categoria = ?");
+        $cons -> bind_param('i',$id);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0){
+            echo json_encode([
+                "status" => "warning",
+                "title" => "Ya establecido!",
+                "message" => "Este producto ya ha sido establecido para aparecer en la portada de la página."
+            ]);
+            exit;
+        }
+        $ind = $con -> prepare("INSERT INTO categoria_principal (categoria) VALUES (?)");
+        $ind -> bind_param('i',$id);
+        if($ind -> execute()){
+            echo json_encode([
+                "status" => "success",
+                "title" => "Correcto!",
+                "message" => "Se ha establecido este producto para aparecer en la portada de la página."
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "No se ha podido establecer este producto para aparecer en la portada de la página."
+            ]);
+        }
+        $ind -> close();
+        $con -> close();
+    }
+
+    if(isset($_GET['cons_destacado']) && $_GET['cons_destacado'] === $clav) {
+        $id = $_POST['id'];
+        $cons = $con -> prepare("SELECT * FROM categoria_principal WHERE categoria = ?");
+        $cons -> bind_param('i',$id);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0){
+            echo json_encode([
+                "status" => "success",
+                "title" => "Ya establecido!",
+                "message" => 1
+            ]);
+        }
+        else {
+            echo json_encode([
+                "status" => "success",
+                "title" => "Ya establecido!",
+                "message" => 0
+            ]);
+        }
+    }
+
+    if(isset($_GET['del_destacado']) && $_GET['del_destacado'] === $clav) {
+        $id = $_POST['id'];
+        $cons = $con -> prepare("SELECT * FROM categoria_principal WHERE categoria = ?");
+        $cons -> bind_param('i',$id);
+        $cons -> execute();
+        $Rcons = $cons -> get_result();
+        if($Rcons -> num_rows > 0){
+            $dl = $con -> prepare("DELETE FROM categoria_principal WHERE categoria = ?");
+            $dl -> bind_param('i',$id);
+            if($dl -> execute()){
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Desfijado!",
+                    "message" => "Se ha desfijado este producto de la portada."
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "No es posible desfijar este producto por ahora"
+                ]);
+            }
+        }
+        else {
+            echo json_encode([
+                "status" => "error",
+                "title" => "No encontrado!",
+                "message" => "No se ha encontrado el producto"
+            ]);
+        }
+    }
+
 ?>

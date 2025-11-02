@@ -18,6 +18,7 @@
             BEGIN
                 DECLARE v_unidades DECIMAL(10,3);
                 DECLARE v_porciones INT;
+                DECLARE isunidad INT;
 
                 SELECT unidades, porciones
                 INTO v_unidades, v_porciones
@@ -29,9 +30,11 @@
                 IF v_porciones > 0 THEN
                     SET v_porciones = v_porciones - NEW.cantidad;
                     SET v_unidades = v_porciones / 8;
+                    SET isunidad = 0;
                 ELSE
                     SET v_unidades = v_unidades - NEW.cantidad;
                     SET v_porciones = 0;
+                    SET isunidad = 1;
                 END IF;
 
                 UPDATE caja
@@ -66,7 +69,7 @@
                 WHERE id_producto = NEW.id_producto
                 AND sucursal   = NEW.sucursal;
 
-                IF v_unidades <= 0 OR v_porciones <= 0 THEN
+                IF v_unidades <= 0 AND isunidad = 1 OR v_porciones <= 0 AND isunidad = 0 THEN
                     UPDATE productos
                     SET estado = 0
                     WHERE id = NEW.id_producto

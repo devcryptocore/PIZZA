@@ -739,6 +739,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             title: `Opciones ${name}`,
             html: `
                 <div class="offerbtn">
+                    <button id="destacar" class="stkbutton destacar">Destacar</button>
                     <button id="offerbutton" class="stkbutton offer">Oferta</button>
                     <button class="stkbutton rest" onclick="handleProduct('rest',${id})">Restar</button>
                     <button id="deactivate" class="stkbutton desactivar">Desactivar</button>
@@ -767,7 +768,34 @@ document.addEventListener("DOMContentLoaded",()=>{
             showConfirmButton: false,
             showCloseButton: true
         });
-        //try {
+        try {
+            const surc = `../${uris.consdestacado}`;
+            const datc = new FormData();
+            datc.append("id",id);
+            const sdac = await fetch(surc,{
+                method: "POST",
+                body: datc
+            });
+            const repsc = await sdac.json();
+            if(repsc.message === 1) {
+                document.querySelector(".destacar").setAttribute("id","nodestacar");
+                document.querySelector(".destacar").innerText = "No destacar";
+                document.querySelector("#nodestacar").addEventListener('click', async ()=>{
+                    const duri = `../${uris.deldestacado}`;
+                    const fid = new FormData();
+                    fid.append('id',id);
+                    const dsl = await fetch(duri,{
+                        method: "POST",
+                        body: fid
+                    });
+                    const rfid = await dsl.json();
+                    Swal.fire({
+                        title: rfid.title,
+                        text: rfid.message,
+                        icon: rfid.status
+                    })
+                });
+            }
             var disp = true;
             const urip = `../${uris.getthisproduct}`;
             const iddata = new FormData();
@@ -828,6 +856,35 @@ document.addEventListener("DOMContentLoaded",()=>{
                         }
                     });
                 }
+            }
+            if(document.querySelector("#destacar")){
+                document.querySelector("#destacar").addEventListener('click', async () => {
+                    Swal.fire({
+                        title: "Destacar producto",
+                        text: "Desea que este producto aparezca en la portada de la página?",
+                        icon: "question",
+                        showConfirmButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, destacar",
+                        cancelButtonText: "Cancelar"
+                    }).then(async (resss) => {
+                        if(resss.isConfirmed){
+                            const sur = `../${uris.destacarproduct}`;
+                            const dat = new FormData();
+                            dat.append("id",id);
+                            const sda = await fetch(sur,{
+                                method: "POST",
+                                body: dat
+                            });
+                            const reps = await sda.json();
+                            Swal.fire({
+                                title: reps.title,
+                                text: reps.message,
+                                icon: reps.status
+                            });
+                        }
+                    });
+                });
             }
             if(document.querySelector("#offerbutton")){
                 const offerbtn = document.querySelector("#offerbutton");
@@ -927,10 +984,10 @@ document.addEventListener("DOMContentLoaded",()=>{
                     });
                 });
             }
-        /*}
+        }
         catch (err) {
             console.error(err);
-        }*/
+        }
     }
 
     if(document.querySelector("#get_barcodes")){

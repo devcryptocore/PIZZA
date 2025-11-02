@@ -305,6 +305,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     if(document.querySelector("#loginForm")){
+        let fls = 0;
+        let inps = document.querySelector(".showhiddepass").nextElementSibling;
+        document.querySelector(".showhiddepass").addEventListener('click', ()=>{
+            if(fls == 1){
+                document.querySelector(".showhiddepass").classList.remove("showhiddepass-active");
+                inps.setAttribute("type","password");
+                fls = 0;
+            }
+            else {
+                document.querySelector(".showhiddepass").classList.add("showhiddepass-active");
+                inps.setAttribute("type","text");
+                fls = 1;
+            }
+        });
         const loginform = document.querySelector("#loginForm");
         const uril = `../${uris.login}`;
         loginform.addEventListener('submit', (e)=> {

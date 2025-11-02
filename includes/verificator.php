@@ -2,10 +2,10 @@
     session_start();
     $sesion = $_SESSION['usuario'] ?? '';
 
-    include('../config/connector.php');
-    include('../config/errorhandler.php');
-    include('../php/optimizador.php');
-    include('../php/logger.php');
+    include(__DIR__ . '/../config/connector.php');
+    include(__DIR__ . '/../config/errorhandler.php');
+    include(__DIR__ . '/../php/optimizador.php');
+    include(__DIR__ . '/../php/logger.php');
 
     $verif12 = $con -> prepare("SELECT * FROM usuarios WHERE usuario = ?");
     $verif12 -> bind_param('s',$sesion);

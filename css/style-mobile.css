@@ -35,7 +35,7 @@
 body {
     padding: 0;
     margin: 0;
-    background: #e1e1e1;
+    background: #121619;
     font-family: Poppins;
     overflow-x: hidden;
 }
@@ -311,7 +311,7 @@ body {
     height: 40px;
     background: #fff;
     position: absolute;
-    bottom: 0;
+    bottom: -1px;
     clip-path: polygon(100% 100%, 0% 100%, 50% 0%, 50% 0%);
 }
 .swhite {
@@ -714,6 +714,9 @@ body {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 15px;
+}
+.infoprod-w .descript {
+    padding: 10px 0px 0px 0px;
 }
 .descript h2 {
     margin: 0;

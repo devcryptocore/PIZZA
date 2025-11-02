@@ -5,15 +5,15 @@
     if(isset($_GET['new_ingredient']) && $_GET['new_ingredient'] === $clav){
         try {
             $ingrediente = htmlspecialchars($_POST['ingrediente']);
-            $stock = isset($_POST['stock']) ? $_POST['stock'] : 0;
-            $minimo = isset($_POST['stock_minimo']) ? $_POST['stock_minimo'] : 0;
+            $stock = isset($_POST['stock']) ? sanear_string($_POST['stock']) : 0;
+            $minimo = isset($_POST['stock_minimo']) ? sanear_string($_POST['stock_minimo']) : 0;
             $costo = sanear_string($_POST['costo']);
             $costound = isset($_POST['stock']) ? sanear_string($_POST['costo'])/$stock : sanear_string($_POST['costo'])/1;
             $costo_total = sanear_string($_POST['costo']);
             $unidad = $_POST['unidad'];
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
             $ins = $con -> prepare("INSERT INTO ingredientes (nombre, costo, costo_und, unidad, stock, stock_minimo, vencimiento, sucursal, usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $ins -> bind_param('siisdisss', $ingrediente, $costo, $costound, $unidad, $stock, $minimo, $vencimiento,$sucursal,$sesion);
+            $ins -> bind_param('sidsdisss', $ingrediente, $costo, $costound, $unidad, $stock, $minimo, $vencimiento,$sucursal,$sesion);
             $ins -> execute();
             $idinsert = $con -> insert_id;
             $inv = $con->prepare("INSERT INTO inversion (idinsumo, concepto, cantidad, unidad, costo, registrado_por,sucursal) VALUES (?, ?, ?, ?, ?, ? ,?)");
@@ -149,14 +149,14 @@
                 <option value="unidad" '.$un.'>Unidades</option>
             ';
             $insumo = [
-                "nombre" => $ing['nombre'],
-                "costo" => $ing['costo'],
+                "nombre" => $ing['nombre'] ?? '',
+                "costo" => $ing['costo'] ?? 0,
                 "costo_total" => round($ing['costo_und']*$ing['stock']),
                 "unidad" => $ing['unidad'],
                 "unidad_select" => $slct,
-                "stock" => $ing['stock'],
-                "minimo" => $ing['stock_minimo'],
-                "vencimiento" => $ing['vencimiento']
+                "stock" => $ing['stock'] ?? 0,
+                "minimo" => $ing['stock_minimo'] ?? 0,
+                "vencimiento" => $ing['vencimiento'] ?? ''
             ];
             echo json_encode($insumo);
         }
@@ -169,7 +169,7 @@
 
     elseif(isset($_GET['cantid']) && $_GET['cantid'] === $clav){
         $id = $_POST['id'];
-        $cantid = $_POST['cantid'];
+        $cantid = sanear_string($_POST['cantid']);
         try {
             if($_SESSION['sucursal'] == 'system'){
                 $cns = $con->prepare("SELECT * FROM ingredientes WHERE id = ?");
@@ -225,7 +225,7 @@
 
     elseif(isset($_GET['quitar_cantid']) && $_GET['quitar_cantid'] === $clav){
         $id = $_POST['id'];
-        $cantid = $_POST['cantid'];
+        $cantid = sanear_string($_POST['cantid']);
         try {
             if($_SESSION['sucursal'] == 'system'){
                 $cns = $con->prepare("SELECT * FROM ingredientes WHERE id = ?");
@@ -280,32 +280,18 @@
         try {
             $id = $_POST['id'];
             $ingrediente = htmlspecialchars($_POST['ingrediente']);
-            $stock = $_POST['stock'] <= 0 ? 0 : $_POST['stock'];
-            $minimo = $_POST['stock_minimo'];
-            if($stock == 0){
-                $costo = 0;
-                $costo_total = 0;
-            }
-            else {
-                $costo = sanear_string($_POST['costo'])/$stock;
-                $costo_total = sanear_string($_POST['costo']);
-            }
-            $unidad = $_POST['unidad'];
+            $minimo = sanear_string($_POST['stock_minimo']);
             $vencimiento = !empty($_POST['vencimiento']) ? $_POST['vencimiento'] : null;
-            $ins = $con -> prepare("UPDATE ingredientes SET nombre = ?, costo = ?, costo_und = ?, unidad = ?, stock = ?, stock_minimo = ?, vencimiento = ? WHERE id = ?");
-            $ins -> bind_param('sidsdisi', $ingrediente, $costo_total, $costo, $unidad, $stock, $minimo, $vencimiento,$id);
+            $ins = $con -> prepare("UPDATE ingredientes SET nombre = ?, stock_minimo = ?, vencimiento = ? WHERE id = ?");
+            $ins -> bind_param('sisi', $ingrediente, $minimo, $vencimiento, $id);
             $ins -> execute();
-            $inv = $con->prepare("UPDATE inversion SET idinsumo = ?, concepto = ?, cantidad = ?, unidad = ?, costo = ? WHERE id = ?");
-            $inv -> bind_param('isisii',$id,$ingrediente,$stock,$unidad,$costo_total,$id);
-            $inv -> execute();
             echo json_encode([
                 "status" => "success",
                 "title" => "Correcto!",
                 "message" => $ingrediente." actualizado correctamente!"
             ]);
-            writeLog("Insumo modificado (".$ingrediente.", cantidad = ".$stock.units($unidad).")",$sesion);
+            writeLog("Insumo modificado (".$ingrediente.")",$sesion);
             $ins -> close();
-            $inv -> close();
         }
         catch (mysqli_sql_exception $e){
             echo json_encode([
@@ -321,6 +307,18 @@
     elseif(isset($_GET['delete']) && $_GET['delete'] === $clav){
         $id = $_POST['id'];
         try {
+            $cons = $con -> prepare("SELECT * FROM product_ingredients WHERE ingrediente = ?");
+            $cons -> bind_param('i',$id);
+            $cons -> execute();
+            $Rcons = $cons -> get_result();
+            if($Rcons -> num_rows > 0) {
+                echo json_encode([
+                    "status" => "warning",
+                    "title" => "No permitido!",
+                    "message" => "No se puede eliminar este insumo mientras haya productos que lo incluyan"
+                ]);
+                exit;
+            }
             $dl = $con -> prepare("DELETE FROM ingredientes WHERE id = ?");
             $dl -> bind_param('i',$id);
             $dl -> execute();

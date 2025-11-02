@@ -2,61 +2,8 @@ import * as uris from './uris.js';
 document.addEventListener('DOMContentLoaded',()=>{
 
     const roulette = document.querySelector("#set_roulette");
-    const catprincipal = document.querySelector("#set_principal");
+    const setbot = document.querySelector("#set_bot");
     const setclean = document.querySelector("#set_clean");
-
-    catprincipal.addEventListener("click", ()=>{
-        Swal.fire({
-            title: "Establecer categoría principal",
-            html: `
-                <div class="form-container">
-                    <form id="setPrincipal">
-                        <div class="oneInput">
-                            <div class="inputContainer" style="background-image:url(../res/icons/category.svg)">
-                                <select name="categoria" id="category" class="inputField" required autocomplete="off"></select>
-                                <label for="category">Categoría principal</label>
-                            </div>
-                        </div>
-                        <div class="oneInput">
-                            <input type="submit" value="Establecer" class="send-button">
-                        </div>
-                    </form>
-                </div>
-            `,
-            showConfirmButton: false,
-            showCancelButton: false,
-            showCloseButton: true
-        });
-        (async () => {
-            const ucat = `../${uris.get_categories}`;
-            const cat = await fetch(ucat);
-            if(!cat.ok){
-                throw new Error(`${cat.status} / ${cat.statusText}`);
-            }
-            const categ = await cat.json();
-            document.querySelector("#category").innerHTML = categ.message;
-        })();
-        document.querySelector("#setPrincipal").addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = new FormData(e.target);
-            const urik = `../${uris.set_principal}`;
-            try {
-                const rb = await fetch(urik,{
-                    method: "POST",
-                    body: data
-                });
-                const rps = await rb.json();
-                Swal.fire({
-                    title: rps.title,
-                    text: rps.message,
-                    icon: rps.status
-                });
-            }
-            catch (err) {
-                console.error(err);
-            }
-        })
-    });
 
     roulette.addEventListener('click', async () => {
         const uri = `../${uris.getroulette}`;
@@ -171,6 +118,110 @@ document.addEventListener('DOMContentLoaded',()=>{
             }
         }
         catch(err){
+            console.error(err);
+        }
+    });
+
+    setbot.addEventListener('click', async () => {
+        const urib = `../${uris.getbotstate}`;
+        try {
+            const consu = await fetch(urib);
+            if(!consu.ok){throw new Error(`${consu.status} / ${consu.statusText}`);}
+            const botsatus = await consu.json();
+            if(botsatus.status == 'noconfigured'){
+                Swal.fire({
+                    title: "Configure su bot:",
+                    html: `
+                        <div class="form-container">
+                            <form id="setBot">
+                                <div class="oneInput">
+                                    <div class="inputContainer" style="background-image:url(../res/icons/key.svg)">
+                                        <input type="text" name="token" class="inputField" id="tokn" required autocomplete="off">
+                                        <label for="tokn" class="active-label">API Token</label>
+                                    </div>
+                                </div>
+                                <div class="oneInput">
+                                    <input type="submit" value="Configurar" class="send-button">
+                                </div>
+                            </form>
+                        </div>
+                    `,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+                const setbot = document.querySelector("#setBot");
+                setbot.addEventListener('submit', async (b) => {
+                    b.preventDefault();
+                    const uriset = `../${uris.setbotstate}`;
+                    const dta = new FormData(b.target);
+                    try {
+                        const setdata = await fetch(uriset, {
+                            method: "POST",
+                            body: dta
+                        });
+                        const resdata = await setdata.json();
+                        Swal.fire({
+                            title: resdata.title,
+                            text: resdata.message,
+                            icon: resdata.status
+                        }).then(()=>{
+                            location.reload()
+                        });
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
+                });
+            }
+            else {
+                Swal.fire({
+                    title: "Reconfigure su bot:",
+                    html: `
+                        <div class="form-container">
+                            <form id="updateBot">
+                                <div class="oneInput">
+                                    <div class="inputContainer" style="background-image:url(../res/icons/key.svg)">
+                                        <input type="text" value="${botsatus.message.token}" name="token" class="inputField" id="tokn" required autocomplete="off">
+                                        <label for="tokn" class="active-label">API Token</label>
+                                    </div>
+                                </div>
+                                <div class="oneInput">
+                                    <input type="submit" value="Reconfigurar" class="send-button">
+                                </div>
+                            </form>
+                        </div>
+                    `,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+                const setbot = document.querySelector("#updateBot");
+                setbot.addEventListener('submit', async (b) => {
+                    b.preventDefault();
+                    const uriset = `../${uris.editbotstate}`;
+                    const dta = new FormData(b.target);
+                    try {
+                        const setdata = await fetch(uriset, {
+                            method: "POST",
+                            body: dta
+                        });
+                        const resdata = await setdata.json();
+                        Swal.fire({
+                            title: resdata.title,
+                            text: resdata.message,
+                            icon: resdata.status
+                        }).then(()=>{
+                            location.reload()
+                        });
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        }
+        catch (err) {
             console.error(err);
         }
     });

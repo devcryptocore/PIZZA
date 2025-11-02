@@ -386,18 +386,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="dtcon">
                         <div>
                             <b>Ventas:</b>
-                            <span>$${resp.message.ventas}</span>
+                            <span>$${milesjs(resp.message.ventas)}</span>
                         </div>
                         <div>
                             <b>Entradas:</b>
-                            <span>$${resp.message.ingresos}</span>
+                            <span>$${milesjs(resp.message.ingresos)}</span>
                         </div>
                         <div>
                             <b>Gastos:</b>
-                            <span>$${resp.message.egresos}</span>
+                            <span>$${milesjs(resp.message.egresos)}</span>
+                        </div>
+                        <div>
+                            <b>Esta caja:</b>
+                            <span>$${milesjs(resp.message.estacaja)}</span>
                         </div>
                     </div>
-                    <div class="fondosbar">${resp.message.entities}</div>
+                    <div class="fondosbar">
+                        <div class="entcon xlsbutton" onclick="xls('#detable')"></div>
+                        <div class="entcon">
+                            <b>Efectivo</b><span>$${milesjs(resp.message.entities.efectivo)}</span>
+                        </div>
+                        <div class="entcon">
+                            <b>Nequi</b><span>$${milesjs(resp.message.entities.nequi)}</span>
+                        </div>
+                        <div class="entcon">
+                            <b>Daviplata</b><span>$${milesjs(resp.message.entities.daviplata)}</span>
+                        </div>
+                        <div class="entcon">
+                            <b>Bancolombia</b><span>$${milesjs(resp.message.entities.bancolombia)}</span>
+                        </div>
+                        <div class="entcon">
+                            <b>Davivienda</b><span>$${milesjs(resp.message.entities.davivienda)}</span>
+                        </div>
+                        <div class="entcon">
+                            <b>Consignación</b><span>$${milesjs(resp.message.entities.consignacion)}</span>
+                        </div>
+                        <div class="entcon">
+                            <b>Otros</b><span>$${milesjs(resp.message.entities.otros)}</span>
+                        </div>
+                    </div>
                     <table class="table-container ingredients_table" id="detable">
                         <thead>
                             <tr>
@@ -409,12 +436,25 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <th style="font-size:12px;">Fecha</th>
                             </tr>
                         </thead>
-                        <tbody>${resp.message.datatable}</tbody>
+                        <tbody id="datatables"></tbody>
                     </table>
                 `,
                 showConfirmButton: false,
                 showCancelButton: false,
                 showCloseButton: true
+            });
+            let datas = resp.message.datatable;
+            datas.forEach(d => {
+                document.querySelector("#datatables").innerHTML += `
+                    <tr>
+                        <td style="font-size:10px;">${d.tipo}</td>
+                        <td style="font-size:10px;">${d.concepto}</td>
+                        <td style="font-size:10px;">${d.entidad}</td>
+                        <td style="font-size:10px;">$${milesjs(d.valor)}</td>
+                        <td style="font-size:10px;">${d.sucursal}</td>
+                        <td style="font-size:10px;">${d.fecha}</td>
+                    </tr>
+                `;
             });
         }
         catch (err) {

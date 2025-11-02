@@ -3,26 +3,6 @@
     $cat = "";
     if(isset($_GET['c'])){
         $cat = $_GET['c'];
-        switch ($cat) {
-            case 'pizzas':
-                $banner = "background: url(res/images/pizzas_banner.webp) center / 100% no-repeat;";
-                break;
-            case 'hamburguesas':
-                $banner = "background: url(res/images/hamburguesas_banner.webp) center / 100% no-repeat;";
-                break;
-            case 'perros calientes':
-                $banner = "background: url(res/images/perros_banner.webp) center / 100% no-repeat;";
-                break;
-            case 'salchipapas':
-                $banner = "background: url(res/images/salchis_banner.webp) center / 100% no-repeat;";
-                break;
-            case 'pollo broaster':
-                $banner = "background: url(res/images/broaster_banner.webp) center / 100% no-repeat;";
-                break;
-            default:
-                $banner = "background: url(res/images/pizzas_banner.webp) center / 100% no-repeat;";
-                break;
-        }
     }
 ?>
 <!DOCTYPE html>
@@ -30,7 +10,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextFlow App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#545454">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NextFlow">
+    <meta name="description" content="NextFlow App">
+    <meta name="theme-color" content="#d6d6d6">
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="NextFlow" />
+    <meta property="og:description" content="Food delivery a un click!" />
+    <meta property="og:image" class="versionizedog" content="https://cryptocoreapp.com/nextflow/demospp.jpg" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="632" />
+    <meta property="og:url" content="https://cryptocoreapp.com/nextflow/" />
+    <meta property="og:site_name" content="NextFlow" />
+    <meta property="fb:app_id" content="368569449013481" />
+    <link rel="apple-touch-icon" href="res/icons/icon-192x192.png">
     <link rel="shortcut icon" href="res/icons/pizza2.svg" type="image/x-icon">
+    <link rel="stylesheet" href="css/ruleta.css" class="versionized">
+    <link rel="stylesheet" href="css/style-mobile.css" class="versionized">
     <link rel="stylesheet" href="css/active-products.css?v=<?=$version;?>">
     <link rel="stylesheet" href="css/style-mobile.css?v=<?=$version;?>">
     <link rel="stylesheet" href="css/sweetAlert.css">
@@ -51,7 +51,7 @@
     <div class="navBar">
         <div class="org-name">
             <img src="res/images/logotype.png" alt="Pizza Logo" id="companylogo">
-            <h1 >MAX<b>PIZZA</b></h1>
+            <h1 >NextFlow App</b></h1>
         </div>
         <div class="nav-left-cont">
             <button class="my-cart" id="my_cart"><span id="cartCount"></span></button>
@@ -63,15 +63,16 @@
             </label>
         </div>
     </div>
+    <input type="hidden" id="nomcat" value="<?=$cat;?>">
     <div class="shopping-cart" id="shopping_cart"></div>
-    <div class="banner-cont" style="<?=$banner;?>"></div>
+    <div class="banner-cont"></div>
     <h1 id="page-title">Categoría</h1>
     <div class="myIngredients" id="myMenu"></div>
     <input type="hidden" id="category" value="<?=$cat;?>">
     <section class="footer">
         <div class="footersquare">
             <div class="btcontent">
-                <h3>La pizza está a un clic. ¡Pídela ya!</h3>
+                <h3>Tu pedido está a un clic. ¡Ordéna ya!</h3>
                 <span>¿Listo para ordenar? ¡Te esperamos!</span>
                 <button class="dwapp" id="installPWA" data-aos="fade-up" data-aos-offset="290" data-aos-delay="100">Descarga la app</button>
             </div>

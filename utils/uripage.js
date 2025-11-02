@@ -10,3 +10,4 @@ export const someproducts = "utils/page.php?get_some_products=cGFnZW1heHBpenph";
 export const setcheckout = "utils/page.php?set_pedido=cGFnZW1heHBpenph";
 export const makemenu = "utils/page.php?menu_products=cGFnZW1heHBpenph";
 export const get_company_data = "utils/page.php?get_company_data=cGFnZW1heHBpenph";
+export const getcatimage = "utils/page.php?get_catimage=cGFnZW1heHBpenph";

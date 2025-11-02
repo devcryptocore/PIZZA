@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded",()=>{
                             </div>
                             <div class="oneInput">
                                 <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
-                                    <input type="number" name="stock" id="stock" class="inputField" required autocomplete="off">
+                                    <input type="text" name="stock" id="stock" class="inputField" required autocomplete="off" onkeyup="moneyFormat(this)">
                                     <label for="stock">Cantidad</label>
                                 </div>
                             </div>
                             <div class="oneInput">
                                 <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
-                                    <input type="number" name="stock_minimo" id="stock_min" class="inputField" required autocomplete="off">
+                                    <input type="text" name="stock_minimo" id="stock_min" class="inputField" required autocomplete="off" onkeyup="moneyFormat(this)">
                                     <label for="stock_min">Mínimo</label>
                                 </div>
                             </div>
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                                 </div>
                             </div>
                             <div class="oneInput">
-                                <div class="inputContainer"  style="background-image:url(../res/icons/dollar.svg)">
+                                <div class="inputContainer" style="background-image:url(../res/icons/dollar.svg)">
                                     <input type="text" name="costo" id="costo" class="inputField" required autocomplete="off" onkeyup="moneyFormat(this)">
                                     <label for="costo">Costo</label>
                                 </div>
@@ -253,28 +253,8 @@ document.addEventListener("DOMContentLoaded",()=>{
                                     </div>
                                     <div class="oneInput">
                                         <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
-                                            <input type="number" value="${rta.stock}" name="stock" id="stock" class="inputField active-input-field" required autocomplete="off">
-                                            <label for="stock">Cantidad (gr)</label>
-                                        </div>
-                                    </div>
-                                    <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/weight.svg)">
-                                            <input type="number" value="${rta.minimo}" name="stock_minimo" id="stock_min" class="inputField active-input-field" required autocomplete="off">
-                                            <label for="stock_min">Mínimo (gr)</label>
-                                        </div>
-                                    </div>
-                                    <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/pesa.svg)">
-                                            <select name="unidad" id="unidad" class="inputField active-input-field" required autocomplete="off">
-                                                ${rta.unidad_select}
-                                            </select>
-                                            <label for="unidad">Medida</label>
-                                        </div>
-                                    </div>
-                                    <div class="oneInput">
-                                        <div class="inputContainer"  style="background-image:url(../res/icons/dollar.svg)">
-                                            <input type="text" value="${milesjs(rta.costo_total)}" name="costo" id="costo" class="inputField active-input-field" required autocomplete="off" onkeyup="moneyFormat(this)">
-                                            <label for="costo">Costo</label>
+                                            <input type="text" value="${rta.minimo}" name="stock_minimo" id="stock_min" class="inputField active-input-field" required autocomplete="off" onkeyup="moneyFormat(this)">
+                                            <label for="stock_min">Mínimo</label>
                                         </div>
                                     </div>
                                     <div class="oneInput">
@@ -284,7 +264,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                                         </div>
                                     </div>
                                     <div class="oneInput">
-                                        <input type="submit" value="Registrar" class="send-button">
+                                        <input type="submit" value="Actualizar" class="send-button">
                                     </div>
                                 </form>
                             </div>

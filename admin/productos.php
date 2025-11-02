@@ -13,7 +13,7 @@
 <body>
     <div class="headbar">
         <h1>Productos</h1>
-        <div class="total-container"></div>
+        <div class="total-container" style="display: none;"></div>
         <div class="search-container">
             <input type="text" id="FiltrarContenido" placeholder="Buscar producto" class="search-bar">
         </div>

@@ -257,8 +257,10 @@
 }
 .offerbtn {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-around;
+    gap: 7px;
 }
 .offer {
     background: #212121a6 url(../res/icons/offer-yellow.svg) 5px / 20px no-repeat;
@@ -269,6 +271,10 @@
 }
 .activar {
     background: #c1c1c1a6 url(../res/icons/ok.svg) 5px / 20px no-repeat;
+}
+.destacar {
+    background: #8222ffa6 url(../res/icons/destacar.svg) 5px / 20px no-repeat;
+    color: #fff;
 }
 .dvcont {
     display: flex;
@@ -290,7 +296,7 @@
 .ingredients_table thead tr th:nth-child(9) {
     border-radius: 0px 0px 0px 0px;
 }
-.ingredients_table thead tr th:nth-child(10) {
+.ingredients_table thead tr th:nth-child(11) {
     border-radius: 0px 4px 0px 0px;
 }
 #get_barcodes {
@@ -312,6 +318,12 @@
     border: 1px solid var(--dark-grey);
     border-radius: 6px;
     background: #e4e4e4 url(../res/icons/delete-red.svg) center / 20px no-repeat;
+}
+.opscontainer {
+    gap: 10px;
+}
+.opscontainer .stkbutton {
+    height: 40px;
 }
 @media screen and (max-width: 700px) {
     .opscontainer {

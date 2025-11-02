@@ -20,7 +20,16 @@
                 exit;
             }
         }
-        $ins = $con -> prepare("UPDATE entidades SET {$entidad} = ?");
+        $entidades_validas = ['efectivo', 'nequi', 'daviplata', 'bancolombia', 'davivienda', 'consignacion', 'otros'];
+        if (!in_array($entidad, $entidades_validas)) {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Entidad de pago inválida."
+            ]);
+            exit;
+        }
+        $ins = $con -> prepare("UPDATE entidades SET " . $entidad . " = ?");
         $ins -> bind_param('i',$inicial);
         if($ins -> execute()){
             echo json_encode([
@@ -46,8 +55,17 @@
         $tipo = "transferencia";
         $concept = "Transferencia de $" . miles($monto) . " desde " . $desde . " hacia " . $hacia . " por " . $sesion;
         $con -> begin_transaction();
+        $entidades_validas = ['efectivo', 'nequi', 'daviplata', 'bancolombia', 'davivienda', 'consignacion', 'otros'];
+        if (!in_array($desde, $entidades_validas) || !in_array($hacia, $entidades_validas)) {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Entidad de pago inválida."
+            ]);
+            exit;
+        }
         try {
-            $ver = $con -> prepare("SELECT {$desde} FROM entidades");
+            $ver = $con -> prepare("SELECT " . $desde . " FROM entidades");
             $ver -> execute();
             $Rver = $ver -> get_result();
             $fondos = $Rver -> fetch_assoc()[$desde];
@@ -59,8 +77,7 @@
                 ]);
                 exit;
             }
-            $upd = $con -> prepare("UPDATE entidades SET {$desde} = COALESCE({$desde}, 0) - ?
-            , {$hacia} = COALESCE({$hacia}, 0) + ?");
+            $upd = $con -> prepare("UPDATE entidades SET " . $desde . " = COALESCE(" . $desde . ", 0) - ?, " . $hacia . " = COALESCE(" . $hacia . ", 0) + ?");
             $upd -> bind_param('ii',$monto,$monto);
             $upd -> execute();
             $ins = $con -> prepare("INSERT INTO movimientos (tipo,concepto,entidad,valor,sucursal)
@@ -100,8 +117,17 @@
                 ]);
                 exit;
             }
+            $entidades_validas = ['efectivo', 'nequi', 'daviplata', 'bancolombia', 'davivienda', 'consignacion', 'otros'];
+            if (!in_array($entidad, $entidades_validas)) {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Entidad de pago inválida."
+                ]);
+                exit;
+            }
             if($tipo == "egreso") {
-                $ver = $con -> prepare("SELECT {$entidad} FROM entidades");
+                $ver = $con -> prepare("SELECT " . $entidad . " FROM entidades");
                 $ver -> execute();
                 $Rver = $ver -> get_result();
                 $fondos = $Rver -> fetch_assoc()[$entidad];
@@ -113,12 +139,12 @@
                     ]);
                     exit;
                 }
-                $upd = $con -> prepare("UPDATE entidades SET {$entidad} = COALESCE({$entidad},0) - ?");
+                $upd = $con -> prepare("UPDATE entidades SET " . $entidad . " = COALESCE(" . $entidad . ",0) - ?");
                 $upbox = $con -> prepare("UPDATE caja SET egresos = COALESCE(egresos,  0) + ? WHERE codcaja = ?");
                 $concept = "Gasto de $" . miles($monto) . " por " . $concepto . " registrado por " . $sesion;
             }
             else {
-                $upd = $con -> prepare("UPDATE entidades SET {$entidad} = COALESCE({$entidad},0) + ?");
+                $upd = $con -> prepare("UPDATE entidades SET " . $entidad . " = COALESCE(" . $entidad . ",0) + ?");
                 $upbox = $con -> prepare("UPDATE caja SET egresos = COALESCE(ingresos,  0) + ? WHERE codcaja = ?");
                 $concept = "Ingreso de $" . miles($monto) . " por " . $concepto . " registrado por " . $sesion;
             }

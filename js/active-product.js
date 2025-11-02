@@ -6,7 +6,15 @@ document.addEventListener("DOMContentLoaded",()=>{
     const categ = document.querySelector("#category");
     const pagetitle = document.querySelector("#page-title");
     const shopingcart = document.querySelector("#shopping_cart");
+    let deferredPrompt;
+    let v = Date.now();
+    let temps = "session_" + v;
+    let fechax = new Date();
+    let year = fechax.getFullYear();
+    const installBtn = document.getElementById('installPWA');
     let cartstate = 0;
+    const orgname = document.querySelectorAll(".org-name");
+    const esmovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     (()=>{
         pagetitle.textContent = categ.value;
     })();
@@ -16,6 +24,70 @@ document.addEventListener("DOMContentLoaded",()=>{
         const ts = localStorage.getItem('tempses');
         if(ts === null){
             localStorage.setItem('tempses',temps);
+        }
+    })();
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.hidden = false;
+    });
+    installBtn.addEventListener('click', async () => {
+        installBtn.hidden = true;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('Usuario instaló la app');
+        }
+        deferredPrompt = null;
+    });
+
+    (async ()=>{
+        const ts = localStorage.getItem('tempses');
+        if(ts === null){
+            localStorage.setItem('tempses',temps);
+        }
+
+        const urcat = source.getcatimage;
+        const cate = document.querySelector("#nomcat").value;
+        const nc = new FormData();
+        try {
+            nc.append('cat',cate);
+            const scat = await fetch(urcat,{
+                method: "POST",
+                body: nc
+            });
+            const rcat = await scat.json();
+            document.querySelector(".banner-cont").style.background = `url(${rcat.message.replace("../","")}) center / cover no-repeat`;
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+        const urc = source.get_company_data;
+        try {
+            const comp = await fetch(urc);
+            if(!comp.ok){throw new Error(`${comp.status} / ${comp.statusText}`);}
+            const respu = await comp.json();
+            let sucur = respu.message.sucursales;
+            let stlnom = respu.message.organizacion;
+            if(stlnom.split(" ").length > 1) {
+                stlnom = stlnom.split(" ");
+                stlnom = `${stlnom[0]}<b> ${stlnom.slice(1)}</b>`;
+            }
+            else {
+                let nlt = parseInt(stlnom.length / 2);
+                stlnom = `${stlnom.slice(0,nlt)}<b>${stlnom.slice(nlt)}</b>`;
+            }
+            orgname.forEach(on => {
+                on.innerHTML = `
+                    <img data-aos="fade-down" src="${respu.message.logotipo.replace("../","")}" alt="Pizza Logo" id="companylogo">
+                    <h1 data-aos="fade-right">${stlnom}</b></h1>
+                `;
+            });
+        }
+        catch (err) {
+            console.error(err);
         }
     })();
 
@@ -222,6 +294,53 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     }
 
+    window.setToCart = async (id, cant) => {
+        const cart = `${source.addtocart}`;
+        if(localStorage.getItem('tempses') === null){
+            iziToast.error({
+                title: "Error!",
+                message: `No se ha podido agregar, por favor intente nuevamente!`,
+                position: "topCenter",
+                onClosed: () => {
+                    location.reload();
+                }
+            });
+            return;
+        }
+        const ses = localStorage.getItem('tempses');
+        const data = new FormData();
+        try {
+            data.append("idsesion",ses);
+            data.append("idproducto",id);
+            data.append("cantidad",cant);
+            const addtocart = await fetch(cart,{
+                method: "POST",
+                body: data
+            });
+            const response = await addtocart.json();
+            if(response.status == 'success'){
+                iziToast.success({
+                    title: response.title,
+                    position: "topCenter",
+                    timeout: 1000
+                });
+                numelems();
+                get_mycart();
+            }
+            else {
+                iziToast.error({
+                    title: response.title,
+                    message: response.message,
+                    position: "topCenter"
+                });
+                return;
+            }
+        }
+        catch (err) {
+            console.error(err);
+        } 
+    }
+
     window.addToCart = async (id, cant) => {
         const cart = `${source.addtocart}`;
         cant = document.querySelector(cant).value;
@@ -365,7 +484,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                             <h2><b>$</b>${rprod.message.precio}</h2>
                             <span>${rprod.message.descripcion}</span>
                         </div>
-                        <button class="addbt" onclick="addToCart('${id}',1)">Agregar al carrito</button>
+                        <button class="addbt" onclick="setToCart('${id}',1)">Agregar al carrito</button>
                     </div>
                 `,
                 color: "#fff",

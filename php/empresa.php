@@ -187,13 +187,23 @@
     if(isset($_GET['set_us_info']) && $_GET['set_us_info'] === $clav) {
         $type = $_GET['type'];
         
+        $allowed_types = ['nosotros', 'faqs', 'contacto'];
+        if (!in_array($type, $allowed_types)) {
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error!",
+                "message" => "Tipo de sección inválido."
+            ]);
+            exit;
+        }
+        
         $text = htmlspecialchars($_POST['texttopublish']);
         $cons = $con -> prepare("SELECT * FROM about_section");
         $cons -> execute();
         $Rcons = $cons -> get_result();
-        $sent = "INSERT INTO about_section ({$type}) VALUES (?)";
+        $sent = "INSERT INTO about_section (" . $type . ") VALUES (?)";
         if($Rcons -> num_rows > 0){
-            $sent = "UPDATE about_section SET {$type} = ?";
+            $sent = "UPDATE about_section SET " . $type . " = ?";
         }
         if(isset($_GET['action']) && $_GET['action'] == 'del'){
             $text = '';

@@ -40,7 +40,7 @@
         $dummie = "../res/images/pizza_dummie.png";
         try {
             $sql = "SELECT p.*,ap.porciones,ap.precio AS precioporcion FROM productos p INNER JOIN
-             active_products ap ON ap.id_producto = p.id WHERE p.categoria = (SELECT categoria FROM categoria_principal) AND p.estado = 1";
+             active_products ap ON ap.id_producto = p.id WHERE p.id = (SELECT categoria FROM categoria_principal WHERE categoria = p.id) AND p.estado = 1";
             $result = $con->query($sql);
             $pzz = [];
             $description = [];
@@ -566,6 +566,26 @@
                 "sucursales" => $sucursales
             ]
         ], JSON_UNESCAPED_UNICODE);
+    }
+
+    if(isset($_GET['get_catimage']) && $_GET['get_catimage'] === $exclav){
+        $cat = $_POST['cat'];
+        $bn = $con -> prepare("SELECT imagen FROM categorias WHERE categoria = ?");
+        $bn -> bind_param('s',$cat);
+        $bn -> execute();
+        $Rbn = $bn -> get_result();
+        if($Rbn -> num_rows > 0){
+            $bnr = $Rbn -> fetch_assoc();
+            $banner = $bnr['imagen'];
+        }
+        else {
+            $banner = "res/images/amigos.webp";
+        }
+        echo json_encode([
+            "status" => "success",
+            "title" => "ok",
+            "message" => $banner
+        ]);
     }
 
 ?>
