@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             e.preventDefault();
             const uric = source.setcheckout;
             const data = new FormData(e.target);
-            try {
+            //try {
                 const chk = await fetch(uric,{
                     method: "POST",
                     body: data
@@ -988,16 +988,17 @@ document.addEventListener('DOMContentLoaded',()=>{
                     }).then(()=>{
                         numelems();
                         get_mycart();
-                        abrirWhatsAppPedido(rpa,rpa.message.telefono);
+                        //abrirWhatsAppPedido(rpa,rpa.message.telefono);
+                        setPedido(rpa);
                     });
                 }
                 else {
                     console.log(rpa);
                 }
-            }
+            /*}
             catch (err) {
                 console.error(err);
-            }
+            }*/
         });
 
     }
@@ -1007,6 +1008,37 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
 
 })
+
+async function setPedido(rpa) {
+
+    const urip = source.setpedido;
+    const data = new FormData();
+    //try {
+        data.append('nombre', rpa.message.nombre);
+        data.append('telefono', rpa.message.telefono);
+        data.append('direccion', rpa.message.direccion);
+        data.append('pedido', rpa.message.pedido);
+        data.append('total', rpa.message.total);
+        data.append('comentario', rpa.message.comentario);
+        data.append('fecha', rpa.message.fecha);
+        data.append('page', rpa.message.page);
+
+        const pedir = await fetch(urip, {
+            method: "POST",
+            body: data
+        });
+        if(!pedir.ok){throw new Error(`${pedir.status} / ${pedir.statusText}`);}
+        const resp = await pedir.json();
+        Swal.fire({
+            title: resp.title,
+            text: resp.text,
+            icon: resp.status
+        });
+    /*}
+    catch (err) {
+        console.error(err);
+    }*/
+}
 
 function abrirWhatsAppPedido(rpa,phone) {
 

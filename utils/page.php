@@ -432,9 +432,9 @@
                 if (ob_get_length()) ob_end_clean();
                 echo json_encode([
                     "status" => "success",
-                    "title" => "Correcto!",
+                    "title" => "Excelente!",
                     "message" => [
-                        "text" => "Su pedido se ha registrado con éxito, será redirigido a Whatsapp",
+                        "text" => "Gracias! estamos procesando su pedido, por favor espere..",
                         "nombre" => urlencode($nombre),
                         "telefono" => urlencode($telefono),
                         "direccion" => urlencode($direccion),

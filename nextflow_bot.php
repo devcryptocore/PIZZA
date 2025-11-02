@@ -153,8 +153,41 @@
             exit;
         }
 
-        if(isset($_GET['new_pedido'])){
-            echo "";
+        if(isset($_GET['set_pedido'])){
+            $nombre = $_POST['nombre'] ?? '';
+            $telefono = $_POST['telefono'] ?? '';
+            $direccion = $_POST['direccion'] ?? '';
+            $comentario = $_POST['comentario'] ?? '';
+            $pedido = $_POST['pedido'] ?? '';
+            $total = $_POST['total'] ?? 0;
+            $pagina = $_POST['pagina'] ?? '';
+            $fecha = $_POST['fecha'] ?? '';
+
+            $mensaje = "";
+            $mensaje .= "▁▂▃▅▆ ɴᴜᴇᴠᴏ ᴘᴇᴅɪᴅᴏ ▆▅▃▂▁" . \n\n;
+            $mensaje .= "<b>Nombre: </b> ". $nombre . \n;
+            $mensaje .= "<b>Teléfono: </b> ". $telefono . \n;
+            $mensaje .= "<b>Dirección: </b> ". $direccion . \n;
+            $mensaje .= "<b>Pedido: </b> " . \n . $pedido . \n;
+            $mensaje .= "<b>Total:  ". $total . "</b>" . \n;
+            $mensaje .= "Realizado el ". $fecha . \n\n;
+            $mensaje .= $pagina . \n;
+            $mensaje .= "ᴰᵉᵛᵉˡᵒᵖᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ";
+
+            if(sendMessage($chat_id, $mensaje)){
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "Correcto!",
+                    "message" => "Pedido realizado con éxito!\nNos pondrémos en contacto en un momento."
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Lo sentimos, no podemos procesar su pedido en el momento\nPor favor, comuniquese directamente con nosotros"
+                ]);
+            }
         }
     }
 
