@@ -83,18 +83,12 @@
         );
 
         $update = json_decode(file_get_contents("php://input"), true);
+        //$chat_id = null;
 
         if (isset($update["message"]["chat"]["id"])) {
             $chat_id = $update["message"]["chat"]["id"];
         } elseif (isset($update["callback_query"]["message"]["chat"]["id"])) {
             $chat_id = $update["callback_query"]["message"]["chat"]["id"];
-        }
-
-        if (isset($update["message"]["chat"]["type"])) {
-            if (in_array($update["message"]["chat"]["type"], ["group", "supergroup"])) {
-                $chat_id_group = $update["message"]["chat"]["id"];
-                $chat_id = $chat_id_group;
-            }
         }
 
         $text = $update["message"]["text"] ?? null;
@@ -142,7 +136,7 @@
         }
 
         if ($text && strpos($text, "/start") === 0) {
-            sendMessage($chat_id, "¡Bienvenido!\n\nPor favor ejecute /setbot para configurar su bot");
+            sendMessage($chat_id, "👋 ¡Hola!\n\nComandos disponibles:\n/setbot → Configurar bot");
             http_response_code(200);
             exit;
         }
@@ -152,7 +146,7 @@
             file_put_contents($stateFile, json_encode($state));
 
             if (!isset($con)) {
-                sendMessage($chat_id, "Error en conexión a la base de datos.");
+                sendMessage($chat_id, "❌ Error en conexión a la base de datos.");
                 http_response_code(200);
                 exit;
             }
@@ -174,7 +168,7 @@
             $upd -> bind_param('s', $chat_id);
 
             if ($upd -> execute()) {
-                sendMessage($chat_id, "<b>✅ Bot configurado correctamente!</b>\nAhora puede recibir pedidos por aquí");
+                sendMessage($chat_id, "<b>✅ Bot configurado correctamente</b>");
             } else {
                 sendMessage($chat_id, "<b>❌ No se pudo configurar el bot.</b>");
             }
@@ -218,11 +212,6 @@
                         "url" => "https://www.google.com/maps?q=" . $coordsClean
                     ]
                 ];
-            }
-
-            if (isset($update["message"]["chat"]["type"]) &&
-                in_array($update["message"]["chat"]["type"], ["group", "supergroup"])) {
-                $chat_id = $update["message"]["chat"]["id"];
             }
 
             if(!sendMessage($chat_id, $mensaje, $keyboard)){
