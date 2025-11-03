@@ -435,17 +435,18 @@
                     "title" => "Excelente!",
                     "message" => [
                         "text" => "Gracias! estamos procesando su pedido, por favor espere..",
-                        "nombre" => urlencode($nombre),
-                        "telefono" => urlencode($telefono),
-                        "direccion" => urlencode($direccion),
+                        "nombre" => $nombre,
+                        "telefono" => $telefono,
+                        "direccion" => $direccion,
                         "pedido" => $productos,
                         "total" => miles($total),
                         "fecha" => $fechahora,
-                        "comentario" => urlencode($comentario),
-                        "telefono" => $telefonorg,
+                        "comentario" => $comentario,
+                        "telefonorg" => $telefonorg,
+                        "coordenadas" => $coordenadas,
                         "page" => $dominio
                     ]
-                ],JSON_UNESCAPED_UNICODE);
+                ]);
             }
             catch (Exception $e) {
                 $con -> rollback();

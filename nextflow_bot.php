@@ -8,58 +8,72 @@
         $botinfo = $con -> prepare("SELECT * FROM telegram_bot");
         $botinfo -> execute();
         $Rbotinfo = $botinfo -> get_result();
-        if($Rbotinfo -> num_rows > 0 && !isset($_GET['update_bot'])) {
-            $databot = $Rbotinfo -> fetch_assoc();
-            $token = $databot['tkn'];
-            $apiURL = $apiURL . $token . "/";
-            $chat_id = $databot['chatid'] ?? '';
-            echo json_encode([
-                "status" => "success",
-                "title" => "ok",
-                "message" => [
-                    "token" => $token
-                ]
-            ]);
-        }
-        else {
-            if(isset($_GET['set_bot']) && $_GET['set_bot'] === $clav){
-                $tkn = htmlspecialchars($_POST['token']) ?? '';
-                $ins = $con -> prepare("INSERT INTO telegram_bot (tkn) VALUES (?)");
-                $ins -> bind_param('s',$tkn);
-                if($ins -> execute()){
-                    echo  json_encode([
+        $databot = $Rbotinfo -> fetch_assoc();
+        $token = $databot['tkn'];
+        $apiURL = $apiURL . $token . "/";
+        $chat_id = $databot['chatid'] ?? '';
+        if (isset($_GET['set_bot']) && $_GET['set_bot'] === $clav) {
+            $tkn = htmlspecialchars($_POST['token']) ?? '';
+            $ins = $con->prepare("INSERT INTO telegram_bot (tkn) VALUES (?)");
+            $ins->bind_param('s', $tkn);
+            if ($ins->execute()) {
+                $webhookURL = $dominio . "/nextflow_bot.php?get_bot_state";
+                $info = file_get_contents("https://api.telegram.org/bot{$tkn}/getWebhookInfo");
+                $info = json_decode($info, true);
+                $webhookActual = $info["result"]["url"] ?? '';
+                if ($webhookActual !== $webhookURL) {
+                    $setWebhook = file_get_contents("https://api.telegram.org/bot{$tkn}/setWebhook?url={$webhookURL}");
+                    $setWebhook = json_decode($setWebhook, true);
+                    if (!empty($setWebhook["ok"]) && $setWebhook["ok"] === true) {
+                        echo json_encode([
+                            "status" => "success",
+                            "title" => "Correcto!",
+                            "message" => "Bot configurado y webhook registrado con éxito!"
+                        ]);
+                        exit;
+                    } else {
+                        echo json_encode([
+                            "status" => "error",
+                            "title" => "Error al configurar Webhook",
+                            "message" => "Token guardado, pero no se pudo registrar el webhook. Verifique el token."
+                        ]);
+                        exit;
+                    }
+                } else {
+                    echo json_encode([
                         "status" => "success",
-                        "title" => "Correcto!",
-                        "message" => "Se ha configurado su bot correctamente!"
+                        "title" => "Bot activo",
+                        "message" => "El bot ya estaba configurado con este dominio!"
                     ]);
                     exit;
                 }
             }
-            if(isset($_GET['update_bot']) && $_GET['update_bot'] === $clav){
-                $tkn = htmlspecialchars($_POST['token']) ?? '';
-                $ins = $con -> prepare("UPDATE telegram_bot SET tkn = ?");
-                $ins -> bind_param('s',$tkn);
-                if($ins -> execute()){
-                    echo  json_encode([
-                        "status" => "success",
-                        "title" => "Correcto!",
-                        "message" => "Se ha reconfigurado su bot correctamente!"
-                    ]);
-                }
-                else {
-                    echo  json_encode([
-                        "status" => "error",
-                        "title" => "No configurado",
-                        "message" => "Bot no configurado!"
-                    ]);
-                }
-                exit;
-            }
-            echo  json_encode([
-                "status" => "noconfigured",
-                "title" => "No configurado",
-                "message" => "Bot no configurado!"
+            echo json_encode([
+                "status" => "error",
+                "title" => "Error",
+                "message" => "No se pudo guardar el token en la base de datos."
             ]);
+            exit;
+        }
+
+        if(isset($_GET['update_bot']) && $_GET['update_bot'] === $clav){
+            $tkn = htmlspecialchars($_POST['token']) ?? '';
+            $ins = $con -> prepare("UPDATE telegram_bot SET tkn = ?");
+            $ins -> bind_param('s',$tkn);
+            if($ins -> execute()){
+                echo  json_encode([
+                    "status" => "success",
+                    "title" => "Correcto!",
+                    "message" => "Se ha reconfigurado su bot correctamente!"
+                ]);
+            }
+            else {
+                echo  json_encode([
+                    "status" => "error",
+                    "title" => "No configurado",
+                    "message" => "Bot no configurado!"
+                ]);
+            }
             exit;
         }
 
@@ -69,7 +83,7 @@
         );
 
         $update = json_decode(file_get_contents("php://input"), true);
-        $chat_id = null;
+        //$chat_id = null;
 
         if (isset($update["message"]["chat"]["id"])) {
             $chat_id = $update["message"]["chat"]["id"];
@@ -109,6 +123,16 @@
                 FILE_APPEND
             );
             curl_close($ch);
+            if ($result === false) {
+                return false;
+            }
+            $json = json_decode($result, true);
+            return isset($json["ok"]) && $json["ok"] === true;
+        }
+
+        function registrarWebhook($token, $url) {
+            $endpoint = "https://api.telegram.org/bot{$token}/setWebhook?url={$url}";
+            return file_get_contents($endpoint);
         }
 
         if ($text && strpos($text, "/start") === 0) {
@@ -160,34 +184,77 @@
             $comentario = $_POST['comentario'] ?? '';
             $pedido = $_POST['pedido'] ?? '';
             $total = $_POST['total'] ?? 0;
-            $pagina = $_POST['pagina'] ?? '';
             $fecha = $_POST['fecha'] ?? '';
+            $coordenadas = $_POST['coordenadas'] ?? 'No definido';
 
             $mensaje = "";
-            $mensaje .= "▁▂▃▅▆ ɴᴜᴇᴠᴏ ᴘᴇᴅɪᴅᴏ ▆▅▃▂▁" . \n\n;
-            $mensaje .= "<b>Nombre: </b> ". $nombre . \n;
-            $mensaje .= "<b>Teléfono: </b> ". $telefono . \n;
-            $mensaje .= "<b>Dirección: </b> ". $direccion . \n;
-            $mensaje .= "<b>Pedido: </b> " . \n . $pedido . \n;
-            $mensaje .= "<b>Total:  ". $total . "</b>" . \n;
-            $mensaje .= "Realizado el ". $fecha . \n\n;
-            $mensaje .= $pagina . \n;
-            $mensaje .= "ᴰᵉᵛᵉˡᵒᵖᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ";
+            $mensaje .= "▁▂▃▅▆ ɴᴜᴇᴠᴏ ᴘᴇᴅɪᴅᴏ ▆▅▃▂▁\n\n\n";
+            $mensaje .= "👥 <b>Nombre: </b> ". $nombre . "\n";
+            $mensaje .= "📱 <b>Teléfono: </b> ". $telefono . "\n";
+            $mensaje .= "📫 <b>Dirección: </b> ". $direccion . "\n";
+            $mensaje .= "🧾 <b>Pedido: </b> " . "\n\n" . $pedido . "\n\n";
+            $mensaje .= "💰 <b>Total:  $". $total . "</b>" . "\n\n";
+            $mensaje .= "🕒 <i>Realizado el ". $fecha . "</i>\n\n";
+            $mensaje .= "📍 <b>Ubicación: </b>". $coordenadas . "\n\n";
+            $mensaje .= $dominio . "\nᴰᵉᵛᵉˡᵒᵖᵉᵈ ᵇʸ ᶜʳʸᵖᵗᵒᶜᵒʳᵉ";
+            $keyboard = [];
+            $keyboard[] = [
+                [
+                    "text" => "📲 Contactar por WhatsApp",
+                    "url" => "https://wa.me/57" . preg_replace('/\D/', '', $telefono)
+                ]
+            ];
+            if ($coordenadas != "No definido") {
+                $coordsClean = str_replace(" ", "", $coordenadas);
+                $keyboard[] = [
+                    [
+                        "text" => "📍 Ver Ubicación",
+                        "url" => "https://www.google.com/maps?q=" . $coordsClean
+                    ]
+                ];
+            }
 
-            if(sendMessage($chat_id, $mensaje)){
+            if(!sendMessage($chat_id, $mensaje, $keyboard)){
+                echo json_encode([
+                    "status" => "error",
+                    "title" => "Error!",
+                    "message" => "Lo sentimos, no podemos procesar su pedido en el momento\nPor favor, comuniquese directamente con nosotros - " . $chat_id
+                ], JSON_UNESCAPED_UNICODE);
+            }
+            else {
                 echo json_encode([
                     "status" => "success",
                     "title" => "Correcto!",
                     "message" => "Pedido realizado con éxito!\nNos pondrémos en contacto en un momento."
+                ], JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        if(isset($_GET['botdata'])) {
+            $botinfo = $con -> prepare("SELECT * FROM telegram_bot");
+            $botinfo -> execute();
+            $Rbotinfo = $botinfo -> get_result();
+            if($Rbotinfo -> num_rows > 0 && !isset($_GET['update_bot'])) {
+                $databot = $Rbotinfo -> fetch_assoc();
+                $token = $databot['tkn'];
+                $apiURL = $apiURL . $token . "/";
+                $chat_id = $databot['chatid'] ?? '';
+                echo json_encode([
+                    "status" => "success",
+                    "title" => "ok",
+                    "message" => [
+                        "token" => $token
+                    ]
                 ]);
             }
             else {
-                echo json_encode([
-                    "status" => "error",
-                    "title" => "Error!",
-                    "message" => "Lo sentimos, no podemos procesar su pedido en el momento\nPor favor, comuniquese directamente con nosotros"
+                echo  json_encode([
+                    "status" => "noconfigured",
+                    "title" => "No configurado",
+                    "message" => "Bot no configurado!"
                 ]);
             }
+            exit;
         }
     }
 

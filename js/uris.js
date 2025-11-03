@@ -80,7 +80,7 @@ export const getstockminimonf = "php/caduca.php?get_minimo_notify=bWF4cGl6emFsYX
 export const destacarproduct = "php/products.php?destacar_product=bWF4cGl6emFsYXVuaW9u";
 export const consdestacado = "php/products.php?cons_destacado=bWF4cGl6emFsYXVuaW9u";
 export const deldestacado = "php/products.php?del_destacado=bWF4cGl6emFsYXVuaW9u";
-export const getbotstate = "nextflow_bot.php?get_bot_state";
+export const getbotstate = "nextflow_bot.php?get_bot_state&botdata";
 export const getbotinfo = "nextflow_bot.php?get_bot_state&get_bot_info=bWF4cGl6emFsYXVuaW9u";
 export const setbotstate = "nextflow_bot.php?get_bot_state&set_bot=bWF4cGl6emFsYXVuaW9u";
 export const editbotstate = "nextflow_bot.php?get_bot_state&update_bot=bWF4cGl6emFsYXVuaW9u";

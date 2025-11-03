@@ -965,9 +965,29 @@ document.addEventListener('DOMContentLoaded',()=>{
         const checkoutform = document.querySelector("#checkoutForm");
         checkoutform.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const nombre = document.getElementById("nombre").value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+            const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s+[A-Za-zÁÉÍÓÚáéíóúÑñ]+)+$/;
+            if (!nombreRegex.test(nombre)) {
+                iziToast.warning({
+                    title: "Atención:",
+                    message: "Ingresa un nombre válido con al menos dos palabras y solo letras.",
+                    position: "topCenter"
+                });
+                return;
+            }
+            const telRegex = /^\d{10}$/;
+            if (!telRegex.test(telefono)) {
+                iziToast.warning({
+                    title: "Atención:",
+                    message: "El teléfono debe tener exactamente 10 dígitos y solo números.",
+                    position: "topCenter"
+                });
+                return;
+            }
             const uric = source.setcheckout;
             const data = new FormData(e.target);
-            //try {
+            try {
                 const chk = await fetch(uric,{
                     method: "POST",
                     body: data
@@ -988,17 +1008,16 @@ document.addEventListener('DOMContentLoaded',()=>{
                     }).then(()=>{
                         numelems();
                         get_mycart();
-                        //abrirWhatsAppPedido(rpa,rpa.message.telefono);
                         setPedido(rpa);
                     });
                 }
                 else {
                     console.log(rpa);
                 }
-            /*}
+            }
             catch (err) {
                 console.error(err);
-            }*/
+            }
         });
 
     }
@@ -1013,7 +1032,7 @@ async function setPedido(rpa) {
 
     const urip = source.setpedido;
     const data = new FormData();
-    //try {
+    try {
         data.append('nombre', rpa.message.nombre);
         data.append('telefono', rpa.message.telefono);
         data.append('direccion', rpa.message.direccion);
@@ -1021,7 +1040,7 @@ async function setPedido(rpa) {
         data.append('total', rpa.message.total);
         data.append('comentario', rpa.message.comentario);
         data.append('fecha', rpa.message.fecha);
-        data.append('page', rpa.message.page);
+        data.append('coordenadas', rpa.message.coordenadas);
 
         const pedir = await fetch(urip, {
             method: "POST",
@@ -1031,13 +1050,15 @@ async function setPedido(rpa) {
         const resp = await pedir.json();
         Swal.fire({
             title: resp.title,
-            text: resp.text,
-            icon: resp.status
+            text: resp.message,
+            icon: resp.status,
+            color: "#fff",
+            background: "#1D2026",
         });
-    /*}
+    }
     catch (err) {
         console.error(err);
-    }*/
+    }
 }
 
 function abrirWhatsAppPedido(rpa,phone) {
